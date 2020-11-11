@@ -1,3 +1,4 @@
 *.pyc
 /secrets
 /static
+.vscode/settings.json
