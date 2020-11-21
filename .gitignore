@@ -2,3 +2,5 @@
 /secrets
 /static
 .vscode/settings.json
+venv/
+*.sqlite3
