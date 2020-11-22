@@ -26,35 +26,35 @@
         <a class="nav-link" href="{% url 'about' %}">About</a>
       </li>
       <li class="nav-item">
-<li class='nav-item'>
-                {% block user_login %}
-{% if user.is_authenticated %}
- <a   class="nav-link " href="{% url 'logout' %}" >Log Out <span class="badge badge-pill badge-primary">{{user.first_name}}</span> </a>
-{% else %}
-  <a class="nav-link" href="{% url 'login' %}">Log In</a>
-{% endif %}
-{% endblock user_login%}
-                </li>
-      </li>
-      {% comment %} <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
+
+{% block user_login %}
+                
+                  {% if user.is_authenticated %}
+                  <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" >Logged in As: <span class="badge badge-pill badge-success">{{user.first_name}}</span> </a>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
+          <a class="nav-link" href="#" >Log Out <span class="badge badge-pill badge-warning">{{user.first_name}}</span> </a>
+          <a class="nav-link" href="{% url 'private_home' %}">Secret zone!</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+          <a class="nav-link" href="admin/">Admin</a>
         </div>
       </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li> {% endcomment %}
+                  
+                  {% else %}
+                  <li>
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                  </li>
+                  {% endif %}
+               
+               </li>
+{% endblock user_login%}
+ 
+
+      </li>
+      
     </ul>
-    {% comment %} <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form> {% endcomment %}
+    
   </div>
 </nav>
 </header>
@@ -63,4 +63,43 @@
 
 {% endblock content %}
 </div>
+
+<main role="main">
+
+  <!-- Main jumbotron for a primary marketing message or call to action -->
+  
+
+  <div class="container">
+
+    <!-- Example row of columns -->
+    <div class="row">
+      <div class="col-md-4">
+        <h2>{% lorem 1 w random%} </h2>
+         {% lorem 1 b random%}    
+         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>{% lorem 1 w random%} </h2>
+        {% lorem 1 b random %}
+        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-4">
+        <h2>{% lorem 1 w random%} </h2>
+{% lorem 1 b random %} 
+        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+      </div>
+    </div>
+
+    <hr>
+
+  </div> <!-- /container -->
+
+</main>
+
+<footer class="container">
+  <p>&copy; Rod! </p>
+</footer>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+      <script>window.jQuery || document.write('<script src="../assets/js/vendor/jquery.slim.min.js"><\/script>')</script><script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
 <body>

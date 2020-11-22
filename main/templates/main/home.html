@@ -3,9 +3,13 @@
 
 
 {% block content %}
-<div class='container'></div>
 
-<h1>home page</h1>
-<!-- contents go here! -->
-<p>some content goes here for the public. </p>
+
+<div class="jumbotron">
+  <h1 class="display-4">Hello, internet person!</h1>
+  <p class="lead">This website is a place for me to store all my thoughts? its evolving. </p>
+  <hr class="my-4">
+  <p>this will probably also contain a list of my projects. </p>
+  <a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more</a>
+</div>
 {% endblock content %}
