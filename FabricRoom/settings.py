@@ -1,23 +1,21 @@
-import os
+import os 
+import environ
 from pathlib import Path
+
+#Load the Environment vars from FabricRoom/.env
+env = environ.Env()
+environ.Env.read_env()
+
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env('DEBUG')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'w1p-n_+gf8=xq6q2)_%x&km(h%p5w2#tbjm!2(*dul@1c-dmm4'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['60hz.dev']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -73,9 +71,17 @@ WSGI_APPLICATION = 'FabricRoom.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
+    # 'test': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('DATABASE_NAME'),
+        'USER': env('DATABASE_USER'),
+        'PASSWORD': env('DATABASE_PASSWORD'),
+        'HOST': env('DATABASE_HOST'),
+        'PORT': env('DATABASE_PORT'),
     }
 }
 
@@ -156,11 +162,11 @@ LOGGING = {
             'propagate': True,
             #'format': 'django: %(meassage)s'
         },
-        "django_auth_ldap": {
-            "level": "DEBUG",
-            'handlers': ['syslog',],
-            'propagate': True,
-            #'format': 'django: %(meassage)s'
-        },
+        # "django_auth_ldap": {
+        #     "level": "DEBUG",
+        #     'handlers': ['syslog',],
+        #     'propagate': True,
+        #     #'format': 'django: %(meassage)s'
+        # },
     },
 }
