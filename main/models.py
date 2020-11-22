@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.db import models
+from datetime import datetime
 
 class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     bio = models.TextField()
-    birthdate = models.DateField
+    birthdate = models.DateField(default=datetime.now)
     
-    def __str__(self):
-        return f"{self.user.username}" 
+    

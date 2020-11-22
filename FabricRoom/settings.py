@@ -4,7 +4,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -26,7 +25,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'main'
+    'main',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -40,11 +40,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'FabricRoom.urls'
+#template dirs not working on this droplet. 
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates/'),],
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'main/templates/main'  ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,7 +71,8 @@ DATABASES = {
     }
 }
 
-
+LOGIN_REDIRECT_URL = 'private_home'
+LOGOUT_REDIRECT_URL = 'home'
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -108,9 +110,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/srv/code/static/'
-
-
+STATICFILES_DIRS = [BASE_DIR / 'static']
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
