@@ -4,3 +4,4 @@
 .vscode/settings.json
 venv/
 *.sqlite3
+static/*
