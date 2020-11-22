@@ -48,7 +48,11 @@ ROOT_URLCONF = 'FabricRoom.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'main/templates/main'  ],
+        'DIRS': [
+            BASE_DIR / 'templates', 
+            BASE_DIR / 'main/templates/main', 
+            BASE_DIR / 'blog/templates/blog',
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

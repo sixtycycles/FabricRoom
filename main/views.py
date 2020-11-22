@@ -1,18 +1,18 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from main.models import Tag, Note, Profile
-
+from main.models import Profile
+from blog.models import Tag, Post, Note
 
 class LandingPageView(TemplateView):
     template_name = 'home.html'
-   
-    
+       
     def get_context_data(self, **kwargs):
         context = super(LandingPageView, self).get_context_data(**kwargs)
         context['user'] =  self.request.user
-        context['tags'] = Tag.objects.all()
         context['notes'] = Note.objects.all()
+        context['posts'] = Post.objects.all()
+        context['tags'] = Tag.objects.all()
         return context
 
 class AboutPageView(TemplateView):

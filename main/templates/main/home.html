@@ -1,10 +1,6 @@
-{% extends 'base.html' %} 
-
-
+{% extends 'base.html' %}
 
 {% block content %}
-
-
 <div class="jumbotron">
   <h1 class="display-4">Hello, internet person!</h1>
   <p class="lead">This website is a place for me to store all my thoughts? its evolving. </p>
@@ -12,25 +8,44 @@
   <p>this will probably also contain a list of my projects. </p>
   <a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more</a>
 </div>
-<div class="row">    
-      <div class="col-md-4">
-        <h2>Tags</h2>
-         {% block tags %}
-{% for tag in tags %}
-<div class='badge badge-primary badge-pills'>{{tag.tag_slug}}</div>
-{% endfor %}
-         {%endblock tags%}  
-         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+<div class="row">
+  
+  <div class="col-md-12">
+    {% for note in notes %}
+    <div class="card">
+      <div class="card-header">
+        <h2>{{ note.title }}</h2>
       </div>
-      <div class="col-md-8">
-        {% for note in notes %}
-        <h2>{{ note.subject }}</h2>
-        <p>{{ note.note_body }}</p>
-        {% endfor %}
-        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+      <div class="card-body">
+        <p>{{ note.body }}</p>
       </div>
-      
+      <div class="card-footer"></div>
     </div>
-
     <hr>
+   {% endfor %}
+    <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+  </div>
+
+  {% load markdown_extras %}
+  
+  <div class="col-md-12">
+    {% for post in posts %}
+    <div class="card">
+      <div class="card-header">
+        <h2>{{ post.title }}</h2>
+      </div>
+      <div class="card-body">
+        <p>{{ post.body | markdown | safe }}</p>
+      </div>
+      <div class="card-footer"></div>
+    </div>
+    <hr>
+    {% endfor %}
+
+  </div>
+
+
+</div>
+
+<hr>
 {% endblock content %}

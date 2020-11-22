@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from main.models import Profile, Note, Tag
+from main.models import Profile
+from blog.models import Note, Tag
 
 
 
@@ -57,14 +58,11 @@ class ProfileAdmin(UserAdmin):
         return form
 
 
-class TagAdmin(admin.ModelAdmin):
-    pass
 
 
-class NoteAdmin(admin.ModelAdmin):
-    pass
 
-admin.site.register(Tag, TagAdmin)
-admin.site.register(Note, NoteAdmin)
 admin.site.unregister(User)
 admin.site.register(User, ProfileAdmin)
+
+
+admin.site.site_header = "Post Admin Site"

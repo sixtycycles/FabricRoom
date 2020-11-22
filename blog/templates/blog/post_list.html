@@ -1,21 +1,16 @@
 {% extends 'base.html' %}
-{% block content %}
+{% block content %} 
 {% load markdown_extras %}
-
 {% for post in object_list %}
 
-<div class='card'>
-  <div class='card-header'>
+<div class="card">
+  <div class="card-header">
     <h2>{{ post.title }}</h2>
   </div>
-  <div class='card-body'>  
+  <div class="card-body">
     <p>{{ post.body | markdown | safe }}</p>
   </div>
-  <div class='card-footer'>
-     
-  </div>
+  <div class="card-footer"></div>
 </div>
 
-{% endfor %}
-
-{%endblock content%}
+{% endfor %} {%endblock content%}
