@@ -15,7 +15,8 @@ class PostModelTest(TestCase):
 
 class HomePageTest(TestCase):
     def setUp(self):
-        Post.objects.create(title = 'test title', body = 'test body content that is longer')
+        
+        Post.objects.create( author = 'auth_user', title = 'test title', body = 'test body content that is longer')
 
     def test_view_url_exists_at_proper_location(self):
         response = self.client.get('/')
@@ -29,3 +30,7 @@ class HomePageTest(TestCase):
         response = self.client.get(reverse('home')) 
         self.assertEqual(response.status_code, 200) 
         self.assertTemplateUsed(response, 'home.html')
+    
+    def test_post_that_doesnt_exist_shows_404(self):
+        response: self.client.get('posts/3')
+        self.assertEqual(response.status_code, 404)

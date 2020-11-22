@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %} 
 {% load markdown_extras %}
-{% for post in all_posts_list %}
+{% if post %}
 <div class="card">
   <div class="card-header">
     <h2>{{ post.title }}</h2>
@@ -9,9 +9,10 @@
   <div class="card-body">
     <p>{{ post.body | markdown | safe }}</p>
   </div>
-  <div class="card-footer"> 
-    <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">Read More...</a>
-  </div>
+  <div class="card-footer">by {{post.author.first_name}} {{post.author.last_name}}</div>
 </div>
-{% endfor %} 
+{% else %}
+<div class="alert alert-info" ><h3>There are currently no posts to show here? </h3></div>
+{% endif %}
+
 {%endblock content%}
