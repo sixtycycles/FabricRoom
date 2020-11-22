@@ -12,4 +12,25 @@
   <p>this will probably also contain a list of my projects. </p>
   <a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more</a>
 </div>
+<div class="row">    
+      <div class="col-md-4">
+        <h2>Tags</h2>
+         {% block tags %}
+{% for tag in tags %}
+<div class='badge badge-primary badge-pills'>{{tag.tag_slug}}</div>
+{% endfor %}
+         {%endblock tags%}  
+         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      <div class="col-md-8">
+        {% for note in notes %}
+        <h2>{{ note.subject }}</h2>
+        <p>{{ note.note_body }}</p>
+        {% endfor %}
+        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
+      </div>
+      
+    </div>
+
+    <hr>
 {% endblock content %}

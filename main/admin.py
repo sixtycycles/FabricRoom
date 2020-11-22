@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from main.models import Profile
+from main.models import Profile, Note, Tag
+
 
 
 class ProfileInline(admin.StackedInline):
@@ -9,6 +10,7 @@ class ProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'User Profile'
     fk_name = 'user'
+
 
 class ProfileAdmin(UserAdmin):
     inlines = (ProfileInline, )
@@ -54,5 +56,15 @@ class ProfileAdmin(UserAdmin):
 
         return form
 
+
+class TagAdmin(admin.ModelAdmin):
+    pass
+
+
+class NoteAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Tag, TagAdmin)
+admin.site.register(Note, NoteAdmin)
 admin.site.unregister(User)
 admin.site.register(User, ProfileAdmin)

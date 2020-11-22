@@ -34,10 +34,10 @@
                   <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" >Logged in As: <span class="badge badge-pill badge-success">{{user.first_name}}</span> </a>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="nav-link" href="#" >Log Out <span class="badge badge-pill badge-warning">{{user.first_name}}</span> </a>
+          <a class="nav-link" href="{% url 'logout'%}" >Log Out <span class="badge badge-pill badge-warning">{{user.first_name}}</span> </a>
           <a class="nav-link" href="{% url 'private_home' %}">Secret zone!</a>
           <div class="dropdown-divider"></div>
-          <a class="nav-link" href="admin/">Admin</a>
+          <a class="nav-link" href="/admin/">Admin</a>
         </div>
       </li>
                   
@@ -49,52 +49,28 @@
                
                </li>
 {% endblock user_login%}
- 
-
       </li>
-      
+    
     </ul>
     
   </div>
 </nav>
 </header>
+
 <div class="container">
+<main role="main">
+
 {% block content %}
 
 {% endblock content %}
-</div>
 
-<main role="main">
-
-  <!-- Main jumbotron for a primary marketing message or call to action -->
-  
-
-  <div class="container">
-
-    <!-- Example row of columns -->
-    <div class="row">
-      <div class="col-md-4">
-        <h2>{% lorem 1 w random%} </h2>
-         {% lorem 1 b random%}    
-         <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-      </div>
-      <div class="col-md-4">
-        <h2>{% lorem 1 w random%} </h2>
-        {% lorem 1 b random %}
-        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-      </div>
-      <div class="col-md-4">
-        <h2>{% lorem 1 w random%} </h2>
-{% lorem 1 b random %} 
-        <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p>
-      </div>
-    </div>
 
     <hr>
 
-  </div> <!-- /container -->
+
 
 </main>
+</div>
 
 <footer class="container">
   <p>&copy; Rod! </p>
