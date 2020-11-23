@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 
 {% block content %}
 <h2>PRIVATE AREA WEE WOO WEE WOO</h2>
@@ -7,8 +7,9 @@
 <h3>Hey {{user.first_name}}!</h3>
 <hr>
 <p>heres what we know about you: </p>
-<ul>
-    <li><img src='{{ MEDIA_URL }}{{ user.profile.profile_image }}'></li>
+<ul>{%if user.profile.profile_image%}
+    <li><img src="{% static 'admin/default_profile.jpg' %}" alt="default profile placeholder"></li>
+    {%endif%}
     <li>{{user.profile.bio}}</li>
     <li>{{user.profile.birthdate}}</li>
     <li>{{user.email}}</li>
