@@ -1,7 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>About!</h1>
-<!-- contents go here! -->
-<p> I'll tell you all about it. </p>
+<div class="row">
+
+    <div class="col-lg">
+        <div class="card">
+
+            <div class="card-body">
+                <div class="card-title">
+                    <h1>About 60hz.dev</h1>
+                    <hr>
+                </div>
+                <p> I'll tell you all about it! This is a Django (Python) site 
+                    is running on a Digital Ocean Droplet. I'm using Nginx as a web proxy 
+                    and to serve static files, uWsgi in emperor mode to interact with django, 
+                    Postgresql as a database, and serving files locally. 
+                    I'll try to keep this updated, or automate updating it. </p>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}
