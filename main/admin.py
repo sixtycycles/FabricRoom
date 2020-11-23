@@ -5,7 +5,6 @@ from main.models import Profile
 from blog.models import Note, Tag
 
 
-
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
@@ -15,16 +14,15 @@ class ProfileInline(admin.StackedInline):
 
 class ProfileAdmin(UserAdmin):
     inlines = (ProfileInline, )
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', )
+    list_display = ('username', 'email', 'first_name',
+                    'last_name', 'is_staff', )
     list_select_related = ('profile', )
-
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
             return list()
         return super(ProfileAdmin, self).get_inline_instances(request, obj)
     from typing import Set
-
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
@@ -56,9 +54,6 @@ class ProfileAdmin(UserAdmin):
                 form.base_fields[f].disabled = True
 
         return form
-
-
-
 
 
 admin.site.unregister(User)

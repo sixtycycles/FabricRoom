@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block content %} 
+{% block content %}
 {% load markdown_extras %}
 {% for post in all_posts_list %}
 <div class="card">
@@ -9,9 +9,9 @@
   <div class="card-body">
     <p>{{ post.body | markdown | safe }}</p>
   </div>
-  <div class="card-footer"> 
+  <div class="card-footer">
     <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">Read More...</a>
   </div>
 </div>
-{% endfor %} 
+{% endfor %}
 {%endblock content%}

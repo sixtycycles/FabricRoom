@@ -7,8 +7,8 @@ class BlogListView(ListView):
     template_name = 'post_list.html'
     context_object_name = 'all_posts_list'
 
-    # def get_queryset(self):
-    #     return Post.objects.filter(published = True)
+    def get_queryset(self):
+        return Post.objects.filter(published = True)
 
 class BlogDetailView(DetailView): # new model = Post
     model = Post

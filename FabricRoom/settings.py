@@ -1,8 +1,8 @@
-import os 
+import os
 import environ
 from pathlib import Path
 
-#Load the Environment vars from FabricRoom/.env
+# Load the Environment vars from FabricRoom/.env
 env = environ.Env()
 environ.Env.read_env()
 
@@ -23,10 +23,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #my apps
+    # my apps
     'main',
     'blog',
-    #3rd party packages
+    # 3rd party packages
     'widget_tweaks',
 ]
 
@@ -41,16 +41,16 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'FabricRoom.urls'
-#template dirs not working on this droplet. 
+# template dirs not working on this droplet.
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates', 
-            BASE_DIR / 'main/templates/main', 
+            BASE_DIR / 'templates',
+            BASE_DIR / 'main/templates/main',
             BASE_DIR / 'blog/templates/blog',
-            ],
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,7 +134,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'django': {
-          'format':'django: %(message)s',
+            'format': 'django: %(message)s',
         },
         'verbose': {
             'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
@@ -157,10 +157,10 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['syslog','file' ],
+            'handlers': ['syslog', 'file'],
             'level': 'DEBUG',
             'propagate': True,
-            #'format': 'django: %(meassage)s'
+            # 'format': 'django: %(meassage)s'
         },
         # "django_auth_ldap": {
         #     "level": "DEBUG",

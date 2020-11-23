@@ -4,16 +4,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from main.models import Profile
 from blog.models import Tag, Post, Note
 
+
 class LandingPageView(TemplateView):
     template_name = 'home.html'
-       
+
     def get_context_data(self, **kwargs):
         context = super(LandingPageView, self).get_context_data(**kwargs)
-        context['user'] =  self.request.user
+        context['user'] = self.request.user
         context['notes'] = Note.objects.all()
-        context['posts'] = Post.objects.all()
+        context['posts'] = Post.objects.filter(published=True)
         context['tags'] = Tag.objects.all()
         return context
+
 
 class AboutPageView(TemplateView):
     template_name = 'about.html'
@@ -28,5 +30,5 @@ class PrivateHome(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(PrivateHome, self).get_context_data(**kwargs)
-        context['user'] =  self.request.user
+        context['user'] = self.request.user
         return context
