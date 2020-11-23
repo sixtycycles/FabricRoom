@@ -2,9 +2,11 @@
 
 
 {% block content %}
-<h2>PRIVATE AREA</h2>
-<h3>Hello {{user.first_name}} {{user.last_name}}!</h3>
+<h2>PRIVATE AREA WEE WOO WEE WOO</h2>
+<br>
+<h3>Hey {{user.first_name}}!</h3>
 <hr>
+<p>heres what we know about you: </p>
 <ul>
     <li><img src='{{ MEDIA_URL }}{{ user.profile.profile_image }}'></li>
     <li>{{user.profile.bio}}</li>

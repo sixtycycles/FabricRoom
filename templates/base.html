@@ -53,6 +53,7 @@
               <a class="nav-link" href="{% url 'private_home' %}">Secret zone!</a>
               <div class="dropdown-divider"></div>
               <a class="nav-link" href="/admin/">Admin</a>
+              <a class="nav-link" href="{% url 'post_new' %}">New Blog Post</a>
             </div>
           </li>
 
@@ -77,7 +78,7 @@
       {% block content %}
       <!--content goes here. -->
       {% endblock content %}
-      <hr>
+      
     </main>
   </div>
 

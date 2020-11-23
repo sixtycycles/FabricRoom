@@ -34,8 +34,3 @@ class HomePageTest(TestCase):
     #def test_redirects_to_login_page_on_not_loggedin(self):
     #     response = self.client.get(reverse(my_view))
     #     self.assertRedirects(response, reverse('login_page'))
-
-    # def test_redirects_to_test_page_on_loggedin(self):
-    #     self.client.login(username='my_username', password='my_password')
-    #     response = self.client.get(reverse(my_view))
-    #     self.assertRedirects(response, reverse('test'))
