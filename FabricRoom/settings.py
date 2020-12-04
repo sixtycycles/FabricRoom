@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     # my apps
     'main',
     'blog',
+    'healthstats',
     # 3rd party packages
     'widget_tweaks',
 ]
@@ -50,6 +51,7 @@ TEMPLATES = [
             BASE_DIR / 'templates',
             BASE_DIR / 'main/templates/main',
             BASE_DIR / 'blog/templates/blog',
+            BASE_DIR / 'healthstats/templates/healthstats'
         ],
         'APP_DIRS': True,
         'OPTIONS': {

@@ -1,58 +1,58 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
-from blog.models import Post
+from healthstats.models import HealthEvent, EventType
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 
 
-class BlogListView(ListView):
-    model = Post
-    template_name = 'post_list.html'
-    context_object_name = 'all_posts_list'
+class HealthEventListView(ListView):
+    model = HealthEvent
+    template_name = 'stat_list.html'
+    context_object_name = 'all_health_events'
 
     def get_queryset(self):
-        return Post.objects.filter(published=True)
+        return HealthEvent.objects.all()
 
 
-class BlogDetailView(DetailView):  # new model = Post
-    model = Post
-    template_name = 'post_detail.html'
+class HealthEventDetailView(DetailView):  # new model = HealthEvent
+    model = HealthEvent
+    template_name = 'stat_detail.html'
     context_object_name = 'post'
 
 
-class BlogCreateView(LoginRequiredMixin, CreateView):
-    model = Post
+class HealthEventCreateView(LoginRequiredMixin, CreateView):
+    model = HealthEvent
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     raise_exception = True
-    template_name = 'post_new.html'
-    fields = ['title', 'author', 'body']
+    template_name = 'stat_new.html'
+    fields = ['event_type', 'value', 'notes']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
 
-class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
+class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = HealthEvent
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     raise_exception = True
-    template_name = 'post_update.html'
-    fields = ['title', 'author', 'body']
+    template_name = 'stat_update.html'
+    fields = ['when', 'event_type', 'value', 'notes']
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
 
 
-class BlogDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
+class HealthEventDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = HealthEvent
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     raise_exception = True
-    template_name = 'post_delete.html'
+    template_name = 'stat_delete.html'
     success_url = reverse_lazy('blog_list')
 
     def test_func(self):
