@@ -41,8 +41,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'FabricRoom.urls'
-# template dirs not working on this droplet.
 
+# template dirs not working on this droplet.
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -85,11 +85,12 @@ DATABASES = {
     }
 }
 
-LOGIN_REDIRECT_URL = 'private_home'
-LOGOUT_REDIRECT_URL = 'home'
-# Password validation
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL = 'main.CustomUser'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
+
+# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

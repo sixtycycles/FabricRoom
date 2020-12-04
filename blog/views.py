@@ -27,9 +27,13 @@ class BlogCreateView(LoginRequiredMixin, CreateView):
     raise_exception = True
     template_name = 'post_new.html'
     fields = ['title', 'author', 'body']
+    
+    def form_valid(self, form):  
+        form.instance.author = self.request.user 
+        return super().form_valid(form)
 
 
-class BlogUpdateView(LoginRequiredMixin, UpdateView):
+class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
@@ -37,10 +41,19 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'post_update.html'
     fields = ['title', 'author', 'body']
 
-class BlogDeleteView(LoginRequiredMixin,DeleteView):
+    def test_func(self): 
+        obj = self.get_object()
+        return obj.author == self.request.user
+
+
+class BlogDeleteView(LoginRequiredMixin,UserPassesTestMixin, DeleteView):
     model = Post
     login_url = '/accounts/login/'
     redirect_field_name = 'redirect_to'
     raise_exception = True    
     template_name = 'post_delete.html'
     success_url = reverse_lazy('blog_list')
+
+    def test_func(self): 
+        obj = self.get_object()
+        return obj.author == self.request.user
