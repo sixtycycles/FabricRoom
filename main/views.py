@@ -9,7 +9,7 @@ from blog.models import Tag, Post, Note
 
 
 class LandingPageView(TemplateView):
-    template_name = 'home.html'
+    template_name = 'stat_list.html'
 
     def get_context_data(self, **kwargs):
         context = super(LandingPageView, self).get_context_data(**kwargs)

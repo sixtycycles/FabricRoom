@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+       <h2> Health app! </h2>
+    </div><div class="card-body">
+        <div class="card-text">
+            Hi! What information do you want to enter? Please pick one of these: 
+        </div>
+        <ul class="nav nav-fill nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'symptom_new' %}">New Symptom</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stat_new' %}">New Health Event</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'post_new' %}">Journal entry</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'stat_list' %}">Explore Data</a>
+            </li>
+        </ul>
+        {% block stat_area %}
+that content
+{% endblock stat_area %}
+    </div>
+</div>
+
+
+
+
+
+
+{% endblock content %}

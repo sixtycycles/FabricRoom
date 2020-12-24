@@ -34,7 +34,7 @@ class BlogTest(TestCase):
                          'test body content that is longer')
 
     def test_post_list_view(self):
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse('blog'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test title')
         self.assertTemplateUsed(response, 'home.html')

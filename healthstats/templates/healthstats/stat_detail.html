@@ -1,20 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'healthstats_base.html' %}
 
 {% block content %}
 {% load markdown_extras %}
-{% if post %}
-<div class="card">
+{% if stat %}
+<div class="card mt-4 mb-4">
   <div class="card-header">
-    <h2>{{ post.title }}</h2>
+    <h2>{{ stat.when }}</h2>
   </div>
   <div class="card-body">
-    <p>{{ post.body | markdown | safe }}</p>
+    <p>Entered By: {{ stat.author }}</p>
+    {% if stat.symptoms %}
+    <p> Symptoms:
+      {% for symptom in stat.symptoms.all %}
+      <span class="badge badge-info">{{ symptom }} </span>
+      {%endfor%}
+    </p> 
+    {% endif %}
+    {% if stat.temperature %}
+    Temperature(farenheit): {{stat.temperature}}
+    {% endif %}
+
+    <p>Additional Notes: {{stat.note}}</p>
   </div>
-  <div class="card-footer">by {{post.author.first_name}} {{post.author.last_name}}
+  <div class="card-footer">by {{stat.author.first_name}} {{stat.author.last_name}}
     {% if user.is_authenticated %}
-<a href="{% url 'post_update' post.id %}" class="btn btn-info">Edit this post? </a>
-<a href="{% url 'post_delete' post.id %}" class="btn btn-danger">Delete this post? </a>
-{% endif%}
+    <a href="{% url 'stat_update' stat.id %}" class="btn btn-info">Edit</a>
+    <a href="{% url 'stat_delete' stat.id %}" class="btn btn-danger">Delete</a>
+    {% endif%}
+    <p>Recorded on: {{stat.when}} </p>
   </div>
 </div>
 {% else %}
@@ -23,4 +36,4 @@
 </div>
 {% endif %}
 
-{%endblock content%}
+{% endblock content%}

@@ -1,10 +1,10 @@
 {% extends 'healthstats_base.html' %}
 {% block stat_area %}
 {% load widget_tweaks %}
-<h1>Delete Post id: {{post.id}} </h1>
+<h1>Delete Symptom: {{symptom.name}} </h1>
 <form action="" method="post">{% csrf_token %}
 
-<p>Are you sure you want to delete {{post.author.first_name}}'s post: "{{ post.title }}"?</p>
+<p>Are you sure you want to delete "{{ symptom.name }}"?</p>
 
 <input class="form-control btn-danger" type="submit" value="Confirm"> </form>
 {% endblock stat_area %}

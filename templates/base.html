@@ -32,9 +32,9 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'about' %}">About</a>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="{% url 'blog_list' %}">Blog</a>
-          </li>
+          </li> -->
           <li class="nav-item">
 
             {% block user_login %}
@@ -50,6 +50,7 @@
                   class="badge badge-pill badge-warning">{{user.first_name}}</span> </a>
               
               <div class="dropdown-divider"></div>
+              <a class="nav-link" href="/health">Health Stats</a>
               <a class="nav-link" href="/admin/">Admin</a>
               <a class="nav-link" href="{% url 'post_new' %}">New Blog Post</a>
             </div>

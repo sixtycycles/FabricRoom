@@ -1,9 +1,9 @@
 from django.contrib import admin
-from healthstats.models import HealthEvent, EventType
+from healthstats.models import HealthEvent, Symptom
 
 
-@admin.register(EventType)
-class EventTypeAdmin(admin.ModelAdmin):
+@admin.register(Symptom)
+class SymptomAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(HealthEvent)

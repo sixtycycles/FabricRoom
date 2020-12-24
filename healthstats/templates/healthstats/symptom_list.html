@@ -1,0 +1,24 @@
+{% extends 'healthstats_base.html' %}
+{% block stat_area %}
+
+
+{% for symptom in all_symptoms %}
+<div class="card mb-3">
+  <div class="card-header">
+    <h2>{{symptom.name}}</h2>
+  </div>
+
+  <div class="card-body">
+{% if symptom.description %}
+{{symptom.description|truncatewords:30}}
+{% endif %}
+  </div>
+  <div class="card-footer">
+    <a class='btn btn-secondary' href="{% url 'symptom_detail' symptom.name %}">Details</a>
+    {% if user.is_authenticated %}
+    <a href="{% url 'symptom_delete' symptom.id %}" class="btn btn-danger">Delete</a>
+    {% endif%}
+  </div>
+</div>
+{% endfor %}
+{% endblock stat_area %}
