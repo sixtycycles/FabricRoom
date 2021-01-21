@@ -3,33 +3,15 @@
 {% block content %}
 <div class="jumbotron">
   <h1 class="display-4">Hello, internet person!</h1>
-  <p class="lead">This is a website on the internet.   </p>
+  <p class="lead">This is a website on the internet. </p>
   <hr class="my-4">
-  <p>thanks for visiting! </p>
-  <a class="btn btn-primary btn-lg" href="https://github.com/sixtycycles/FabricRoom" role="button">See this site on Github</a>
+  <p>Thanks for visiting! </p>
+  <a class="btn btn-info btn-lg" href="https://github.com/sixtycycles/FabricRoom" role="button">See this site on
+    Github</a>
+  <!-- <a class="btn btn-primary btn-lg" href="{% url 'signup' %}" role="button">please-dont-click-the signup button</a>
+  <a class="btn btn-secondary btn-lg" href="{% url 'login' %}" role="button">log in!</a> -->
 </div>
-<div class="row">
-  
-  {% load markdown_extras %}
-  
-  <div class="col-md-12">
-    {% for post in posts %}
-    <div class="card">
-      <div class="card-header">
-        <h2>{{ post.title }}</h2>
-      </div>
-      <div class="card-body">
-        <p>{{ post.body | markdown | safe }}</p>
-      </div>
-      <div class="card-footer"></div>
-    </div>
-    
-    {% endfor %}
 
-  </div>
-
-
-</div>
 
 
 {% endblock content %}

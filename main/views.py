@@ -9,14 +9,14 @@ from blog.models import Tag, Post, Note
 
 
 class LandingPageView(TemplateView):
-    template_name = 'stat_list.html'
+    template_name = 'home.html'
 
     def get_context_data(self, **kwargs):
         context = super(LandingPageView, self).get_context_data(**kwargs)
         context['user'] = self.request.user
-        context['notes'] = Note.objects.all()
-        context['posts'] = Post.objects.filter(published=True)
-        context['tags'] = Tag.objects.all()
+        # context['notes'] = Note.objects.all()
+        # context['posts'] = Post.objects.filter(published=True)
+        # context['tags'] = Tag.objects.all()
         return context
 
 
@@ -27,6 +27,8 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     success_url = reverse_lazy('login') 
     template_name = 'registration/signup.html'
+
+
 
 # class PrivateHome(LoginRequiredMixin, TemplateView):
 #     login_url = '/accounts/login/'

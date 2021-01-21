@@ -20,10 +20,10 @@ class Symptom(models.Model):
 class HealthEvent(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     when = models.DateTimeField(auto_now_add=True)
-    symptoms = models.ManyToManyField(Symptom, related_name='symptoms', blank=True)
-    temperature = models.FloatField(verbose_name='temperatures',blank=True, null=True)
-    note = models.TextField(blank=True, null=True)
-    feels_rating = models.IntegerField(blank=True, null=True)
+    symptoms = models.ManyToManyField(Symptom, related_name='symptoms', blank=True, help_text="hold command or ctrl key to select more than one symptom")
+    temperature = models.FloatField(verbose_name='what is your temperature right now',blank=True, null=True, help_text="temperature in Farenheit please, 1 or more decimal places")
+    note = models.TextField(verbose_name='Are there any notes related to this event?', blank=True, null=True)
+    feels_rating = models.IntegerField(blank=True, null=True, help_text="Overall feelings impression. enter a number between 0 and 10, 0 is bad, 10 is good")
 
     def __str__(self):
         return f"{self.author.first_name} - @{self.when}"
