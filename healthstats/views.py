@@ -4,7 +4,8 @@ from django.views.generic.edit import DeleteView
 from healthstats.models import HealthEvent, Symptom
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-
+from plotly.offline import plot
+from plotly.graph_objs import Scatter
 
 class HealthEventHomeView(TemplateView):
     model = HealthEvent
@@ -125,4 +126,11 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'symptom_delete.html'
     success_url = reverse_lazy('health_event_home')
 
-   
+def stat_plot_view(request):
+    x_data = [0,1,2,3]
+    y_data = [x**2 for x in x_data]
+    plot_div = plot([Scatter(x=x_data, y=y_data,
+                        mode='lines', name='test',
+                        opacity=0.8, marker_color='green')],
+               output_type='div')
+    return render(request, "stat_plot.html", context={'plot_div': plot_div})

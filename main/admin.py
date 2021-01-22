@@ -7,7 +7,8 @@ from main.models import Profile
 from blog.models import Note, Tag
 
 
-admin.site.site_header = "Post Admin Site"
+admin.site.site_header = "60hz.dev Admin"
+admin.site.site_title = "ADMIN - 60hz.dev"
 
 class CustomUserProfileInline(admin.StackedInline):
     model = Profile
