@@ -8,3 +8,5 @@ static/
 media/
 .env
 staticfiles/
+marisa_history.csv
+stat_data.txt

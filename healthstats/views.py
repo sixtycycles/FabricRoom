@@ -14,7 +14,7 @@ from plotly.offline import plot
 from plotly.graph_objs import Scatter
 
 
-class HealthEventHomeView(TemplateView):
+class HealthEventHomeView(LoginRequiredMixin, TemplateView):
     model = HealthEvent
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
