@@ -1,5 +1,5 @@
-{% extends 'healthstats_base.html' %}
-{% block stat_area %}
+{% extends 'base.html' %}
+{% block content %}
 {% load widget_tweaks %}
 <h1> Updating {{healthevent}}</h1>
 
@@ -46,4 +46,4 @@
     {% endfor %}
 
 <input class=' form-control btn btn-success' type="submit" value="Save"> </form>
-{% endblock stat_area %}
+{% endblock content %}

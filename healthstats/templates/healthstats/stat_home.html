@@ -1,20 +1,17 @@
-{% extends 'healthstats_base.html' %}
-{% block stat_area %}
+{% extends 'base.html' %}
+{% block content %}
 
-{% for stat in all_health_events %}
+
 <div class="card mb-3">
   <div class="card-header">
-    <h2>{{stat.event_type}}</h2>
+    <h2>Hi {{user.first_name }}!</h2>
   </div>
 
   <div class="card-body">
-    <p>Entered By: {{ stat.author }}</p>
-    <p>Value: <span class="badge badge-primary">{{stat.value}}</span></p>
-    <p>Recorded on :{{stat.when}} </p>
+   <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a>
   </div>
   <div class="card-footer">
-    <a class='btn btn-secondary' href="{% url 'stat_detail' stat.pk %}">More...</a>
-  </div>
 </div>
-{% endfor %}
-{% endblock stat_area %}
+</div>
+
+{% endblock content %}

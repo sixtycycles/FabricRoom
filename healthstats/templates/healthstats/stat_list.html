@@ -1,21 +1,27 @@
-{% extends 'healthstats_base.html' %}
-{% block stat_area %}
+{% extends 'base.html' %}
+{% block content %}
 
-{% load markdown_extras %}
+<table class="table table-striped">
+<thead>
+  <tr>
+    <th scope="col">author</th>
+    <th scope="col">temperature</th>
+    <th scope="col">when</th>
+  </tr>
+</thead>
+<tbody>
 {% for stat in all_health_events %}
-<div class="card mb-3">
-  <div class="card-header">
-    <h2>{{stat.event_type}}</h2>
-  </div>
 
-  <div class="card-body">
-    <p>Entered By: {{ stat.author }}</p>
-    <p>Tempterature: <span class="badge badge-primary">{{stat.temperature}}</span></p>
-    <p>Recorded on :{{stat.when}} </p>
-  </div>
-  <div class="card-footer">
-    <a class='btn btn-secondary' href="{% url 'stat_detail' stat.pk %}">More...</a>
-  </div>
-</div>
+<tr>
+
+</tr>
+<td>{{ stat.author }}</td>
+<td>{{ stat.temperature }}</td>
+<td>{{ stat.when|date:'P D M d' }} </td>
+
+
+    
 {% endfor %}
-{% endblock stat_area %}
+</tbody>
+</table>
+{% endblock content %}

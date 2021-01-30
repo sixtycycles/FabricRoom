@@ -1,4 +1,3 @@
-import os
 import environ
 from pathlib import Path
 
@@ -94,7 +93,7 @@ DATABASES = {
 
 
 AUTH_USER_MODEL = 'main.CustomUser'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'health_event_home'
 LOGOUT_REDIRECT_URL = 'home'
 
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

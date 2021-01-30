@@ -8,4 +8,7 @@ class SymptomAdmin(admin.ModelAdmin):
 
 @admin.register(HealthEvent)
 class HealthEventAdmin(admin.ModelAdmin):
-    pass
+    fields = ('author', 'symptoms', 'temperature', 'note', 'feels_rating' )
+    list_display = ('author', 'when', 'feels_rating')
+    list_filter = ('author', 'feels_rating')
+    

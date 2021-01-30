@@ -1,6 +1,7 @@
-{% extends 'healthstats_base.html' %}
-{% block stat_area %}
+{% extends 'base.html' %}
+{% block content %}
 {% autoescape off %}
+<h3>Temperature over time</h3>
 {{ plot_div }}
 {% endautoescape %}
-{% endblock stat_area %}
+{% endblock content %}
