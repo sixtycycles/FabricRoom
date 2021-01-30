@@ -1,3 +1,3 @@
 ## Fabric Room ###
 ### this is the code to render [60hz.dev](https://60hz.dev) ###
-#### i dont know what its for yet. ####
+#### this currently lets you track body temperature and other symptoms/notes for yourself. MOre data interaction is comming!.  ####
