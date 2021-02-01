@@ -20,9 +20,9 @@
 
 </head>
 
-<body>
+<body class="">
   <header>
-    <nav class="navbar navbar-expand-lg navbar-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark text-light">
       <a class="navbar-brand" href="{% url 'home' %}">60hz.dev</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,7 +45,7 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false" href="#">Logged in As: <span
-                class="badge  bg-success">{{user.first_name}}</span></a>
+                class="badge  bg-secondary">{{user.first_name}}</span></a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="nav-link" href="{% url 'logout'%}">Log Out 
                 <span class="badge  bg-warning">{{user.first_name}}</span> </a>
@@ -82,6 +82,7 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item"  href="{% url 'stat_new' %}">Add Temperature</a>                
                 <a class="dropdown-item"  href="{% url 'symptom_new' %}">Add Symptom</a>
+                <a class="dropdown-item"  href="{% url 'note_new' %}">Add Note</a>
                 <a class="dropdown-item"  href="{% url 'stat_list' %}">Explore Data</a>
                 <a class="dropdown-item" href="{% url 'stat_plot' %}">Temperature Plot</a>
             </ul>
@@ -108,7 +109,7 @@
     </main>
   </div>
 
-  <footer class="container">
+  <footer class="container ">
     <hr>
     <p>Today is the {% now "jS \o\f F" %} - &copy; Rod! </p>
  

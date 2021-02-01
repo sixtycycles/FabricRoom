@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% load markdown_extras %}
+{% for note in all_notes_list %}
+<div class="card">
+  <div class="card-header">
+    <h2>{{ note.name }}</h2>
+  </div>
+
+  <div class="card-body">
+    <p>By {{ note.author }}</p>
+    <p><div class="badge badge-primary">{{note.tags}}</div></p>
+    <!-- <p>{{ post.body | markdown | safe }}</p> -->
+  </div>
+  <div class="card-footer">
+    <a class='btn btn-secondary' href="{% url 'note_detail' note.pk %}">Read More...</a>
+  </div>
+</div>
+{% endfor %}
+{% endblock content %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if note %}
+<div class="card">
+  <div class="card-header">
+    <h2>{{ note.title }}</h2>
+  </div>
+  <div class="card-body">
+    <p>
+      <a href="{{ note.link }}"> {{ note.link }}</a>
+    </p>
+  </div>
+  <div class="card-footer">by {{note.author.first_name}} {{note.author.last_name}}
+    {% if user.is_authenticated %}
+<a href="{% url 'note_update' note.id %}" class="btn btn-info">Edit this note? </a>
+<a href="{% url 'note_delete' note.id %}" class="btn btn-danger">Delete this note? </a>
+{% endif%}
+  </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+  <h3>There are currently no notes to show here? </h3>
+</div>
+{% endif %}
+
+{%endblock content%}

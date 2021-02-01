@@ -32,8 +32,10 @@ class Note(models.Model):
                                related_name="authors_notes", on_delete=models.CASCADE)
     link = models.URLField(blank=True)
     title = models.CharField(max_length=100, blank=True)
-    body = models.TextField(blank=True)
-    tags = models.ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f"{self.title}"
+
+    def get_absolute_url(self):
+        return reverse('note_detail', args=[str(self.id)])
