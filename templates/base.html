@@ -22,7 +22,7 @@
 
 <body class="">
   <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-dark text-light">
+    <nav class="navbar  navbar-expand-md  ">
       <a class="navbar-brand" href="{% url 'home' %}">60hz.dev</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,25 @@
           <!-- <li class="nav-item">
             <a class="nav-link" href="{% url 'blog_list' %}">Blog</a>
           </li> -->
+          {% if user.is_authenticated %}
+         
+            
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false" >Actions</a>
+          
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <div class="dropdown-header">Health App Actions</div>
+            <div class="dropdown-divider"></div>
+              <a class="nav-link"  href="{% url 'stat_new' %}">Add Temperature</a>                
+              <a class="nav-link"  href="{% url 'symptom_new' %}">Add Symptom</a>
+              <a class="nav-link"  href="{% url 'note_new' %}">Add Note</a>
+              <a class="nav-link"  href="{% url 'stat_list' %}">Explore Data</a>
+              <a class="nav-link" href="{% url 'stat_plot' %}">Temperature Plot</a>
+          </div>
+        </li>
+      
+        {% endif%}
           <li class="nav-item">
 
             {% block user_login %}
@@ -45,19 +64,21 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown"
               aria-haspopup="true" aria-expanded="false" href="#">Logged in As: <span
-                class="badge  bg-secondary">{{user.first_name}}</span></a>
+                class="badge  bg-warning">{{user.first_name}}</span></a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="nav-link" href="{% url 'logout'%}">Log Out 
-                <span class="badge  bg-warning">{{user.first_name}}</span> </a>
-
-              <div class="dropdown-divider"></div>
-
-              <a class="nav-link" href="/health">Health Stats</a>
               
+
+              <!-- <div class="dropdown-divider"></div> -->
+              <div class="dropdown-header"> <strong>Your Apps</strong></div>
+              <div class="dropdown-divider"></div>
+              <a class="nav-link" href="/health">Health Stats</a>
+
               {% if user.is_staff %}
               <a class="nav-link" href="/admin/">Admin</a>
               {% endif %}
-
+              <div class="dropdown-divider"></div>
+              <a class="nav-link" href="{% url 'logout'%}">Log Out 
+                <span class="badge  bg-warning">{{user.first_name}}</span> </a>
             </div>
           </li>
 
@@ -72,23 +93,7 @@
           {% endblock user_login %}
           </li>
 <!--#########-->        
-          {% if user.is_authenticated %}
          
-            
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false" >do stuff</a>
-            
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item"  href="{% url 'stat_new' %}">Add Temperature</a>                
-                <a class="dropdown-item"  href="{% url 'symptom_new' %}">Add Symptom</a>
-                <a class="dropdown-item"  href="{% url 'note_new' %}">Add Note</a>
-                <a class="dropdown-item"  href="{% url 'stat_list' %}">Explore Data</a>
-                <a class="dropdown-item" href="{% url 'stat_plot' %}">Temperature Plot</a>
-            </ul>
-          </li>
-        
-          {% endif%}
 
           {% if not user.is_authenticated %}
           <li><a class="nav-link" href="{% url 'signup' %}" role="button">Signup</a></li>
@@ -100,7 +105,7 @@
   </header>
   
   <div class="container">
-    <main role="main">
+    <main role="main" class="">
      
       {% block content %}
       <!--content goes here. -->

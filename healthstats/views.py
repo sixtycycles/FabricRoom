@@ -138,8 +138,12 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
 
 def stat_plot_view(request):
     health_events = HealthEvent.objects.filter(author=request.user)
-    y_data = [each.temperature for each in health_events]
-    x_data = [each.when for each in health_events]
+
+    y_data = [event.temperature for event in health_events]
+    x_data = [event.when for event in health_events]
+    notes = [event.note for event in health_events]
+    symptoms = [event.symptoms for event in health_events]
+
     plot_div = plot(
         [
             Scatter(
@@ -149,8 +153,18 @@ def stat_plot_view(request):
                 name="test",
                 opacity=0.8,
                 marker_color="green",
-            )
+            ),
         ],
         output_type="div",
     )
-    return render(request, "stat_plot.html", context={"plot_div": plot_div})
+
+    return render(
+        request,
+        "stat_plot.html",
+        context={
+            "plot_div": plot_div,
+            "dates": x_data,
+            "notes": notes,
+            "symptoms": symptoms
+        },
+    )

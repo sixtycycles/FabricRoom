@@ -3,5 +3,13 @@
 {% autoescape off %}
 <h3>Temperature over time</h3>
 {{ plot_div }}
+<!-- <h3>Average weekly temp. </h3>
+-->
+{% for each in dates %}
+{{ each }} <br>
+{% endfor %}
+
+{{dates.month}}
+
 {% endautoescape %}
 {% endblock content %}

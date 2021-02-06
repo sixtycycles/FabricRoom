@@ -2,14 +2,15 @@
 {% block content %}
 
 
-<div class="card mb-3">
+<div class="card mb-3 mt-3">
   <div class="card-header">
     <h1>Hi {{user.first_name }}!</h1>
   </div>
 
   <div class="card-body">
    <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a>
-   <a class="btn btn-secondary" href="{% url 'note_new' %}"> New Note </a>
+   <a class="btn btn-primary light" href="{% url 'note_new' %}"> New Note </a>
+   <a class="btn btn-primary" href="{% url 'symptom_new' %}"> New Symptom </a>
   </div>
   <div class="card-footer">
 </div>

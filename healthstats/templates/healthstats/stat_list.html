@@ -7,6 +7,7 @@
     <th scope="col">author</th>
     <th scope="col">temperature</th>
     <th scope="col">when</th>
+    <th scope="col">symptoms</th>
   </tr>
 </thead>
 <tbody>
@@ -18,6 +19,7 @@
 <td>{{ stat.author }}</td>
 <td>{{ stat.temperature }}</td>
 <td>{{ stat.when|date:'P D M d' }} </td>
+<td>{{ stat.get_symptoms}}</td>
 
 
     

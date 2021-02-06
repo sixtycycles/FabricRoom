@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
+<div class="row mt-3">
 
     <div class="col-lg">
         <div class="card">
@@ -11,7 +11,10 @@
                     <h1>About 60hz.dev</h1>
                     <hr>
                 </div>
-                <p>  <a class="btn btn-info btn-lg" href="https://github.com/sixtycycles/FabricRoom" role="button">See this site on
+                <p>  
+                    Some random words unrelated to this site: 
+                    {% lorem 4 p random %}
+                    <a class="btn btn-info btn-lg" href="https://github.com/sixtycycles/FabricRoom" role="button">See this site on
                     Github</a></p>
             </div>
         </div>
