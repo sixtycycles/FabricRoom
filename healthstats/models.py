@@ -4,14 +4,14 @@ from django.contrib.auth import get_user_model
 
 
 class Symptom(models.Model):
-    name = models.SlugField(verbose_name="Symptom name", max_length=200, unique=True)
+    slug = models.SlugField(verbose_name="Symptom name", max_length=200, unique=True)
     description = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
     def get_absolute_url(self):
-        return reverse("symptom_detail", args=[str(self.name)])
+        return reverse("symptom_detail", args=[str(self.slug)])
 
     # override save to save slug only on creation so urls dont change .
 
@@ -37,7 +37,7 @@ class HealthEvent(models.Model):
     feels_rating = models.IntegerField(
         blank=True,
         null=True,
-        help_text="Overall feelings impression. enter a number between 0 and 10, 0 is bad, 10 is good",
+        help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
     )
 
     def __str__(self):

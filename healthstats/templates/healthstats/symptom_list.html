@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
+<table class="">
 {% for symptom in all_symptoms %}
 <div class="card mb-3">
   <div class="card-header">
-    <h2>{{symptom.name}}</h2>
+    <h2>{{symptom.slug}}</h2>
   </div>
 
   <div class="card-body">
@@ -14,11 +14,13 @@
 {% endif %}
   </div>
   <div class="card-footer">
-    <a class='btn btn-secondary' href="{% url 'symptom_detail' symptom.name %}">Details</a>
+    <a class='btn btn-secondary' href="{% url 'symptom_detail' symptom.slug %}">Details</a>
     {% if user.is_authenticated %}
-    <a href="{% url 'symptom_delete' symptom.id %}" class="btn btn-danger">Delete</a>
-    {% endif%}
+    <a href="{% url 'symptom_delete' symptom.slug %}" class="btn btn-danger">Delete</a>
+    {% endif %}
   </div>
 </div>
 {% endfor %}
+</table>
+
 {% endblock content %}

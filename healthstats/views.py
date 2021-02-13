@@ -42,7 +42,7 @@ class SymptomCreateView(LoginRequiredMixin, CreateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "symptom_new.html"
-    fields = ["name"]
+    fields = ["slug"]
 
 
 class HealthEventListView(LoginRequiredMixin, ListView):
@@ -111,7 +111,7 @@ class SymptomUpdateView(LoginRequiredMixin, UpdateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "symptom_update.html"
-    fields = ["name"]
+    fields = ["slug"]
 
 
 class HealthEventDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
