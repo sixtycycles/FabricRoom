@@ -13,7 +13,7 @@ class Symptom(models.Model):
     def get_absolute_url(self):
         return reverse("symptom_detail", args=[str(self.slug)])
 
-    # override save to save slug only on creation so urls dont change .
+
 
 
 class HealthEvent(models.Model):
@@ -47,4 +47,7 @@ class HealthEvent(models.Model):
         return reverse("stat_detail", args=[str(self.id)])
 
     def get_symptoms(self):
-        return self.symptoms
+        ret = ''
+        for dept in self.symptoms.all():
+            ret += dept.slug + ', '
+        return ret[:-2]

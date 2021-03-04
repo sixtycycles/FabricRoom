@@ -54,7 +54,7 @@ class HealthEventListView(LoginRequiredMixin, ListView):
     context_object_name = "all_health_events"
 
     def get_queryset(self):
-        return HealthEvent.objects.filter(author=self.request.user)
+        return HealthEvent.objects.filter(author=self.request.user).order_by("-when")
 
 
 class SymptomListView(LoginRequiredMixin, ListView):
@@ -165,6 +165,6 @@ def stat_plot_view(request):
             "plot_div": plot_div,
             "dates": x_data,
             "notes": notes,
-            "symptoms": symptoms
+            "symptoms": symptoms,
         },
     )

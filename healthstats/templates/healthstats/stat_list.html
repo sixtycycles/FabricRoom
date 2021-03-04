@@ -1,27 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load tz %}
+
 
 <table class="table table-striped">
 <thead>
   <tr>
-    <th scope="col">author</th>
+    <!-- <th scope="col">author</th> -->
     <th scope="col">temperature</th>
     <th scope="col">when</th>
+    <th scope="col">notes</th>
     <th scope="col">symptoms</th>
+
   </tr>
 </thead>
 <tbody>
 {% for stat in all_health_events %}
-
 <tr>
-
-</tr>
-<td>{{ stat.author }}</td>
+<!-- <td>{{ stat.author }}</td> -->
+<!-- date:'P D M d' -->
+<!-- we only have users in LA right now w/e -->
+{% timezone "America/Los_Angeles" %}
+<td>{{ stat.when|localtime }} </td> 
+{% endtimezone %}
 <td>{{ stat.temperature }}</td>
-<td>{{ stat.when|date:'P D M d' }} </td>
-<td>{{ stat.get_symptoms}}</td>
+<td>{{ stat.note}}</td>
 
-
+<td>{{ stat.get_symptoms }}</td>
+</tr>
     
 {% endfor %}
 </tbody>
