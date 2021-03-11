@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django_pandas.managers import DataFrameManager
 
 class Symptom(models.Model):
-    slug = models.SlugField(verbose_name="Symptom name", max_length=200, unique=True)
+    slug = models.SlugField(verbose_name="Symptom name", max_length=200, unique=True, help_text="Enter the name in with hyphens instead of spaces, like \'my-symptom-name\'")
     description = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):

@@ -89,6 +89,10 @@ class SymptomDetailView(LoginRequiredMixin, DetailView):
     raise_exception = True
     template_name = "symptom_detail.html"
     context_object_name = "symptom"
+    # related_events = symptom.symptom_set.all()
+    # def get_queryset(self):
+    #     return Symptom.objects.get(pk=self.request.id).prefetch_related("health_event")
+
 
 
 class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
