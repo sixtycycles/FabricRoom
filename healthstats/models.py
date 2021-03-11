@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-
+from django_pandas.managers import DataFrameManager
 
 class Symptom(models.Model):
     slug = models.SlugField(verbose_name="Symptom name", max_length=200, unique=True)
@@ -12,8 +12,6 @@ class Symptom(models.Model):
 
     def get_absolute_url(self):
         return reverse("symptom_detail", args=[str(self.slug)])
-
-
 
 
 class HealthEvent(models.Model):
@@ -39,6 +37,9 @@ class HealthEvent(models.Model):
         null=True,
         help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
     )
+    
+    objects = DataFrameManager()
+
 
     def __str__(self):
         return f"{self.author.first_name} - @{self.when}"

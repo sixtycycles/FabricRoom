@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+{% autoescape off %}
+<h3>Pandas go here</h3>
+{{ df|safe }}
+
+
+{% endautoescape %}
+{% endblock content %}

@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load tz %}
 {% load widget_tweaks %}
-<h1> Updating {{healthevent}}</h1>
-
+{% timezone 'America/Los_Angeles' %}
+<h1> Updating event #{{ healthevent.id }} from {{ healthevent.when|localtime }}</h1>
+{% endtimezone %}
 <form action="" method="post">
     {% csrf_token %}
     {% load widget_tweaks %}
@@ -46,4 +48,6 @@
     {% endfor %}
 
 <input class=' form-control btn btn-success' type="submit" value="Save"> </form>
+<br>
+<a href="{% url 'stat_delete' healthevent.id %}" class="form-control btn btn-danger">Delete This Event?</a>
 {% endblock content %}

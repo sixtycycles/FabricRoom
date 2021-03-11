@@ -1,15 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 {% autoescape off %}
-<h3>Temperature over time</h3>
-{{ plot_div }}
+<h4>All {{user.first_name}}'s temperature datapoints</h4>
+{{raw_temp_data}}
+
+<h4>{{user.first_name}}'s 7 day rolling average temperature</h4>
+{{ seven_day_rolling_average }}
 <!-- <h3>Average weekly temp. </h3>
 -->
-{% for each in dates %}
+<!-- {% for each in dates %}
 {{ each }} <br>
-{% endfor %}
-
-{{dates.month}}
+{% endfor %} -->
+<!-- {{test}} -->
 
 {% endautoescape %}
 {% endblock content %}

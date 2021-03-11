@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
-
+{% load tz %}
 {% block content %}
 {% load markdown_extras %}
 {% if stat %}
 <div class="card mt-4 mb-4">
   <div class="card-header">
-    <h2>{{ stat.when }}</h2>
+    {% timezone "America/Los_Angeles" %}
+    <h2>{{ stat.when|localtime }}</h2>
+    {% endtimezone %}
   </div>
   <div class="card-body">
     <p>Entered By: {{ stat.author }}</p>

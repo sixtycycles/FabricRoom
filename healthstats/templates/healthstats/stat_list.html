@@ -7,10 +7,11 @@
 <thead>
   <tr>
     <!-- <th scope="col">author</th> -->
-    <th scope="col">temperature</th>
     <th scope="col">when</th>
+    <th scope="col">temperature</th>
     <th scope="col">notes</th>
     <th scope="col">symptoms</th>
+    <th scope="col">edit/delete?</th>
 
   </tr>
 </thead>
@@ -27,6 +28,9 @@
 <td>{{ stat.note}}</td>
 
 <td>{{ stat.get_symptoms }}</td>
+<td>
+  <a href="{% url 'stat_update' stat.id %}" class="btn btn-info">Edit</a>
+</td>
 </tr>
     
 {% endfor %}

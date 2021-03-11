@@ -12,6 +12,7 @@ from healthstats.views import (
     HealthEventDetailView,
     HealthEventHomeView,
     stat_plot_view,
+
 )
 
 urlpatterns = [
@@ -27,4 +28,5 @@ urlpatterns = [
     path("event/new/", HealthEventCreateView.as_view(), name="stat_new"),
     path("event/<int:pk>/delete", HealthEventDeleteView.as_view(), name="stat_delete"),
     path("event/<int:pk>/update", HealthEventUpdateView.as_view(), name="stat_update"),
+    
 ]

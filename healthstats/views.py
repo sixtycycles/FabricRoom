@@ -97,8 +97,8 @@ class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "stat_update.html"
-    readonly_fields = ["when"]
-    fields = ["event_type", "value", "notes"]
+    readonly_fields = ["author", "when"]
+    fields = ["temperature", "symptoms", "note", "feels_rating"]
 
     def test_func(self):
         obj = self.get_object()
@@ -137,22 +137,41 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def stat_plot_view(request):
-    health_events = HealthEvent.objects.filter(author=request.user)
 
-    y_data = [event.temperature for event in health_events]
-    x_data = [event.when for event in health_events]
+    health_events = HealthEvent.objects.filter(author=request.user)
+    onlytemps = HealthEvent.objects.filter(author=request.user).exclude(
+        temperature=None
+    )
+    temperatures = [event.temperature for event in onlytemps]
+    datetime_of_sample = [event.when for event in onlytemps]
     notes = [event.note for event in health_events]
     symptoms = [event.symptoms for event in health_events]
+    df = health_events.to_timeseries(index="when")
+    seven_day_average = df.temperature.rolling(7).mean().shift(-3)
 
-    plot_div = plot(
+    raw_temp_data = plot(
         [
             Scatter(
-                x=x_data,
-                y=y_data,
+                x=datetime_of_sample,
+                y=temperatures,
                 mode="markers",
-                name="test",
+                name="raw daily temperatures",
                 opacity=0.8,
                 marker_color="green",
+            ),
+        ],
+        output_type="div",
+    )
+
+    seven_day_rolling_average = plot(
+        [
+            Scatter(
+                x=datetime_of_sample,
+                y=seven_day_average,
+                mode="markers",
+                name="7 day rolling average temperature",
+                opacity=0.8,
+                marker_color="blue",
             ),
         ],
         output_type="div",
@@ -162,9 +181,18 @@ def stat_plot_view(request):
         request,
         "stat_plot.html",
         context={
-            "plot_div": plot_div,
-            "dates": x_data,
-            "notes": notes,
-            "symptoms": symptoms,
+            "seven_day_rolling_average": seven_day_rolling_average,
+            "raw_temp_data": raw_temp_data,
+            # "dates": x_data,
+            # "test": newlist,
+            # "notes": notes,
+            # "symptoms": symptoms,
         },
     )
+
+
+# def pandas_view(request):
+#     health_events = HealthEvent.objects.filter(author=request.user)
+#     df = health_events.to_timeseries(index='when')
+#     df["7_day_average"] = df.temperature.rolling(7).mean().shift(-3)
+#     return render(request, 'pandas.html', {'df': df.to_html()})
