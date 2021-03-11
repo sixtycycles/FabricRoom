@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # my apps
     'main',
-    'blog',
+    # 'blog',
     'healthstats',
     # 3rd party packages
     'widget_tweaks',
@@ -55,7 +55,7 @@ TEMPLATES = [
         'DIRS': [
             BASE_DIR / 'templates',
             BASE_DIR / 'main/templates/main',
-            BASE_DIR / 'blog/templates/blog',
+            # BASE_DIR / 'blog/templates/blog',
             BASE_DIR / 'healthstats/templates/healthstats'
         ],
         'APP_DIRS': True,

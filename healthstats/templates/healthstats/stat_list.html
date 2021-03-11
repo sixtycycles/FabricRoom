@@ -2,7 +2,6 @@
 {% block content %}
 {% load tz %}
 
-
 <table class="table table-striped">
 <thead>
   <tr>
@@ -22,12 +21,12 @@
 <!-- date:'P D M d' -->
 <!-- we only have users in LA right now w/e -->
 {% timezone "America/Los_Angeles" %}
-<td>{{ stat.when|localtime }} </td> 
+<td>{{ stat.when|localtime|date:"m/d/y g:ia"}} </td> 
 {% endtimezone %}
 <td>{{ stat.temperature }}</td>
 <td>{{ stat.note}}</td>
 
-<td>{{ stat.get_symptoms }}</td>
+<td>{% for event in stat.get_symptoms %} <div class="badge badge-warning"> {{event }}</div>{% endfor %}</td>
 <td>
   <a href="{% url 'stat_update' stat.id %}" class="btn btn-info">Edit</a>
 </td>

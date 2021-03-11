@@ -3,7 +3,7 @@
 {% load tz %}
 {% load widget_tweaks %}
 {% timezone 'America/Los_Angeles' %}
-<h1> Updating event #{{ healthevent.id }} from {{ healthevent.when|localtime }}</h1>
+<h1> Updating event #{{ healthevent.id }} from {{ healthevent.when|localtime|date:"g:ia m/d/y " }}</h1>
 {% endtimezone %}
 <form action="" method="post">
     {% csrf_token %}

@@ -1,43 +1,43 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from main.forms import CustomUserCreationForm, CustomUserChangeForm 
+from main.forms import CustomUserCreationForm, CustomUserChangeForm
 from main.models import CustomUser
 from main.models import Profile
-from blog.models import Note, Tag
+
+# from blog.models import Note, Tag
 
 
 admin.site.site_header = "60hz.dev Admin"
 admin.site.site_title = "ADMIN - 60hz.dev"
 
+
 class CustomUserProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
-    verbose_name_plural = 'User Profile'
-    fk_name = 'user'
+    verbose_name_plural = "User Profile"
+    fk_name = "user"
 
 
 @admin.register(CustomUser)
-class CustomUserAdmin(UserAdmin): 
+class CustomUserAdmin(UserAdmin):
     inlines = (CustomUserProfileInline,)
-    add_form = CustomUserCreationForm 
-    form = CustomUserChangeForm 
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
     model = CustomUser
 
-    list_display = ['email', 'username', 'birthdate', 'is_staff', ]
-    fieldsets = UserAdmin.fieldsets + ( 
-        (None, {'fields': ('birthdate',)}),
-    )
-    add_fieldsets = UserAdmin.add_fieldsets + ( 
-        (None, {'fields': ('birthdate',)}),
-    )
+    list_display = [
+        "email",
+        "username",
+        "birthdate",
+        "is_staff",
+    ]
+    fieldsets = UserAdmin.fieldsets + ((None, {"fields": ("birthdate",)}),)
+    add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ("birthdate",)}),)
     # def get_inline_instances(self, request, obj=None):
     #     if not obj:
     #         return list()
     #     return super(CustomUserAdmin, self).get_inline_instances(request, obj)
-
-
-
 
 
 # class ProfileAdmin(UserAdmin):
@@ -87,6 +87,3 @@ class CustomUserAdmin(UserAdmin):
 
 # admin.site.unregister(User)
 # admin.site.register(User, ProfileAdmin)
-
-
-

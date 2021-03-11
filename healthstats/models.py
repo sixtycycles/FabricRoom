@@ -36,10 +36,8 @@ class HealthEvent(models.Model):
         blank=True,
         null=True,
         help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
-    )
-    
+    )  
     objects = DataFrameManager()
-
 
     def __str__(self):
         return f"{self.author.first_name} - @{self.when}"
@@ -48,7 +46,5 @@ class HealthEvent(models.Model):
         return reverse("stat_detail", args=[str(self.id)])
 
     def get_symptoms(self):
-        ret = ''
-        for dept in self.symptoms.all():
-            ret += dept.slug + ', '
-        return ret[:-2]
+        return self.symptoms.all()
+        

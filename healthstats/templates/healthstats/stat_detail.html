@@ -14,7 +14,7 @@
     {% if stat.symptoms %}
     <p> Symptoms:
       {% for symptom in stat.symptoms.all %}
-      <span class="badge badge-info">{{ symptom }} </span>
+      <span class="badge badge-warning">{{ symptom }} </span>
       {%endfor%}
     </p> 
     {% endif %}

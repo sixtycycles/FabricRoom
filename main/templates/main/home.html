@@ -1,6 +1,20 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if user.is_authenticated %}
+<div class="card mb-3 mt-3">
+  <div class="card-header">
+    <h1>Hi {{user.first_name }}!</h1>
+  </div>
+
+  <div class="card-body">
+   <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a>
+   <a class="btn btn-primary" href="{% url 'symptom_new' %}"> New Symptom </a>
+  </div>
+  <div class="card-footer">
+</div>
+</div>
+{% else %}
 <div class="jumbotron mt-3">
   <h1 class="display-4">Hello, internet person!</h1>
   <p class="lead">This is a website on the internet. </p>
@@ -11,7 +25,5 @@
   <!-- <a class="btn btn-primary btn-lg" href="{% url 'signup' %}" role="button">please-dont-click-the signup button</a>
   <a class="btn btn-secondary btn-lg" href="{% url 'login' %}" role="button">log in!</a> -->
 </div>
-
-
-
+{% endif %}
 {% endblock content %}

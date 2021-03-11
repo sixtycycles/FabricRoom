@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-  <link href="data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAADms0cAMF+MACZ6MQD17bwACB4zAO3imADZoCUAas7eAAwxVAAdcygAEk0ZAClghwDWyXYAKHOoAL+DAAAkdS4AUrfHADazRgBqud4A8OaqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADg0NDQ0LCwsLCwsLDQsODg4ODhIHEhISEhISBw4ODg4ODg4OEgcSEhISBw4ODg4GBgYGBgYSEA0HBgYGBgYGBgAAAAAAAA0NAAAAAAAAAAAFBQUFDAwNCAwMBQUFBQUFBQUFBQUFAQEFBQUFBQUFBQUFBQUFBQQEBQUFBQUFBQUTEwkTExMBBBMTExMTERMTExMKCgkTDAQBExMRChETExMTEwoPEQwNCAwCAhETExMTExMTCg8JCQoCChETExMTExEDAwMKDw8PDxEDAxETEwMKChEJCQoKCgkRCQkKAwMDAwoKCg8PEREPCgoKAwMDAwMDAxERAwMDEREDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=" rel="icon" type="image/x-icon" />
+  <link
+    href="data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAADms0cAMF+MACZ6MQD17bwACB4zAO3imADZoCUAas7eAAwxVAAdcygAEk0ZAClghwDWyXYAKHOoAL+DAAAkdS4AUrfHADazRgBqud4A8OaqAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADg0NDQ0LCwsLCwsLDQsODg4ODhIHEhISEhISBw4ODg4ODg4OEgcSEhISBw4ODg4GBgYGBgYSEA0HBgYGBgYGBgAAAAAAAA0NAAAAAAAAAAAFBQUFDAwNCAwMBQUFBQUFBQUFBQUFAQEFBQUFBQUFBQUFBQUFBQQEBQUFBQUFBQUTEwkTExMBBBMTExMTERMTExMKCgkTDAQBExMRChETExMTEwoPEQwNCAwCAhETExMTExMTCg8JCQoCChETExMTExEDAwMKDw8PDxEDAxETEwMKChEJCQoKCgkRCQkKAwMDAwoKCg8PEREPCgoKAwMDAwMDAxERAwMDEREDAwMDAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+    rel="icon" type="image/x-icon" />
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   {% load static %}
@@ -13,7 +16,7 @@
   <script src="{% static '/jquery/jquery-3.5.1.min.js' %}"></script>
   <script src="{% static '/bootstrap-4.5.3/dist/js/bootstrap.bundle.min.js' %}"></script>
   <link rel="stylesheet" href="{% static '/bootstrap-4.5.3/scss/bootstrap.css' %}">
-  
+
 </head>
 
 <body class="">
@@ -27,32 +30,17 @@
 
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'about' %}">About</a>
-          </li>
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="{% url 'blog_list' %}">Blog</a>
-          </li> -->
-          {% if user.is_authenticated %}
-         
-            
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id='navbarDropdown' role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" >Actions</a>
           
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <div class="dropdown-header">Health App Actions</div>
-            <div class="dropdown-divider"></div>
-              <a class="nav-link"  href="{% url 'stat_new' %}">Add Temperature</a>                
-              <a class="nav-link"  href="{% url 'symptom_new' %}">Add Symptom</a>
-              <a class="nav-link"  href="{% url 'note_new' %}">Add Note</a>
-              <a class="nav-link"  href="{% url 'stat_list' %}">Explore Data</a>
-              <a class="nav-link" href="{% url 'stat_plot' %}">Temperature Plot</a>
-              <a class="nav-link" href="{% url 'symptoms' %}"> List of Symptoms</a>
-          </div>
-        </li>
-      
-        {% endif%}
+
+          {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'stat_new' %}">New Temperature</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'symptom_new' %}">New Symptom</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'stat_plot' %}"> Plots </a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'stat_list' %}">List of Temperatures</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'symptoms' %}"> List of Symptoms</a></li>
+          
+
+          {% endif%}
           <li class="nav-item">
 
             {% block user_login %}
@@ -63,7 +51,7 @@
               aria-haspopup="true" aria-expanded="false" href="#">Logged in As: <span
                 class="badge  bg-warning">{{user.first_name}}</span></a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              
+
 
               <!-- <div class="dropdown-divider"></div> -->
               <div class="dropdown-header"> <strong>Your Apps</strong></div>
@@ -74,13 +62,16 @@
               <a class="nav-link" href="/admin/">Admin</a>
               {% endif %}
               <div class="dropdown-divider"></div>
-              <a class="nav-link" href="{% url 'logout'%}">Log Out 
+              <a class="nav-link" href="{% url 'logout'%}">Log Out
                 <span class="badge  bg-warning">{{user.first_name}}</span> </a>
             </div>
           </li>
 
           {% else %}
-          <li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'about' %}">About</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="{% url 'login' %}">Log In</a>
           </li>
           {% endif %}
@@ -89,21 +80,21 @@
           </li>
           {% endblock user_login %}
           </li>
-<!--#########-->        
-         
+          <!--#########-->
+
 
           {% if not user.is_authenticated %}
-          <li><a class="nav-link" href="{% url 'signup' %}" role="button">Signup</a></li>
+          <li><a class="nav-link disabled" href="{% url 'signup' %}" role="button">Signup</a></li>
           {% endif %}
         </ul>
 
       </div>
     </nav>
   </header>
-  
+
   <div class="container">
     <main role="main" class="">
-     
+
       {% block content %}
       <!--content goes here. -->
       {% endblock content %}
@@ -113,8 +104,8 @@
 
   <footer class="container ">
     <hr>
-    <p> &copy; Rod! - {% now "Y" %}  </p>
- 
+    <p> &copy; Rod! - {% now "Y" %} </p>
+
 </body>
-  </html>
-    
+
+</html>

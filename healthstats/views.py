@@ -19,7 +19,7 @@ class HealthEventHomeView(LoginRequiredMixin, TemplateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "stat_home.html"
+    template_name = "home.html"
     context_object_name = "all_health_events"
 
 
