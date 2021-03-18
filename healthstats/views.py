@@ -7,7 +7,7 @@ from django.views.generic import (
     TemplateView,
 )
 from django.views.generic.edit import DeleteView
-from healthstats.models import HealthEvent, Symptom
+from healthstats.models import HealthEvent, Symptom, HeartRate, StepData
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from plotly.offline import plot
@@ -94,7 +94,6 @@ class SymptomDetailView(LoginRequiredMixin, DetailView):
     #     return Symptom.objects.get(pk=self.request.id).prefetch_related("health_event")
 
 
-
 class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = HealthEvent
     login_url = "/accounts/login/"
@@ -146,12 +145,21 @@ def stat_plot_view(request):
     onlytemps = HealthEvent.objects.filter(author=request.user).exclude(
         temperature=None
     )
+    plain_temp_data = {event.when:event.temperature for event in onlytemps }
     temperatures = [event.temperature for event in onlytemps]
     datetime_of_sample = [event.when for event in onlytemps]
-    notes = [event.note for event in health_events]
-    symptoms = [event.symptoms for event in health_events]
+    # notes = [event.note for event in health_events]
+    # symptoms = [event.symptoms for event in health_events]
+
     df = health_events.to_timeseries(index="when")
     seven_day_average = df.temperature.rolling(7).mean().shift(-3)
+    # filtering heart rate data to remove wild anomalies
+    heart_rates = HeartRate.objects.filter(author=request.user).exclude(value__gte=160).exclude(value__lte=40)
+    heart_rates_create = [sample.creation_date for sample in heart_rates]
+    heart_rates_value = [sample.value for sample in heart_rates]
+
+    step_data = StepData.objects.filter(author=request.user)
+    step_dict = {event.creation_date: event.value for event in step_data}
 
     raw_temp_data = plot(
         [
@@ -172,7 +180,7 @@ def stat_plot_view(request):
             Scatter(
                 x=datetime_of_sample,
                 y=seven_day_average,
-                mode="markers",
+                mode="lines+markers",
                 name="7 day rolling average temperature",
                 opacity=0.8,
                 marker_color="blue",
@@ -181,22 +189,30 @@ def stat_plot_view(request):
         output_type="div",
     )
 
+    heart_rate = plot(
+        [
+            Scatter(
+                x=heart_rates_create,
+                y=heart_rates_value,
+                mode="markers",
+                name="Heart rate from apple watch",
+                opacity=0.8,
+                marker_color="red",
+            ),
+        ],
+        output_type="div",
+    )
     return render(
         request,
         "stat_plot.html",
         context={
             "seven_day_rolling_average": seven_day_rolling_average,
             "raw_temp_data": raw_temp_data,
+            "heart_rate": heart_rate,
+            "step_data": step_dict,
             # "dates": x_data,
             # "test": newlist,
             # "notes": notes,
             # "symptoms": symptoms,
         },
     )
-
-
-# def pandas_view(request):
-#     health_events = HealthEvent.objects.filter(author=request.user)
-#     df = health_events.to_timeseries(index='when')
-#     df["7_day_average"] = df.temperature.rolling(7).mean().shift(-3)
-#     return render(request, 'pandas.html', {'df': df.to_html()})

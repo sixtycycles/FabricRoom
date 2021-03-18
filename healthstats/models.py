@@ -3,8 +3,14 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django_pandas.managers import DataFrameManager
 
+
 class Symptom(models.Model):
-    slug = models.SlugField(verbose_name="Symptom name", max_length=200, unique=True, help_text="Enter the name in with hyphens instead of spaces, like \'my-symptom-name\'")
+    slug = models.SlugField(
+        verbose_name="Symptom name",
+        max_length=200,
+        unique=True,
+        help_text="Enter the name in with hyphens instead of spaces, like 'my-symptom-name'",
+    )
     description = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):
@@ -36,7 +42,7 @@ class HealthEvent(models.Model):
         blank=True,
         null=True,
         help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
-    )  
+    )
     objects = DataFrameManager()
 
     def __str__(self):
@@ -47,4 +53,25 @@ class HealthEvent(models.Model):
 
     def get_symptoms(self):
         return self.symptoms.all()
-        
+
+
+class HeartRate(models.Model):
+
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
+    # unit = count/minute
+    creation_date = models.DateTimeField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    value = models.FloatField()
+
+    def __str__(self):
+        return f"{self.author.first_name} - @{self.creation_date}: {self.value}"
+
+
+class StepData(models.Model):
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
+    # unit = count/minute
+    creation_date = models.DateTimeField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    value = models.FloatField()
