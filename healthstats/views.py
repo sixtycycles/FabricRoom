@@ -7,7 +7,13 @@ from django.views.generic import (
     TemplateView,
 )
 from django.views.generic.edit import DeleteView
-from healthstats.models import HealthEvent, Symptom, HeartRate, StepData
+from healthstats.models import (
+    HealthEvent,
+    Symptom,
+    HeartRate,
+    StepData,
+    OxygenData,
+)
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from plotly.offline import plot
@@ -140,32 +146,22 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def stat_plot_view(request):
+    return render(request, "stat_plot.html", context={})
+
+
+def temp_stat_plot_view(request):
 
     health_events = HealthEvent.objects.filter(author=request.user)
     onlytemps = HealthEvent.objects.filter(author=request.user).exclude(
         temperature=None
     )
-    plain_temp_data = {event.when:event.temperature for event in onlytemps }
-    temperatures = [event.temperature for event in onlytemps]
-    datetime_of_sample = [event.when for event in onlytemps]
-    # notes = [event.note for event in health_events]
-    # symptoms = [event.symptoms for event in health_events]
-
     df = health_events.to_timeseries(index="when")
     seven_day_average = df.temperature.rolling(7).mean().shift(-3)
-    # filtering heart rate data to remove wild anomalies
-    heart_rates = HeartRate.objects.filter(author=request.user).exclude(value__gte=160).exclude(value__lte=40)
-    heart_rates_create = [sample.creation_date for sample in heart_rates]
-    heart_rates_value = [sample.value for sample in heart_rates]
-
-    step_data = StepData.objects.filter(author=request.user)
-    step_dict = {event.creation_date: event.value for event in step_data}
-
     raw_temp_data = plot(
         [
             Scatter(
-                x=datetime_of_sample,
-                y=temperatures,
+                x=[event.when for event in onlytemps],
+                y=[event.temperature for event in onlytemps],
                 mode="markers",
                 name="raw daily temperatures",
                 opacity=0.8,
@@ -174,11 +170,10 @@ def stat_plot_view(request):
         ],
         output_type="div",
     )
-
     seven_day_rolling_average = plot(
         [
             Scatter(
-                x=datetime_of_sample,
+                x=[event.when for event in onlytemps],
                 y=seven_day_average,
                 mode="lines+markers",
                 name="7 day rolling average temperature",
@@ -188,31 +183,85 @@ def stat_plot_view(request):
         ],
         output_type="div",
     )
+    return render(
+        request,
+        "stat_plot_temp.html",
+        context={
+            "seven_day_rolling_average": seven_day_rolling_average,
+            "raw_temp_data": raw_temp_data,
+        },
+    )
 
+
+def heart_stat_plot_view(request):
+    heart_rates = HeartRate.objects.filter(author=request.user)
     heart_rate = plot(
         [
             Scatter(
-                x=heart_rates_create,
-                y=heart_rates_value,
+                x=[sample.creation_date for sample in heart_rates],
+                y=[sample.value for sample in heart_rates],
                 mode="markers",
                 name="Heart rate from apple watch",
                 opacity=0.8,
-                marker_color="red",
+                marker_color="blue",
             ),
         ],
         output_type="div",
     )
     return render(
         request,
-        "stat_plot.html",
+        "stat_plot_heart.html",
         context={
-            "seven_day_rolling_average": seven_day_rolling_average,
-            "raw_temp_data": raw_temp_data,
             "heart_rate": heart_rate,
-            "step_data": step_dict,
-            # "dates": x_data,
-            # "test": newlist,
-            # "notes": notes,
-            # "symptoms": symptoms,
+        },
+    )
+
+
+def steps_stat_plot_view(request):
+
+    steps_data = StepData.objects.filter(author=request.user)
+    # step_dict = {event.creation_date: event.value for event in step_data}
+    step_data = plot(
+        [
+            Scatter(
+                x=[sample.creation_date for sample in steps_data],
+                y=[sample.value for sample in steps_data],
+                mode="lines+markers",
+                name="Steps from apple watch",
+                opacity=0.8,
+                marker_color="blue",
+            ),
+        ],
+        output_type="div",
+    )
+    return render(
+        request,
+        "stat_plot_steps.html",
+        context={
+            "step_data": step_data,
+        },
+    )
+
+
+def oxygen_stat_plot_view(request):
+    oxygen_data = OxygenData.objects.filter(author=request.user)
+    oxygen_data_plot = plot(
+        [
+            Scatter(
+                x=[sample.creation_date for sample in oxygen_data],
+                y=[sample.value for sample in oxygen_data],
+                mode="lines+markers",
+                name="Heart rate from apple watch",
+                opacity=0.8,
+                marker_color="brown",
+            ),
+        ],
+        output_type="div",
+    )
+    return render(
+        request,
+        "stat_plot_oxygen.html",
+        context={
+            "oxygen_data": oxygen_data_plot,
         },
     )
