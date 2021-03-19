@@ -70,7 +70,15 @@ class HeartRate(models.Model):
 
 class StepData(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
-    # unit = count/minute
+    # unit = count
+    creation_date = models.DateTimeField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    value = models.FloatField()
+
+class OxygenData(models.Model):
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
+    # unit = %
     creation_date = models.DateTimeField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()

@@ -265,3 +265,41 @@ def oxygen_stat_plot_view(request):
             "oxygen_data": oxygen_data_plot,
         },
     )
+
+
+def oxygen_temperature_stat_plot_view(request):
+    oxygen_data = OxygenData.objects.filter(author=request.user)
+    temp_data = HealthEvent.objects.filter(author=request.user).exclude(temperature=None)
+
+    df = oxygen_data.to_timeseries(index="creation_date")
+    day_average = df.value.rolling(7).mean().shift(-3)
+    oxygen_temperature_plot = plot(
+        [
+            Scatter(
+                x=[sample.creation_date for sample in oxygen_data],
+                y=day_average,
+                # y=[sample.value*100 for sample in oxygen_data],
+                mode="markers",
+                name="oxygen",
+                opacity=0.8,
+                marker_color="blue",
+            ),
+            Scatter(
+                x=[sample.when for sample in temp_data],
+                y=[sample.temperature for sample in temp_data],
+                mode="markers",
+                name="Heart rate from apple watch",
+                opacity=0.8,
+                marker_color="green",
+                hovertext=[sample.note for sample in temp_data]
+            ),
+        ],
+        output_type="div",
+    )
+    return render(
+        request,
+        "stat_plot_oxygen.html",
+        context={
+            "oxygen_data": oxygen_temperature_plot,
+        },
+    )
