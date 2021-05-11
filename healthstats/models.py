@@ -38,11 +38,11 @@ class HealthEvent(models.Model):
     note = models.TextField(
         verbose_name="Are there any notes related to this event?", blank=True, null=True
     )
-    feels_rating = models.IntegerField(
-        blank=True,
-        null=True,
-        help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
-    )
+    # feels_rating = models.IntegerField(
+    #     blank=True,
+    #     null=True,
+    #     help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
+    # )
     objects = DataFrameManager()
 
     def __str__(self):
@@ -67,6 +67,9 @@ class HeartRate(models.Model):
     def __str__(self):
         return f"{self.author.first_name} - @{self.creation_date}: {self.value}"
 
+class AppleHealthUpload(models.Model):
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=2)
+    health_data_xml = models.FileField(upload_to='apple_health_xml',  )
 
 class StepData(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
@@ -76,6 +79,7 @@ class StepData(models.Model):
     end_date = models.DateTimeField()
     value = models.FloatField()
 
+
 class OxygenData(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
     # unit = %
@@ -83,3 +87,4 @@ class OxygenData(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     value = models.FloatField()
+    objects = DataFrameManager()

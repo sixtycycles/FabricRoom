@@ -14,8 +14,11 @@ from healthstats.models import (
     StepData,
     OxygenData,
 )
+from healthstats.forms import AppleHealthUpload
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from plotly.offline import plot
 from plotly.graph_objs import Scatter
 
@@ -35,7 +38,7 @@ class HealthEventCreateView(LoginRequiredMixin, CreateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "stat_new.html"
-    fields = ["temperature", "symptoms", "feels_rating", "note"]
+    fields = ["temperature", "symptoms", "note"]
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -107,7 +110,7 @@ class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     raise_exception = True
     template_name = "stat_update.html"
     readonly_fields = ["author", "when"]
-    fields = ["temperature", "symptoms", "note", "feels_rating"]
+    fields = ["temperature", "symptoms", "note", ]
 
     def test_func(self):
         obj = self.get_object()
@@ -129,7 +132,7 @@ class HealthEventDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView)
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "stat_delete.html"
-    success_url = reverse_lazy("blog_list")
+    success_url = reverse_lazy("stat_list")
 
     def test_func(self):
         obj = self.get_object()
@@ -143,6 +146,30 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
     raise_exception = True
     template_name = "symptom_delete.html"
     success_url = reverse_lazy("health_event_home")
+
+
+# class AppleHealthView(LoginRequiredMixin,CreateView):
+#     model = AppleHealthUpload
+#     login_url = "/accounts/login/"
+#     redirect_field_name = "redirect_to"
+#     raise_exception = True
+#     template_name = "upload.html"
+#     fields = [ "file", ]
+    
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         return super().form_valid(form)
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = AppleHealthUpload(request.POST, request.FILES)
+        if form.is_valid():
+            # file is saved
+            form.save()
+            return HttpResponseRedirect('/success/url/')
+    else:
+        form = AppleHealthUpload()
+    return render(request, 'upload.html', {'form': form})
 
 
 def stat_plot_view(request):
@@ -269,29 +296,38 @@ def oxygen_stat_plot_view(request):
 
 def oxygen_temperature_stat_plot_view(request):
     oxygen_data = OxygenData.objects.filter(author=request.user)
-    temp_data = HealthEvent.objects.filter(author=request.user).exclude(temperature=None)
+    step_data = StepData.objects.filter(author=request.user)
+    temp_data = (
+        HealthEvent.objects.filter(author=request.user)
+        .exclude(temperature=None)
+        .exclude(note="")
+    )
 
-    df = oxygen_data.to_timeseries(index="creation_date")
-    day_average = df.value.rolling(7).mean().shift(-3)
+    dfo = oxygen_data.to_timeseries(index="start_date")
+    dft = temp_data.to_timeseries(index="when")
+    day_average = dfo.value.rolling(7).mean().shift(-3)
+    day_average_t = dft.value.rolling(7).mean().shift(-3)
+
     oxygen_temperature_plot = plot(
         [
             Scatter(
                 x=[sample.creation_date for sample in oxygen_data],
-                y=day_average,
+                y=day_average * 100,
                 # y=[sample.value*100 for sample in oxygen_data],
                 mode="markers",
                 name="oxygen",
                 opacity=0.8,
-                marker_color="blue",
+                marker_color="red",
             ),
             Scatter(
                 x=[sample.when for sample in temp_data],
-                y=[sample.temperature for sample in temp_data],
+                y=day_average_t,
+                # y=[sample.temperature for sample in temp_data],
                 mode="markers",
-                name="Heart rate from apple watch",
+                name="temp",
                 opacity=0.8,
-                marker_color="green",
-                hovertext=[sample.note for sample in temp_data]
+                marker_color="black",
+                hovertext=[sample.note for sample in temp_data],
             ),
         ],
         output_type="div",
@@ -303,3 +339,4 @@ def oxygen_temperature_stat_plot_view(request):
             "oxygen_data": oxygen_temperature_plot,
         },
     )
+
