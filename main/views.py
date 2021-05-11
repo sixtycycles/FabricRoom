@@ -7,7 +7,6 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 
-
 class LandingPageView(TemplateView):
     template_name = "home.html"
 
@@ -41,3 +40,16 @@ class PrivateHome(LoginRequiredMixin, TemplateView):
         context = super(PrivateHome, self).get_context_data(**kwargs)
         context["user"] = self.request.user
         return context
+
+
+# Custom http error code pages
+def custom_error_403(request, exception):
+    return render(request, "403.html", {})
+
+
+def custom_error_404(request, exception):
+    return render(request, "404.html", {})
+
+
+def custom_error_500(request):
+    return render(request, "500.html", {})
