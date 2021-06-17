@@ -15,6 +15,14 @@ class SymptomAdmin(admin.ModelAdmin):
 
 @admin.register(HealthEvent)
 class HealthEventAdmin(admin.ModelAdmin):
-    fields = ("author", "symptoms", "temperature", "note",)
-    list_display = ("author", "when", )
-    list_filter = ("author", )
+    fields = (
+        "author",
+        "symptoms",
+        "temperature",
+        "note",
+    )
+    list_display = (
+        "author",
+        "when",
+    )
+    list_filter = ("author",)

@@ -6,20 +6,16 @@ from datetime import datetime
 
 
 class HealthEventTest(TestCase):
-
     def setUp(self):
 
         # self.client = Client()
 
         self.user = get_user_model().objects.create_user(
-            username='testuser',
-            email='test@email.com',
-            password='secret'
+            username="testuser", email="test@email.com", password="secret"
         )
 
         self.temp_event_type = EventType.objects.create(
-            name="Temperature",
-            description="a measurement of body temperature"
+            name="Temperature", description="a measurement of body temperature"
         )
 
         self.event = HealthEvent.objects.create(
@@ -27,7 +23,7 @@ class HealthEventTest(TestCase):
             event_type=self.temp_event_type,
             when=datetime.datetime.now(),
             value=100.00,
-            notes="a thought about this temp!"
+            notes="a thought about this temp!",
         )
 
     # def test_string_representation(self):
@@ -41,10 +37,10 @@ class HealthEventTest(TestCase):
     #                      'test body content that is longer')
 
     def test_post_list_view(self):
-        response = self.client.get(reverse('home'))
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.event.value)
-        self.assertTemplateUsed(response, 'home.html')
+        self.assertTemplateUsed(response, "home.html")
 
     # def test_post_detail_view(self):
     #     # not sure why self.post from setUp() is put in the second index but w/e.

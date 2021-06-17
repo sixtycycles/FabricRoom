@@ -1,6 +1,7 @@
 from django import forms
 from healthstats.models import AppleHealthUpload
-# from django.utils import timezone 
+
+# from django.utils import timezone
 
 # class HealthEventForm(forms.Form):
 #     event_type = forms.CharField(label='Your name', max_length=100)
@@ -9,5 +10,3 @@ from healthstats.models import AppleHealthUpload
 
 class AppleHealthUpload(forms.Form):
     file = forms.FileField()
-    
-      

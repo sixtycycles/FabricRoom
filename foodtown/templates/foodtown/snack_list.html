@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load tz %}
+
+<table class="table-striped">
+    <tr>
+        <th>Snack </th>
+        <th>How many left? </th>
+    </tr>
+    {% for snack in all_snacks %}
+    <tr>
+        <td>{{snack.name}} </td>
+        <td>{{snack.quantity}}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock content %}
