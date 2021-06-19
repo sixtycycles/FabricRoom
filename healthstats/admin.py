@@ -1,5 +1,5 @@
 from django.contrib import admin
-from healthstats.models import HealthEvent, Symptom, HeartRate
+from healthstats.models import AppleHealthUpload, HealthEvent, Symptom, HeartRate
 
 
 @admin.register(HeartRate)
@@ -26,3 +26,9 @@ class HealthEventAdmin(admin.ModelAdmin):
         "when",
     )
     list_filter = ("author",)
+
+
+@admin.register(AppleHealthUpload)
+class AppleHealthUploadAdmin(admin.ModelAdmin):
+    fields = ("author", "health_data_xml", "is_processed",)
+    list_display = ("author", "health_data_xml", "is_processed")

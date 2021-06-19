@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load tz %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <!-- <th scope="col">author</th> -->
+      <th scope="col">author</th>
+      <th scope="col">file</th>
+      <th scope="col">date added</th>
+      <th scope="col">proccessed status</th>
+      <th scope="col">process actions</th>
+      <th scope="col">edit/delete</th>
+
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for upload in all_uploads %}
+    <tr>
+      <td>{{upload.author}}</td>
+      <td>{{upload.health_data_xml}}</td>
+      <td>
+        {% timezone "America/Los_Angeles" %}
+        {{ upload.when|localtime|date:"m/d/y g:ia"}} 
+        {% endtimezone %}
+      </td>
+      <td>
+        {% if upload.is_processed == True %} 
+          Yes 
+        {% else %} 
+          No 
+        {% endif %} 
+      </td>
+      <td>
+        {% if upload.is_processed == False %}
+          <a href="" class="btn btn-success"> Process data? </a>
+        {% endif %}
+      </td>
+      <td>
+        <a href="" class="btn btn-warning">Edit</a>
+        <a href="" class="btn btn-danger">Delete</a>
+      </td>
+      
+    
+    
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

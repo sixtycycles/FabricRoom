@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load tz %}
+{% block content %}
+{% if object %}
+<div class="card mt-4 mb-4">
+  <div class="card-header">
+    {% timezone "America/Los_Angeles" %}
+    <h2>{{ object.when|localtime }}</h2>
+    {% endtimezone %}
+  </div>
+  <div class="card-body">
+    <p>Entered By: {{ object.author }}</p>
+  </div>
+  <div class="card-footer">by {{object.author.first_name}} {{object.author.last_name}}
+    {% if user.is_authenticated %}
+    <a href="{% url 'apple-health-update' object.id %}" class="btn btn-info">Edit</a>
+  
+    {% endif%}
+    <p>Recorded on: {{object.when}} </p>
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock content%}

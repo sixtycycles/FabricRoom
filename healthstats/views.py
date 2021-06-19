@@ -6,15 +6,16 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
-from django.views.generic.edit import DeleteView
+from django.views.generic.edit import DeleteView, ProcessFormView
 from healthstats.models import (
+    AppleHealthUpload,
     HealthEvent,
     Symptom,
     HeartRate,
     StepData,
     OxygenData,
 )
-from healthstats.forms import AppleHealthUpload
+from healthstats.forms import AppleHealthUploadForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
@@ -110,7 +111,11 @@ class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     raise_exception = True
     template_name = "stat_update.html"
     readonly_fields = ["author", "when"]
-    fields = ["temperature", "symptoms", "note", ]
+    fields = [
+        "temperature",
+        "symptoms",
+        "note",
+    ]
 
     def test_func(self):
         obj = self.get_object()
@@ -155,21 +160,76 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
 #     raise_exception = True
 #     template_name = "upload.html"
 #     fields = [ "file", ]
-    
+
 #     def form_valid(self, form):
 #         form.instance.author = self.request.user
 #         return super().form_valid(form)
+# def handle_uploaded_file(uploaded_file):
+#     with open('f"{uploaded_file[file]}".xml', 'wb+') as destination:
+#         for chunk in uploaded_file.chunks():
+#             destination.write(chunk)
+
 
 def upload_file(request):
-    if request.method == 'POST':
-        form = AppleHealthUpload(request.POST, request.FILES)
+    if request.method == "POST":
+        form = AppleHealthUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            # file is saved
             form.save()
-            return HttpResponseRedirect('/success/url/')
+            return HttpResponseRedirect("apple-health/upload/success")
     else:
-        form = AppleHealthUpload()
-    return render(request, 'upload.html', {'form': form})
+        form = AppleHealthUploadForm()
+    return render(request, "upload.html", {"form": form})
+
+
+class AppleHealthDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = AppleHealthUpload
+    login_url = "/accounts/login"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "apple_health_detail.html"
+    context_object_name = 'object'
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
+
+class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = AppleHealthUpload
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "apple_health_update.html"
+    fields = [
+        "author",
+        "health_data_xml",
+        "is_processed"
+    ]
+
+    # def process_health_data(self):
+    #     # call the script, output to csv for now.
+    #     return HttpResponseRedirect(f"apple-health/update/{self.id}")
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
+
+
+class AppleHealthListView(LoginRequiredMixin, ListView):
+    model = AppleHealthUpload
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "apple_health_list.html"
+    context_object_name = "all_uploads"
+
+    def get_queryset(self):
+        return AppleHealthUpload.objects.filter(author=self.request.user)
+
+
+
+def upload_file_success(request):
+
+    return render(request, "upload_success.html")
 
 
 def stat_plot_view(request):
@@ -339,4 +399,3 @@ def oxygen_temperature_stat_plot_view(request):
             "oxygen_data": oxygen_temperature_plot,
         },
     )
-

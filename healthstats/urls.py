@@ -18,6 +18,10 @@ from healthstats.views import (
     oxygen_stat_plot_view,
     oxygen_temperature_stat_plot_view,
     upload_file,
+    upload_file_success,
+    AppleHealthListView,
+    AppleHealthDetailView,
+    AppleHealthUpdateView,
 )
 
 urlpatterns = [
@@ -46,5 +50,17 @@ urlpatterns = [
     path("event/new/", HealthEventCreateView.as_view(), name="stat_new"),
     path("event/<int:pk>/delete", HealthEventDeleteView.as_view(), name="stat_delete"),
     path("event/<int:pk>/update", HealthEventUpdateView.as_view(), name="stat_update"),
+    path("apple-health/", AppleHealthListView.as_view(), name="apple-health-list"),
+    path("apple-health/<int:pk>", AppleHealthDetailView.as_view(), name="apple-health-detail"),
     path("apple-health/upload", upload_file, name="apple-health-upload"),
+    path(
+        "apple-health/update/<int:pk>",
+        AppleHealthUpdateView.as_view(),
+        name="apple-health-update",
+    ),
+    path(
+        "apple-health/upload/success",
+        upload_file_success,
+        name="apple-health-upload-success",
+    ),
 ]

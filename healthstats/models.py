@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -67,9 +68,18 @@ class HeartRate(models.Model):
     def __str__(self):
         return f"{self.author.first_name} - @{self.creation_date}: {self.value}"
 
+
 class AppleHealthUpload(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=2)
-    health_data_xml = models.FileField(upload_to='apple_health_xml',  )
+    when = models.DateTimeField(auto_now=True)
+    health_data_xml = models.FileField(upload_to='apple_health_xml/', )
+    is_processed = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return f"{self.author}-{self.health_data_xml}"
+
+    def get_absolute_url(self):
+        return f"/health/apple-health/{self.id}"
 
 class StepData(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
