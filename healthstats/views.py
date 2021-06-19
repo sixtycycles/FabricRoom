@@ -1,3 +1,5 @@
+import os 
+import csv
 from django.shortcuts import render
 from django.views.generic import (
     ListView,
@@ -22,6 +24,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from plotly.offline import plot
 from plotly.graph_objs import Scatter
+from .apple_health_data_parse import *
 
 
 class HealthEventHomeView(LoginRequiredMixin, TemplateView):
@@ -153,45 +156,18 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("health_event_home")
 
 
-# class AppleHealthView(LoginRequiredMixin,CreateView):
-#     model = AppleHealthUpload
-#     login_url = "/accounts/login/"
-#     redirect_field_name = "redirect_to"
-#     raise_exception = True
-#     template_name = "upload.html"
-#     fields = [ "file", ]
-
-#     def form_valid(self, form):
-#         form.instance.author = self.request.user
-#         return super().form_valid(form)
-# def handle_uploaded_file(uploaded_file):
-#     with open('f"{uploaded_file[file]}".xml', 'wb+') as destination:
-#         for chunk in uploaded_file.chunks():
-#             destination.write(chunk)
-
-
-def upload_file(request):
-    if request.method == "POST":
-        form = AppleHealthUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("apple-health/upload/success")
-    else:
-        form = AppleHealthUploadForm()
-    return render(request, "upload.html", {"form": form})
-
-
 class AppleHealthDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = AppleHealthUpload
     login_url = "/accounts/login"
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "apple_health_detail.html"
-    context_object_name = 'object'
+    context_object_name = "object"
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+
 
 class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = AppleHealthUpload
@@ -199,11 +175,7 @@ class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "apple_health_update.html"
-    fields = [
-        "author",
-        "health_data_xml",
-        "is_processed"
-    ]
+    fields = ["author", "health_data_xml", "is_processed"]
 
     # def process_health_data(self):
     #     # call the script, output to csv for now.
@@ -226,10 +198,53 @@ class AppleHealthListView(LoginRequiredMixin, ListView):
         return AppleHealthUpload.objects.filter(author=self.request.user)
 
 
+def upload_file(request):
+    if request.method == "POST":
+        form = AppleHealthUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("apple-health/upload/success")
+    else:
+        form = AppleHealthUploadForm()
+    return render(request, "upload.html", {"form": form})
 
 def upload_file_success(request):
 
     return render(request, "upload_success.html")
+
+def process_apple_health_data(request, pk):
+    file = AppleHealthUpload.objects.get(pk=pk)
+    try:
+        os.mkdir(f"/srv/code/media/processed/{request.user.first_name}")
+    except OSError as error: 
+        print(error)
+    data = HealthDataExtractor(f"/srv/code/media/{file.health_data_xml}", f"/srv/code/media/processed/{request.user.first_name}")
+    data.report_stats()
+    data.extract()
+    file.is_processed = True
+    file.csv_data_dir = f"/srv/code/media/processed/{request.user.first_name}"
+    file.save()
+    return HttpResponseRedirect("/health/apple-health/process/success")
+
+def import_processed_apple_health_data(request, pk):
+    heart_rate_path = f"/srv/code/media/processed/{request.user.first_name}/HeartRate.csv"
+    # HearRate.csv header fields:
+    # sourceName(0), sourceVersion(1), device(2), type(3), unit(4), creationDate(5), startDate(6), endDate(7), value(8)
+    with open(heart_rate_path) as f:
+        reader = csv.reader(f)
+        for row in reader:
+            _, created = AppleHealthUpload.objects.get_or_create(
+                author=f"{request.user}",
+                creation_date=row[5],
+                start_date=row[6],
+                end_date=row[7],
+                value=row[8],            
+                )
+    return ""
+
+def process_file_success(request):
+
+    return render(request, "process_success.html")
 
 
 def stat_plot_view(request):

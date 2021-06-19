@@ -72,14 +72,18 @@ class HeartRate(models.Model):
 class AppleHealthUpload(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=2)
     when = models.DateTimeField(auto_now=True)
-    health_data_xml = models.FileField(upload_to='apple_health_xml/', )
+    health_data_xml = models.FileField(
+        upload_to="apple_health_xml/",
+    )
+    csv_data_dir = models.CharField(max_length=500)
     is_processed = models.BooleanField(default=False)
-    
+
     def __str__(self):
         return f"{self.author}-{self.health_data_xml}"
 
     def get_absolute_url(self):
         return f"/health/apple-health/{self.id}"
+
 
 class StepData(models.Model):
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)

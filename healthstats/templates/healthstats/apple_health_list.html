@@ -35,7 +35,7 @@
       </td>
       <td>
         {% if upload.is_processed == False %}
-          <a href="" class="btn btn-success"> Process data? </a>
+          <a href="{% url 'process-data' upload.id %}" class="btn btn-success"> Process data? </a>
         {% endif %}
       </td>
       <td>

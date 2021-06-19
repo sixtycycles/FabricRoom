@@ -124,10 +124,10 @@ class HealthDataExtractor(object):
         directory as the input export.xml. Reports each file written
         unless verbose has been set to False.
     """
-    def __init__(self, path, verbose=VERBOSE):
+    def __init__(self, path, output_path, verbose=VERBOSE):
         self.in_path = path
         self.verbose = verbose
-        self.directory = os.path.abspath(os.path.split(path)[0])
+        self.directory = output_path
         with open(path) as f:
             self.report('Reading data from %s . . . ' % path, end='')
             self.data = ElementTree.parse(f)
@@ -184,8 +184,8 @@ class HealthDataExtractor(object):
         self.handles = {}
         self.paths = []
         for kind in (list(self.record_types) + list(self.other_types)):
-            #path = os.path.join(self.directory, '%s.csv' % abbreviate(kind))
-            path = os.path.join('/srv/code/media/processed/', '%s.csv' % abbreviate(kind))
+            path = os.path.join(self.directory, '%s.csv' % abbreviate(kind))
+
             f = open(path, 'w')
             headerType = (kind if kind in ('Workout', 'ActivitySummary')
                                else 'Record')
@@ -230,10 +230,10 @@ class HealthDataExtractor(object):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print('USAGE: python applehealthdata.py /path/to/export.xml',
               file=sys.stderr)
         sys.exit(1)
-    data = HealthDataExtractor(sys.argv[1])
+    data = HealthDataExtractor(sys.argv[1], sys.argv[2])
     data.report_stats()
     data.extract()
