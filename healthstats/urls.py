@@ -1,5 +1,6 @@
 from django.urls import path
 from healthstats.views import (
+    AppleHealthDeleteView,
     SymptomListView,
     SymptomDetailView,
     SymptomCreateView,
@@ -22,8 +23,10 @@ from healthstats.views import (
     AppleHealthListView,
     AppleHealthDetailView,
     AppleHealthUpdateView,
+    AppleHealthDeleteView,
     process_apple_health_data,
-    process_file_success
+    process_file_success,
+    import_processed_apple_health_data,
 )
 
 urlpatterns = [
@@ -58,8 +61,20 @@ urlpatterns = [
         AppleHealthDetailView.as_view(),
         name="apple-health-detail",
     ),
-    path("apple-health/process/<int:pk>", process_apple_health_data, name='process-data'),
+    path(
+        "apple-health/process/<int:pk>", process_apple_health_data, name="process-data"
+    ),
+    path(
+        "apple-health/import/<int:pk>",
+        import_processed_apple_health_data,
+        name="import-data",
+    ),
     path("apple-health/upload", upload_file, name="apple-health-upload"),
+    path(
+        "apple-health/delete/<int:pk>",
+        AppleHealthDeleteView.as_view(),
+        name="apple-health-delete",
+    ),
     path(
         "apple-health/update/<int:pk>",
         AppleHealthUpdateView.as_view(),

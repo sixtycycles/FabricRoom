@@ -1,12 +1,16 @@
 *.pyc
+*/__pycache__
 /secrets
 /static
 .vscode/settings.json
-venv/
+venv/*
 *.sqlite3
 static/
 media/
+/srv/code/media
 .env
+/srv/code/venv
 staticfiles/
 marisa_history.csv
 stat_data.txt
+.vscode

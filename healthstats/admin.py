@@ -30,5 +30,19 @@ class HealthEventAdmin(admin.ModelAdmin):
 
 @admin.register(AppleHealthUpload)
 class AppleHealthUploadAdmin(admin.ModelAdmin):
-    fields = ("author", "health_data_xml", "is_processed",)
-    list_display = ("author", "health_data_xml", "is_processed")
+    fields = (
+        "author",
+        "health_data_xml",
+        "is_processed",
+        "is_imported",
+    )
+    list_display = (
+        "author",
+        "health_data_xml",
+        "is_processed",
+        "is_imported",
+    )
+    readonly_fields = (
+        "health_data_xml",
+        "csv_data_dir",
+    )

@@ -77,6 +77,7 @@ class AppleHealthUpload(models.Model):
     )
     csv_data_dir = models.CharField(max_length=500)
     is_processed = models.BooleanField(default=False)
+    is_imported = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.author}-{self.health_data_xml}"

@@ -137,7 +137,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -154,6 +153,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
+            "formatter": "verbose",
             "filename": "/var/log/django/debug.log",
         },
         "syslog": {
@@ -171,11 +171,5 @@ LOGGING = {
             "propagate": True,
             # 'format': 'django: %(meassage)s'
         },
-        # "django_auth_ldap": {
-        #     "level": "DEBUG",
-        #     'handlers': ['syslog',],
-        #     'propagate': True,
-        #     #'format': 'django: %(meassage)s'
-        # },
     },
 }

@@ -1,5 +1,6 @@
-import os 
+import os
 import csv
+import logging
 from django.shortcuts import render
 from django.views.generic import (
     ListView,
@@ -25,6 +26,7 @@ from django.shortcuts import render
 from plotly.offline import plot
 from plotly.graph_objs import Scatter
 from .apple_health_data_parse import *
+from datetime import datetime
 
 
 class HealthEventHomeView(LoginRequiredMixin, TemplateView):
@@ -186,6 +188,16 @@ class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return obj.author == self.request.user
 
 
+class AppleHealthDeleteView(LoginRequiredMixin, DeleteView):
+    model = AppleHealthUpload
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "apple_health_delete.html"
+    success_url = reverse_lazy("apple-health-list")
+    context_object_name="obj"
+
+
 class AppleHealthListView(LoginRequiredMixin, ListView):
     model = AppleHealthUpload
     login_url = "/accounts/login/"
@@ -203,22 +215,27 @@ def upload_file(request):
         form = AppleHealthUploadForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("apple-health/upload/success")
+            return HttpResponseRedirect("upload/success")
     else:
         form = AppleHealthUploadForm()
     return render(request, "upload.html", {"form": form})
+
 
 def upload_file_success(request):
 
     return render(request, "upload_success.html")
 
+
 def process_apple_health_data(request, pk):
     file = AppleHealthUpload.objects.get(pk=pk)
     try:
         os.mkdir(f"/srv/code/media/processed/{request.user.first_name}")
-    except OSError as error: 
+    except OSError as error:
         print(error)
-    data = HealthDataExtractor(f"/srv/code/media/{file.health_data_xml}", f"/srv/code/media/processed/{request.user.first_name}")
+    data = HealthDataExtractor(
+        f"/srv/code/media/{file.health_data_xml}",
+        f"/srv/code/media/processed/{request.user.first_name}",
+    )
     data.report_stats()
     data.extract()
     file.is_processed = True
@@ -226,21 +243,40 @@ def process_apple_health_data(request, pk):
     file.save()
     return HttpResponseRedirect("/health/apple-health/process/success")
 
+
 def import_processed_apple_health_data(request, pk):
-    heart_rate_path = f"/srv/code/media/processed/{request.user.first_name}/HeartRate.csv"
+    obj = AppleHealthUpload.objects.get(pk=pk)
+    csv_dir = f"{obj.csv_data_dir}"
+    heart_rate_path = f"{csv_dir}/HeartRate.csv"
+    
     # HearRate.csv header fields:
     # sourceName(0), sourceVersion(1), device(2), type(3), unit(4), creationDate(5), startDate(6), endDate(7), value(8)
     with open(heart_rate_path) as f:
         reader = csv.reader(f)
+        # dont spend hours troubleshooting the header data? 
+        next(reader)
+        # actual data. 
         for row in reader:
-            _, created = AppleHealthUpload.objects.get_or_create(
-                author=f"{request.user}",
-                creation_date=row[5],
-                start_date=row[6],
-                end_date=row[7],
-                value=row[8],            
-                )
-    return ""
+            c_date = datetime.strptime(row[5], '%Y-%m-%d %H:%M:%S %z')
+            created_date = datetime.strftime(c_date, "%Y-%m-%d %H:%M:%S.%f")
+            s_date = datetime.strptime(row[6], '%Y-%m-%d %H:%M:%S %z')
+            start_date = datetime.strftime(s_date, "%Y-%m-%d %H:%M:%S.%f")
+            e_date = datetime.strptime(row[7], '%Y-%m-%d %H:%M:%S %z')
+            end_date = datetime.strftime(e_date, "%Y-%m-%d %H:%M:%S.%f")
+
+            _, created = HeartRate.objects.get_or_create(
+                author=request.user,
+                creation_date=created_date,
+                start_date=start_date,
+                end_date=end_date,
+                value=row[8],
+            )
+        # tell the db its imported. 
+        obj.is_imported = True
+        obj.save()
+
+    return HttpResponseRedirect("/health/apple-health/process/success")
+
 
 def process_file_success(request):
 
@@ -305,7 +341,14 @@ def heart_stat_plot_view(request):
                 mode="markers",
                 name="Heart rate from apple watch",
                 opacity=0.8,
-                marker_color="blue",
+                marker=dict(
+                    size=3,
+                    color=[sample.value**3 for sample in heart_rates],
+                    colorscale='gray',
+                    line_width=0,
+                    
+                    ),
+                #marker_color="blue",
             ),
         ],
         output_type="div",

@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1> Are you sure you want to The uploaded data from {{ obj.when }} </h1>
+<form action="" method="post">{% csrf_token %}
+<input class="form-control btn-danger" type="submit" value="Yes, delete it."> </form>
+<br>
+<!-- <a href="{% url 'apple-health-update' obj.id %}" class="form-control btn btn-info">Go back to edit</a> -->
+{% endblock content %}

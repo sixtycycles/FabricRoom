@@ -27,6 +27,7 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
 
     list_display = [
+        "id",
         "email",
         "username",
         "birthdate",

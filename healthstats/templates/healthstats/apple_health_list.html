@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load tz %}
+<nav class="nav nav-tabs">
+  <a href="{% url 'apple-health-upload' %}" class="nav-link ">Upload Apple Health Data</a>
+  <a href="{% url 'home' %}" class="nav-link">Home (Health App)</a>
+</nav>
+
+<nav class="nav">
+  <a class="nav-link active" href="#">Active</a>
+  <a class="nav-link" href="#">Link</a>
+  <a class="nav-link" href="#">Link</a>
+  <a class="nav-link disabled" href="#">Disabled</a>
+</nav>
 
 <table class="table table-striped">
   <thead>
@@ -28,19 +39,30 @@
       </td>
       <td>
         {% if upload.is_processed == True %} 
-          Yes 
+          <div class="badge badge-primary">processed</div> 
         {% else %} 
-          No 
+        <div class="badge badge-danger">not processed</div> 
         {% endif %} 
+        {% if upload.is_imported == True %} 
+        <br>
+        <div class="badge badge-success">imported</div> 
+      {% else %} 
+      <div class="badge badge-warning">not imported</div> 
+      {% endif %}
+
       </td>
       <td>
         {% if upload.is_processed == False %}
           <a href="{% url 'process-data' upload.id %}" class="btn btn-success"> Process data? </a>
+        {% else %}
+        {% if upload.is_imported == False %}
+        <a href="{% url 'import-data' upload.id %}" class="btn btn-success"> Import Heart Rate data? </a>
+        {% endif %}
         {% endif %}
       </td>
       <td>
-        <a href="" class="btn btn-warning">Edit</a>
-        <a href="" class="btn btn-danger">Delete</a>
+        <a href="{% url 'apple-health-update' upload.id %}" class="btn btn-warning">Edit</a>
+        <a href="{% url 'apple-health-delete' upload.id %}" class="btn btn-danger">Delete</a>
       </td>
       
     
