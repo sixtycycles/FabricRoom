@@ -23,11 +23,6 @@ class AboutPageView(TemplateView):
     template_name = "about.html"
 
 
-class SignUpView(CreateView):
-    form_class = CustomUserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
-
 
 class PrivateHome(LoginRequiredMixin, TemplateView):
     login_url = "/accounts/login/"

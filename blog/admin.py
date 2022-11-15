@@ -1,9 +1,10 @@
 from django.contrib import admin
 from .models import Post, Note, Tag
-
+from django_summernote.admin import SummernoteModelAdmin
 
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(SummernoteModelAdmin):
+    summernote_fields = ('body',)
     list_display = [
         "author",
         "title",

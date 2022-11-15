@@ -76,17 +76,10 @@
             <a class="nav-link" href="{% url 'login' %}">Log In</a>
           </li>
           {% endif %}
-
-
           </li>
           {% endblock user_login %}
-          </li>
-          <!--#########-->
-
-
-          {% if not user.is_authenticated %}
-          <li><a class="nav-link disabled" href="{% url 'signup' %}" role="button">Signup</a></li>
-          {% endif %}
+          </li>          
+          <li><a class="nav-link" href="{% url 'blog' %}" role="button">blog</a></li>
         </ul>
 
       </div>
