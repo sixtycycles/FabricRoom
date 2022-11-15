@@ -17,63 +17,9 @@
 
 <body class="">
   <header>
-    <nav class="navbar navbar-expand-md bg-light  ">
-     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">60hz.dev</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-          {% if user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'stat_new' %}">New Temperature</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'symptom_new' %}">New Symptom</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'stat_plot' %}"> Plots </a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'stat_list' %}">List of Temperatures</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'symptoms' %}"> List of Symptoms</a></li>
-          {% endif%}
-          <li class="nav-item">
-            {% block user_login %}
-            {% if user.is_authenticated %}
-          <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            {{user.first_name}}'s account
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/health">Health</a></li>
-            <li><a class="dropdown-item" href="/health/apple-health/">Apple Health Data</a></li>
-            <li><hr class="dropdown-divider"></li>
-            {% if user.is_staff %}
-            <li><a class="dropdown-item" href="/admin/">Admin</a></li>
-            {% endif %}
-            <li><a class="dropdown-item" href="{% url 'logout'%}">Log Out
-		      
-          <span class="badge  bg-warning">{{user.first_name}}</span> </a></li>
-
-          </ul>
-        </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'about' %}">About</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'blog' %}" role="button">Blog</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-          </li>
-          {% endif %}
-          </li>
-          {% endblock user_login %}
-          </li>          
- 
-        </ul>
-
-      </div>
-    </div>
-    </nav>
+  {% block navbar %}
+    {% include 'navbar.html' %}
+  {% endblock %}
   </header>
 
   <div class="container">
