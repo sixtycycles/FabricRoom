@@ -195,7 +195,7 @@ class AppleHealthDeleteView(LoginRequiredMixin, DeleteView):
     raise_exception = True
     template_name = "apple_health_delete.html"
     success_url = reverse_lazy("apple-health-list")
-    context_object_name="obj"
+    context_object_name = "obj"
 
 
 class AppleHealthListView(LoginRequiredMixin, ListView):
@@ -248,20 +248,20 @@ def import_processed_apple_health_data(request, pk):
     obj = AppleHealthUpload.objects.get(pk=pk)
     csv_dir = f"{obj.csv_data_dir}"
     heart_rate_path = f"{csv_dir}/HeartRate.csv"
-    
+
     # HearRate.csv header fields:
     # sourceName(0), sourceVersion(1), device(2), type(3), unit(4), creationDate(5), startDate(6), endDate(7), value(8)
     with open(heart_rate_path) as f:
         reader = csv.reader(f)
-        # dont spend hours troubleshooting the header data? 
+        # dont spend hours troubleshooting the header data?
         next(reader)
-        # actual data. 
+        # actual data.
         for row in reader:
-            c_date = datetime.strptime(row[5], '%Y-%m-%d %H:%M:%S %z')
+            c_date = datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S %z")
             created_date = datetime.strftime(c_date, "%Y-%m-%d %H:%M:%S.%f")
-            s_date = datetime.strptime(row[6], '%Y-%m-%d %H:%M:%S %z')
+            s_date = datetime.strptime(row[6], "%Y-%m-%d %H:%M:%S %z")
             start_date = datetime.strftime(s_date, "%Y-%m-%d %H:%M:%S.%f")
-            e_date = datetime.strptime(row[7], '%Y-%m-%d %H:%M:%S %z')
+            e_date = datetime.strptime(row[7], "%Y-%m-%d %H:%M:%S %z")
             end_date = datetime.strftime(e_date, "%Y-%m-%d %H:%M:%S.%f")
 
             _, created = HeartRate.objects.get_or_create(
@@ -271,7 +271,7 @@ def import_processed_apple_health_data(request, pk):
                 end_date=end_date,
                 value=row[8],
             )
-        # tell the db its imported. 
+        # tell the db its imported.
         obj.is_imported = True
         obj.save()
 
@@ -344,11 +344,10 @@ def heart_stat_plot_view(request):
                 marker=dict(
                     size=3,
                     color=[sample.value**3 for sample in heart_rates],
-                    colorscale='gray',
+                    colorscale="gray",
                     line_width=0,
-                    
-                    ),
-                #marker_color="blue",
+                ),
+                # marker_color="blue",
             ),
         ],
         output_type="div",

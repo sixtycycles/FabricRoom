@@ -5,6 +5,8 @@ from .models import Snack
 # Register your models here.
 @admin.register(Snack)
 class SnackAdmin(admin.ModelAdmin):
-    list_display = ("name", "quantity",)
+    list_display = (
+        "name",
+        "quantity",
+    )
     list_filter = ("quantity",)
-    

@@ -6,14 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0016_applehealthupload_when'),
+        ("healthstats", "0016_applehealthupload_when"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='applehealthupload',
-            name='csv_data_dir',
-            field=models.CharField(default='/srv/code/media/processed/generic', max_length=500),
+            model_name="applehealthupload",
+            name="csv_data_dir",
+            field=models.CharField(
+                default="/srv/code/media/processed/generic", max_length=500
+            ),
             preserve_default=False,
         ),
     ]

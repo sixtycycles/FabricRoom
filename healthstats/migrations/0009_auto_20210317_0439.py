@@ -9,24 +9,44 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('healthstats', '0008_auto_20210308_0248'),
+        ("healthstats", "0008_auto_20210308_0248"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='symptom',
-            name='slug',
-            field=models.SlugField(help_text="Enter the name in with hyphens instead of spaces, like 'my-symptom-name'", max_length=200, unique=True, verbose_name='Symptom name'),
+            model_name="symptom",
+            name="slug",
+            field=models.SlugField(
+                help_text="Enter the name in with hyphens instead of spaces, like 'my-symptom-name'",
+                max_length=200,
+                unique=True,
+                verbose_name="Symptom name",
+            ),
         ),
         migrations.CreateModel(
-            name='HeartRate',
+            name="HeartRate",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('creation_date', models.DateTimeField()),
-                ('start_date', models.DateTimeField()),
-                ('end_date', models.DateTimeField()),
-                ('value', models.FloatField()),
-                ('author', models.ForeignKey(default=4, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("creation_date", models.DateTimeField()),
+                ("start_date", models.DateTimeField()),
+                ("end_date", models.DateTimeField()),
+                ("value", models.FloatField()),
+                (
+                    "author",
+                    models.ForeignKey(
+                        default=4,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

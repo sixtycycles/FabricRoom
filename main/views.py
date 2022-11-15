@@ -23,7 +23,6 @@ class AboutPageView(TemplateView):
     template_name = "about.html"
 
 
-
 class PrivateHome(LoginRequiredMixin, TemplateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"

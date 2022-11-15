@@ -14,7 +14,7 @@ SECURE_HSTS_SECONDS = 3600
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # my apps
     "main",
-    'blog',
+    "blog",
     "healthstats",
     "foodtown",
     # 3rd party packages

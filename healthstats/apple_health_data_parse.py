@@ -16,64 +16,70 @@ import sys
 from xml.etree import ElementTree
 from collections import Counter, OrderedDict
 
-__version__ = '1.3'
+__version__ = "1.3"
 
-RECORD_FIELDS = OrderedDict((
-    ('sourceName', 's'),
-    ('sourceVersion', 's'),
-    ('device', 's'),
-    ('type', 's'),
-    ('unit', 's'),
-    ('creationDate', 'd'),
-    ('startDate', 'd'),
-    ('endDate', 'd'),
-    ('value', 'n'),
-))
+RECORD_FIELDS = OrderedDict(
+    (
+        ("sourceName", "s"),
+        ("sourceVersion", "s"),
+        ("device", "s"),
+        ("type", "s"),
+        ("unit", "s"),
+        ("creationDate", "d"),
+        ("startDate", "d"),
+        ("endDate", "d"),
+        ("value", "n"),
+    )
+)
 
-ACTIVITY_SUMMARY_FIELDS = OrderedDict((
-    ('dateComponents', 'd'),
-    ('activeEnergyBurned', 'n'),
-    ('activeEnergyBurnedGoal', 'n'),
-    ('activeEnergyBurnedUnit', 's'),
-    ('appleExerciseTime', 's'),
-    ('appleExerciseTimeGoal', 's'),
-    ('appleStandHours', 'n'),
-    ('appleStandHoursGoal', 'n'),
-))
+ACTIVITY_SUMMARY_FIELDS = OrderedDict(
+    (
+        ("dateComponents", "d"),
+        ("activeEnergyBurned", "n"),
+        ("activeEnergyBurnedGoal", "n"),
+        ("activeEnergyBurnedUnit", "s"),
+        ("appleExerciseTime", "s"),
+        ("appleExerciseTimeGoal", "s"),
+        ("appleStandHours", "n"),
+        ("appleStandHoursGoal", "n"),
+    )
+)
 
-WORKOUT_FIELDS = OrderedDict((
-    ('sourceName', 's'),
-    ('sourceVersion', 's'),
-    ('device', 's'),
-    ('creationDate', 'd'),
-    ('startDate', 'd'),
-    ('endDate', 'd'),
-    ('workoutActivityType', 's'),
-    ('duration', 'n'),
-    ('durationUnit', 's'),
-    ('totalDistance', 'n'),
-    ('totalDistanceUnit', 's'),
-    ('totalEnergyBurned', 'n'),
-    ('totalEnergyBurnedUnit', 's'),
-))
+WORKOUT_FIELDS = OrderedDict(
+    (
+        ("sourceName", "s"),
+        ("sourceVersion", "s"),
+        ("device", "s"),
+        ("creationDate", "d"),
+        ("startDate", "d"),
+        ("endDate", "d"),
+        ("workoutActivityType", "s"),
+        ("duration", "n"),
+        ("durationUnit", "s"),
+        ("totalDistance", "n"),
+        ("totalDistanceUnit", "s"),
+        ("totalEnergyBurned", "n"),
+        ("totalEnergyBurnedUnit", "s"),
+    )
+)
 
 FIELDS = {
-    'Record': RECORD_FIELDS,
-    'ActivitySummary': ACTIVITY_SUMMARY_FIELDS,
-    'Workout': WORKOUT_FIELDS,
+    "Record": RECORD_FIELDS,
+    "ActivitySummary": ACTIVITY_SUMMARY_FIELDS,
+    "Workout": WORKOUT_FIELDS,
 }
 
 
-PREFIX_RE = re.compile('^HK.*TypeIdentifier(.+)$')
+PREFIX_RE = re.compile("^HK.*TypeIdentifier(.+)$")
 ABBREVIATE = True
 VERBOSE = True
+
 
 def format_freqs(counter):
     """
     Format a counter object for display.
     """
-    return '\n'.join('%s: %d' % (tag, counter[tag])
-                     for tag in sorted(counter.keys()))
+    return "\n".join("%s: %d" % (tag, counter[tag]) for tag in sorted(counter.keys()))
 
 
 def format_value(value, datatype):
@@ -86,13 +92,13 @@ def format_value(value, datatype):
         'd' for datetime
     """
     if value is None:
-        return ''
-    elif datatype == 's':  # string
-        return '"%s"' % value.replace('\\', '\\\\').replace('"', '\\"')
-    elif datatype in ('n', 'd'):  # number or date
+        return ""
+    elif datatype == "s":  # string
+        return '"%s"' % value.replace("\\", "\\\\").replace('"', '\\"')
+    elif datatype in ("n", "d"):  # number or date
         return value
     else:
-        raise KeyError('Unexpected format value: %s' % datatype)
+        raise KeyError("Unexpected format value: %s" % datatype)
 
 
 def abbreviate(s, enabled=ABBREVIATE):
@@ -109,8 +115,7 @@ def encode(s):
     In Python 2, this encodes as UTF-8, whereas in Python 3,
     it does nothing
     """
-    return s.encode('UTF-8') if sys.version_info.major < 3 else s
-
+    return s.encode("UTF-8") if sys.version_info.major < 3 else s
 
 
 class HealthDataExtractor(object):
@@ -124,21 +129,22 @@ class HealthDataExtractor(object):
         directory as the input export.xml. Reports each file written
         unless verbose has been set to False.
     """
+
     def __init__(self, path, output_path, verbose=VERBOSE):
         self.in_path = path
         self.verbose = verbose
         self.directory = output_path
         with open(path) as f:
-            self.report('Reading data from %s . . . ' % path, end='')
+            self.report("Reading data from %s . . . " % path, end="")
             self.data = ElementTree.parse(f)
-            self.report('done')
+            self.report("done")
         self.root = self.data._root
         self.nodes = self.root.getchildren()
         self.n_nodes = len(self.nodes)
         self.abbreviate_types()
         self.collect_stats()
 
-    def report(self, msg, end='\n'):
+    def report(self, msg, end="\n"):
         if self.verbose:
             print(msg, end=end)
             sys.stdout.flush()
@@ -167,14 +173,14 @@ class HealthDataExtractor(object):
         self.record_types = Counter()
         self.other_types = Counter()
         for record in self.nodes:
-            if record.tag == 'Record':
-                self.record_types[record.attrib['type']] += 1
-            elif record.tag in ('ActivitySummary', 'Workout'):
+            if record.tag == "Record":
+                self.record_types[record.attrib["type"]] += 1
+            elif record.tag in ("ActivitySummary", "Workout"):
                 self.other_types[record.tag] += 1
-            elif record.tag in ('Export', 'Me'):
+            elif record.tag in ("Export", "Me"):
                 pass
             else:
-                self.report('Unexpected node of type %s.' % record.tag)
+                self.report("Unexpected node of type %s." % record.tag)
 
     def collect_stats(self):
         self.count_record_types()
@@ -183,40 +189,41 @@ class HealthDataExtractor(object):
     def open_for_writing(self):
         self.handles = {}
         self.paths = []
-        for kind in (list(self.record_types) + list(self.other_types)):
-            path = os.path.join(self.directory, '%s.csv' % abbreviate(kind))
+        for kind in list(self.record_types) + list(self.other_types):
+            path = os.path.join(self.directory, "%s.csv" % abbreviate(kind))
 
-            f = open(path, 'w')
-            headerType = (kind if kind in ('Workout', 'ActivitySummary')
-                               else 'Record')
-            f.write(','.join(FIELDS[headerType].keys()) + '\n')
+            f = open(path, "w")
+            headerType = kind if kind in ("Workout", "ActivitySummary") else "Record"
+            f.write(",".join(FIELDS[headerType].keys()) + "\n")
             self.handles[kind] = f
-            self.report('Opening %s for writing' % path)
+            self.report("Opening %s for writing" % path)
 
     def abbreviate_types(self):
         """
         Shorten types by removing common boilerplate text.
         """
         for node in self.nodes:
-            if node.tag == 'Record':
-                if 'type' in node.attrib:
-                    node.attrib['type'] = abbreviate(node.attrib['type'])
+            if node.tag == "Record":
+                if "type" in node.attrib:
+                    node.attrib["type"] = abbreviate(node.attrib["type"])
 
     def write_records(self):
         kinds = FIELDS.keys()
         for node in self.nodes:
             if node.tag in kinds:
                 attributes = node.attrib
-                kind = attributes['type'] if node.tag == 'Record' else node.tag
-                values = [format_value(attributes.get(field), datatype)
-                          for (field, datatype) in FIELDS[node.tag].items()]
-                line = encode(','.join(values) + '\n')
+                kind = attributes["type"] if node.tag == "Record" else node.tag
+                values = [
+                    format_value(attributes.get(field), datatype)
+                    for (field, datatype) in FIELDS[node.tag].items()
+                ]
+                line = encode(",".join(values) + "\n")
                 self.handles[kind].write(line)
 
     def close_files(self):
         for (kind, f) in self.handles.items():
             f.close()
-            self.report('Written %s data.' % abbreviate(kind))
+            self.report("Written %s data." % abbreviate(kind))
 
     def extract(self):
         self.open_for_writing()
@@ -224,15 +231,14 @@ class HealthDataExtractor(object):
         self.close_files()
 
     def report_stats(self):
-        print('\nTags:\n%s\n' % format_freqs(self.tags))
-        print('Fields:\n%s\n' % format_freqs(self.fields))
-        print('Record types:\n%s\n' % format_freqs(self.record_types))
+        print("\nTags:\n%s\n" % format_freqs(self.tags))
+        print("Fields:\n%s\n" % format_freqs(self.fields))
+        print("Record types:\n%s\n" % format_freqs(self.record_types))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print('USAGE: python applehealthdata.py /path/to/export.xml',
-              file=sys.stderr)
+        print("USAGE: python applehealthdata.py /path/to/export.xml", file=sys.stderr)
         sys.exit(1)
     data = HealthDataExtractor(sys.argv[1], sys.argv[2])
     data.report_stats()

@@ -10,24 +10,31 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('blog', '0001_initial'),
+        ("blog", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='post',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="post",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='note',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='authors_notes', to=settings.AUTH_USER_MODEL, verbose_name='Author'),
+            model_name="note",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="authors_notes",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Author",
+            ),
         ),
         migrations.AddField(
-            model_name='note',
-            name='tags',
-            field=models.ManyToManyField(to='blog.Tag'),
+            model_name="note",
+            name="tags",
+            field=models.ManyToManyField(to="blog.Tag"),
         ),
     ]

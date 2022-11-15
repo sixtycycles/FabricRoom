@@ -15,22 +15,57 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Symptom',
+            name="Symptom",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.SlugField(verbose_name='symptoms')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.SlugField(verbose_name="symptoms")),
             ],
         ),
         migrations.CreateModel(
-            name='HealthEvent',
+            name="HealthEvent",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('when', models.DateTimeField(auto_now_add=True)),
-                ('temperature', models.FloatField(blank=True, null=True, verbose_name='temperatures')),
-                ('note', models.TextField(blank=True, null=True)),
-                ('feels_rating', models.IntegerField(blank=True, null=True)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('symptoms', models.ManyToManyField(blank=True, null=True, related_name='symptoms', to='healthstats.Symptom')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("when", models.DateTimeField(auto_now_add=True)),
+                (
+                    "temperature",
+                    models.FloatField(
+                        blank=True, null=True, verbose_name="temperatures"
+                    ),
+                ),
+                ("note", models.TextField(blank=True, null=True)),
+                ("feels_rating", models.IntegerField(blank=True, null=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "symptoms",
+                    models.ManyToManyField(
+                        blank=True,
+                        null=True,
+                        related_name="symptoms",
+                        to="healthstats.Symptom",
+                    ),
+                ),
             ],
         ),
     ]

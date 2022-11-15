@@ -9,7 +9,8 @@ class AppleHealthUploadForm(forms.ModelForm):
             "author",
             "health_data_xml",
         )
-        labels = {"author": "Who owns this data?", "health_data_xml": "Choose a File (export.xml):"}
+        labels = {
+            "author": "Who owns this data?",
+            "health_data_xml": "Choose a File (export.xml):",
+        }
         exclude = ("is_processed",)
-
-

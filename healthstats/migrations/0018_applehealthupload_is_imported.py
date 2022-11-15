@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0017_applehealthupload_csv_data_dir'),
+        ("healthstats", "0017_applehealthupload_csv_data_dir"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='applehealthupload',
-            name='is_imported',
+            model_name="applehealthupload",
+            name="is_imported",
             field=models.BooleanField(default=False),
         ),
     ]

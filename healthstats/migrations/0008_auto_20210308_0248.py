@@ -6,13 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0007_auto_20210213_0005'),
+        ("healthstats", "0007_auto_20210213_0005"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='healthevent',
-            name='feels_rating',
-            field=models.IntegerField(blank=True, help_text='How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good', null=True),
+            model_name="healthevent",
+            name="feels_rating",
+            field=models.IntegerField(
+                blank=True,
+                help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
+                null=True,
+            ),
         ),
     ]

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0013_applehealthupload'),
+        ("healthstats", "0013_applehealthupload"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='applehealthupload',
-            name='health_data_xml',
-            field=models.FileField(upload_to='apple_health_xml/'),
+            model_name="applehealthupload",
+            name="health_data_xml",
+            field=models.FileField(upload_to="apple_health_xml/"),
         ),
     ]

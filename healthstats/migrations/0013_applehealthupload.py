@@ -9,16 +9,31 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('healthstats', '0012_remove_healthevent_feels_rating'),
+        ("healthstats", "0012_remove_healthevent_feels_rating"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AppleHealthUpload',
+            name="AppleHealthUpload",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('health_data_xml', models.FileField(upload_to='apple_health_xml')),
-                ('author', models.ForeignKey(default=2, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("health_data_xml", models.FileField(upload_to="apple_health_xml")),
+                (
+                    "author",
+                    models.ForeignKey(
+                        default=2,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
