@@ -8,12 +8,15 @@
   </div>
 
   <div class="card-body">
-    <p>By {{ post.author }}</p>
+    <p>By {{ post.author.first_name }}</p>
     <p><div class="badge badge-primary">{{post.tags}}</div></p>
-    <!-- <p>{{ post.body  }}</p> -->
+   {%autoescape off%}  
+   
+    <p>{{ post.body  }}</p> 
+    {% endautoescape %}
   </div>
   <div class="card-footer">
-    <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">Read More...</a>
+    <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">detail</a>
   </div>
 </div>
 {% endfor %}
