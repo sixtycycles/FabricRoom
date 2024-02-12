@@ -2,7 +2,7 @@
 {% block content %}
 
 {% for post in all_posts_list %}
-<div class="card">
+<div class="card border-0 rounded-0">
   <div class="card-header">
     <h2>{{ post.title }}</h2>
   </div>
@@ -16,7 +16,7 @@
     {% endautoescape %}
   </div>
   <div class="card-footer">
-    <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">detail</a>
+	  <!--   <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">detail</a> -->
   </div>
 </div>
 {% endfor %}
