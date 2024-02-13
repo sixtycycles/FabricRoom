@@ -8,12 +8,16 @@
   </div>
 
   <div class="card-body">
-    <a class="btn btn-primary" href="{% url 'bp_new'%}">New Blood Pressure </a>
-   <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a>
-   <a class="btn btn-primary" href="{% url 'symptom_new' %}"> New Symptom </a>
+    <ul>
+      <li>
+        <a class="btn btn-primary" href="{% url 'bp_new'%}">New Blood Pressure </a>
+      </li>
+      <li> <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a></li>
+      <li> <a class="btn btn-primary" href="{% url 'symptom_new' %}"> New Symptom </a></li>
+    </ul>
   </div>
   <div class="card-footer">
-</div>
+  </div>
 </div>
 {% else %}
 <div class="jumbotron mt-3">
