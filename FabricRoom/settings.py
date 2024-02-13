@@ -6,21 +6,21 @@ env = environ.Env()
 environ.Env.read_env()
 
 SECRET_KEY = env("SECRET_KEY")
-DEBUG = False
-SECURE_SSL_REDIRECT = True
+DEBUG = True
+# SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = 3600
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+# CSRF_COOKIE_SECURE = True
+# SECURE_HSTS_SECONDS = 3600
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ALLOWED_HOSTS = ["60hz.dev"]
-
+# ALLOWED_HOSTS = ["60hz.dev"]
+ALLOWED_HOSTS = ["60hz.dev", "127.0.0.1","localhost"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     "main",
     "blog",
     "healthstats",
-    "foodtown",
     # 3rd party packages
     "django_summernote",
     "widget_tweaks",
@@ -159,17 +158,17 @@ LOGGING = {
             "formatter": "verbose",
             "filename": "debug.log",
         },
-        "syslog": {
-            "level": "DEBUG",
-            "class": "logging.handlers.SysLogHandler",
-            "facility": "user",
-            "formatter": "django",
-            "address": "/dev/log",
-        },
+        # "syslog": {
+        #     "level": "DEBUG",
+        #     "class": "logging.handlers.SysLogHandler",
+        #     "facility": "user",
+        #     "formatter": "django",
+        #     "address": "/dev/log",
+        # },
     },
     "loggers": {
         "django": {
-            "handlers": ["syslog", "file"],
+            "handlers": ["file"],
             "level": "DEBUG",
             "propagate": True,
             # 'format': 'django: %(meassage)s'
