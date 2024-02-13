@@ -58,7 +58,7 @@ class BPCreateView(LoginRequiredMixin, CreateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "bp_new.html"
-    fields = ['systolic_pressure','diastolic_pressure']
+    fields = ['systolic_pressure','diastolic_pressure',"position"]
     
     def form_valid(self, form):
         form.instance.author = self.request.user
