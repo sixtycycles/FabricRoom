@@ -56,6 +56,19 @@ class HealthEvent(models.Model):
         return self.symptoms.all()
 
 
+class BloodPressure(models.Model):
+    sample_date = models.DateTimeField(auto_now_add=True)
+    systolic_pressure = models.PositiveIntegerField(default=0)
+    diastolic_pressure = models.PositiveIntegerField(default=0)
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.systolic_pressure} / {self.diastolic_pressure}"
+    
+    def get_absolute_url(self):
+        return reverse("bp_detail", args=[str(self.id)])
+
+
 class HeartRate(models.Model):
 
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)

@@ -12,6 +12,7 @@ from django.views.generic import (
 from django.views.generic.edit import DeleteView, ProcessFormView
 from healthstats.models import (
     AppleHealthUpload,
+    BloodPressure,
     HealthEvent,
     Symptom,
     HeartRate,
@@ -49,6 +50,57 @@ class HealthEventCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+
+class BPCreateView(LoginRequiredMixin, CreateView):
+    model = BloodPressure
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "bp_new.html"
+    fields = ['systolic_pressure','diastolic_pressure']
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+class BPListView(LoginRequiredMixin, ListView):
+    model = BloodPressure
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "bp_list.html"
+    context_object_name = "all_bps"
+
+    def get_queryset(self):
+        return BloodPressure.objects.all()
+
+class BPDetailView(LoginRequiredMixin, DetailView):
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "bp_detail.html"
+    context_object_name = "bp"
+
+    def get_queryset(self):
+        return BloodPressure.objects.filter(author=self.request.user)
+
+class BPUpdateView(LoginRequiredMixin, UpdateView):
+    model = BloodPressure
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "bp_update.html"
+    fields = ["systolic_pressure","diastolic_pressure"]
+
+
+class BPDeleteView(LoginRequiredMixin, DeleteView):
+    model = BloodPressure
+    login_url = "/accounts/login/"
+    redirect_field_name = "redirect_to"
+    raise_exception = True
+    template_name = "bp_delete.html"
+    success_url = reverse_lazy("bp_list")
 
 
 class SymptomCreateView(LoginRequiredMixin, CreateView):

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load tz %}
+
+<table class="table table-striped">
+<thead>
+  <tr>
+    <!-- <th scope="col">author</th> -->
+    <th scope="col">when</th>
+    <th scope="col">Systolic</th>
+    <th scope="col">Diastolic</th>
+    <th scope="col">Owner</th>
+    <th scope="col">edit/delete?</th>
+
+  </tr>
+</thead>
+<tbody>
+{% for bp in all_bps %}
+<tr>
+<!-- <td>{{ stat.author }}</td> -->
+<!-- date:'P D M d' -->
+<!-- we only have users in LA right now w/e -->
+{% timezone "America/Los_Angeles" %}
+<td>{{ bp.sample_date|localtime|date:"m/d/y g:ia"}} </td> 
+{% endtimezone %}
+<td>{{ bp.systolic_pressure }}</td>
+<td>{{ bp.diastolic_pressure}}</td>
+
+<td>{{bp.author}}</td>
+<td>
+  <a href="{% url 'bp_update' bp.id %}" class="btn btn-info">Edit</a>
+</td>
+</tr>
+    
+{% endfor %}
+</tbody>
+</table>
+{% endblock content %}
