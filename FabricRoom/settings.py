@@ -5,22 +5,10 @@ from pathlib import Path
 env = environ.Env()
 environ.Env.read_env()
 
-SECRET_KEY = env("SECRET_KEY")
-DEBUG = True
-# SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_HSTS_SECONDS = 3600
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# ALLOWED_HOSTS = ["60hz.dev"]
-ALLOWED_HOSTS = ["60hz.dev", "127.0.0.1","localhost"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -51,48 +39,48 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "FabricRoom.urls"
 
-# template dirs not working on this droplet.
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            BASE_DIR / "templates",
-            BASE_DIR / "main/templates/main",
-            # BASE_DIR / 'blog/templates/blog',
-            BASE_DIR / "healthstats/templates/healthstats",
-        ],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.media",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
+# # template dirs not working on this droplet.
+# TEMPLATES = [
+#     {
+#         "BACKEND": "django.template.backends.django.DjangoTemplates",
+#         "DIRS": [
+#             BASE_DIR / "templates",
+#             BASE_DIR / "main/templates/main",
+#             # BASE_DIR / 'blog/templates/blog',
+#             BASE_DIR / "healthstats/templates/healthstats",
+#         ],
+#         "APP_DIRS": True,
+#         "OPTIONS": {
+#             "context_processors": [
+#                 "django.template.context_processors.debug",
+#                 "django.template.context_processors.media",
+#                 "django.template.context_processors.request",
+#                 "django.contrib.auth.context_processors.auth",
+#                 "django.contrib.messages.context_processors.messages",
+#             ],
+#         },
+#     },
+# ]
 
 WSGI_APPLICATION = "FabricRoom.wsgi.application"
 
 
 # Database
 
-DATABASES = {
-    # 'test': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # },
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": env("DATABASE_NAME"),
-        "USER": env("DATABASE_USER"),
-        "PASSWORD": env("DATABASE_PASSWORD"),
-        "HOST": env("DATABASE_HOST"),
-        "PORT": env("DATABASE_PORT"),
-    }
-}
+# DATABASES = {
+#     # 'test': {
+#     #     'ENGINE': 'django.db.backends.sqlite3',
+#     #     'NAME': BASE_DIR / 'db.sqlite3',
+#     # },
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "NAME": env("DATABASE_NAME"),
+#         "USER": env("DATABASE_USER"),
+#         "PASSWORD": env("DATABASE_PASSWORD"),
+#         "HOST": env("DATABASE_HOST"),
+#         "PORT": env("DATABASE_PORT"),
+#     }
+# }
 
 
 AUTH_USER_MODEL = "main.CustomUser"
@@ -131,63 +119,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = "/static/"
-# STATICFILES_DIRS = [BASE_DIR / 'static']
 
-STATIC_ROOT = BASE_DIR / "static"
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "django": {
-            "format": "django: %(message)s",
-        },
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "formatter": "verbose",
-            "filename": "debug.log",
-        },
-        # "syslog": {
-        #     "level": "DEBUG",
-        #     "class": "logging.handlers.SysLogHandler",
-        #     "facility": "user",
-        #     "formatter": "django",
-        #     "address": "/dev/log",
-        # },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-            "propagate": True,
-            # 'format': 'django: %(meassage)s'
-        },
-    },
-}
 
-SUMMERNOTE_THEME = 'bs5'
+SUMMERNOTE_THEME = "bs5"
 SUMMERNOTE_CONFIG = {
-    # Wtf are these numbers?  
-   'attachment_filesize_limit': 1024 * 1024 * 10,
-   'toolbar': [
-        ['style', ['bold', 'italic', 'clear']],
-        ['font', ['strikethrough', 'superscript', 'subscript']],
-        ['fontsize', ['fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['insert', ['picture', 'link', 'hr']],
-        ['edit', ['undo', 'redo']]
-    ]
+    # Wtf are these numbers?
+    "attachment_filesize_limit": 1024 * 1024 * 10,
+    "toolbar": [
+        ["style", ["bold", "italic", "clear"]],
+        ["font", ["strikethrough", "superscript", "subscript"]],
+        ["fontsize", ["fontsize"]],
+        ["color", ["color"]],
+        ["para", ["ul", "ol", "paragraph"]],
+        ["insert", ["picture", "link", "hr"]],
+        ["edit", ["undo", "redo"]],
+    ],
 }
-

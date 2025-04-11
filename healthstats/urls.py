@@ -36,11 +36,11 @@ from healthstats.views import (
 
 urlpatterns = [
     path("", HealthEventHomeView.as_view(), name="health_event_home"),
-    path( "bp/", BPListView.as_view(), name = "bp_list"),
-    path("bp/new/",BPCreateView.as_view(), name = 'bp_new'),
-    path("bp/<int:pk>/",BPDetailView.as_view(), name= "bp_detail"),
-    path("bp/<int:pk>/edit/", BPUpdateView.as_view(), name = "bp_update"),
-    path("bp/<int:pk>/delete/", BPDeleteView.as_view(), name = "bp_delete"),
+    path("bp/", BPListView.as_view(), name="bp_list"),
+    path("bp/new/", BPCreateView.as_view(), name="bp_new"),
+    path("bp/<int:pk>/", BPDetailView.as_view(), name="bp_detail"),
+    path("bp/<int:pk>/edit/", BPUpdateView.as_view(), name="bp_update"),
+    path("bp/<int:pk>/delete/", BPDeleteView.as_view(), name="bp_delete"),
     path("symptoms/", SymptomListView.as_view(), name="symptoms"),
     path("symptom/new/", SymptomCreateView.as_view(), name="symptom_new"),
     path(

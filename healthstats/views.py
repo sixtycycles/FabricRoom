@@ -23,11 +23,11 @@ from healthstats.forms import AppleHealthUploadForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from plotly.offline import plot
 from plotly.graph_objs import Scatter
 from .apple_health_data_parse import *
 from datetime import datetime
+from django.utils.timezone import make_aware
 
 
 class HealthEventHomeView(LoginRequiredMixin, TemplateView):
@@ -64,6 +64,7 @@ class BPCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
+
 class BPListView(LoginRequiredMixin, ListView):
     model = BloodPressure
     login_url = "/accounts/login/"
@@ -75,6 +76,7 @@ class BPListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return BloodPressure.objects.all()
 
+
 class BPDetailView(LoginRequiredMixin, DetailView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
@@ -84,6 +86,7 @@ class BPDetailView(LoginRequiredMixin, DetailView):
 
     def get_queryset(self):
         return BloodPressure.objects.filter(author=self.request.user)
+
 
 class BPUpdateView(LoginRequiredMixin, UpdateView):
     model = BloodPressure
@@ -281,17 +284,23 @@ def upload_file_success(request):
 def process_apple_health_data(request, pk):
     file = AppleHealthUpload.objects.get(pk=pk)
     try:
-        os.mkdir(f"/srv/code/media/processed/{request.user.first_name}")
+        # os.mkdir(f"/srv/code/media/processed/{request.user.first_name}")
+        os.mkdir(f"/Users/rod/PycharmProjects/FabricRoom/media/processed/{request.user.first_name}")
     except OSError as error:
         print(error)
+    # data = HealthDataExtractor(
+    #     f"/srv/code/media/{file.health_data_xml}",
+    #     f"/srv/code/media/processed/{request.user.first_name}",
+    # )
     data = HealthDataExtractor(
-        f"/srv/code/media/{file.health_data_xml}",
-        f"/srv/code/media/processed/{request.user.first_name}",
+        f"/Users/rod/PycharmProjects/FabricRoom/media/{file.health_data_xml}",
+        f"/Users/rod/PycharmProjects/FabricRoom/media/processed/{request.user.first_name}",
     )
     data.report_stats()
     data.extract()
     file.is_processed = True
-    file.csv_data_dir = f"/srv/code/media/processed/{request.user.first_name}"
+    # file.csv_data_dir = f"/srv/code/media/processed/{request.user.first_name}"
+    file.csv_data_dir = f"/Users/rod/PycharmProjects/FabricRoom/media/processed/{request.user.first_name}"
     file.save()
     return HttpResponseRedirect("/health/apple-health/process/success")
 
@@ -305,17 +314,18 @@ def import_processed_apple_health_data(request, pk):
     # sourceName(0), sourceVersion(1), device(2), type(3), unit(4), creationDate(5), startDate(6), endDate(7), value(8)
     with open(heart_rate_path) as f:
         reader = csv.reader(f)
-        # dont spend hours troubleshooting the header data?
+        # pop the header of the file.
         next(reader)
         # actual data.
         for row in reader:
-            c_date = datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S %z")
+            c_date = (datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S %z"))
             created_date = datetime.strftime(c_date, "%Y-%m-%d %H:%M:%S.%f")
-            s_date = datetime.strptime(row[6], "%Y-%m-%d %H:%M:%S %z")
+            s_date = (datetime.strptime(row[6], "%Y-%m-%d %H:%M:%S %z"))
             start_date = datetime.strftime(s_date, "%Y-%m-%d %H:%M:%S.%f")
-            e_date = datetime.strptime(row[7], "%Y-%m-%d %H:%M:%S %z")
+            e_date = (datetime.strptime(row[7], "%Y-%m-%d %H:%M:%S %z"))
             end_date = datetime.strftime(e_date, "%Y-%m-%d %H:%M:%S.%f")
 
+            #what does this do? ( _,changed = X) brain fog lol.
             _, created = HeartRate.objects.get_or_create(
                 author=request.user,
                 creation_date=created_date,

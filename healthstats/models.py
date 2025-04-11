@@ -59,19 +59,19 @@ class HealthEvent(models.Model):
 class BloodPressure(models.Model):
 
     POSITIONS = (
-        ('sitting', 'Sitting'),
-        ('laying down','Laying Down'),
-        ('standing', 'Standing')
+        ("sitting", "Sitting"),
+        ("laying down", "Laying Down"),
+        ("standing", "Standing"),
     )
     sample_date = models.DateTimeField(auto_now_add=True)
     systolic_pressure = models.PositiveIntegerField(default=0)
     diastolic_pressure = models.PositiveIntegerField(default=0)
-    position = models.CharField(max_length=15, choices = POSITIONS, default = "sitting")
+    position = models.CharField(max_length=15, choices=POSITIONS, default="sitting")
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.systolic_pressure} / {self.diastolic_pressure}"
-    
+
     def get_absolute_url(self):
         return reverse("bp_detail", args=[str(self.id)])
 
@@ -90,6 +90,7 @@ class HeartRate(models.Model):
 
 
 class AppleHealthUpload(models.Model):
+    """accepts a single xml file created whrn you export your health data from apple health app"""
     author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=2)
     when = models.DateTimeField(auto_now=True)
     health_data_xml = models.FileField(

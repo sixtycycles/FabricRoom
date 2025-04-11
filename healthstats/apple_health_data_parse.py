@@ -138,8 +138,8 @@ class HealthDataExtractor(object):
             self.report("Reading data from %s . . . " % path, end="")
             self.data = ElementTree.parse(f)
             self.report("done")
-        self.root = self.data._root
-        self.nodes = self.root.getchildren()
+        self.root = self.data.getroot()
+        self.nodes = list(self.root)
         self.n_nodes = len(self.nodes)
         self.abbreviate_types()
         self.collect_stats()
@@ -221,7 +221,7 @@ class HealthDataExtractor(object):
                 self.handles[kind].write(line)
 
     def close_files(self):
-        for (kind, f) in self.handles.items():
+        for kind, f in self.handles.items():
             f.close()
             self.report("Written %s data." % abbreviate(kind))
 
