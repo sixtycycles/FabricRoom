@@ -14,6 +14,7 @@ class Post(models.Model):
         on_delete=models.CASCADE,
     )
     published = models.BooleanField(default=True)
+    created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
