@@ -2,23 +2,23 @@
 {% block content %}
 
 {% for post in all_posts_list %}
-<div class="card border-1 rounded-1">
+<div class="card border-1 rounded-1 margin-bottom-1">
   <div class="card-header">
     <h2>{{ post.title }}</h2>
   </div>
 
   <div class="card-body">
-    <p>By {{ post.author.first_name }}</p>
     <p><div class="badge badge-primary">{{post.tags}}</div></p>
    {%autoescape off%}  
-   
     <p>{{ post.body  }}</p> 
     {% endautoescape %}
   </div>
   <div class="card-footer">
+    <p>- {{ post.author.first_name }}</p>
     <p> {{post.created_date}}</p>
 	  <!--   <a class='btn btn-secondary' href="{% url 'post_detail' post.pk %}">detail</a> -->
   </div>
 </div>
+
 {% endfor %}
 {% endblock content %}
