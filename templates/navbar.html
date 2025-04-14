@@ -35,7 +35,7 @@
               <form method="POST" action="{% url 'logout' %}" style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-link dropdown-item" style="padding: 0; border: none; background: none;">
-                  Log Out <span class="badge bg-warning">{{ user.first_name }}</span>
+                  Log Out <span class="badge bg-info">{{ user.first_name }}</span>
                 </button>
               </form>
           </ul>
