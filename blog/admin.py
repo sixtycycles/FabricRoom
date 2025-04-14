@@ -14,6 +14,7 @@ class PostAdmin(SummernoteModelAdmin):
         "published"
     ]
     list_filter = ["author"]
+    readonly_fields = [""]
     fields = ["author", "title", "body", "created_date", "published"]
 
 
