@@ -12,7 +12,7 @@ class BlogListView(ListView):
     context_object_name = "all_posts_list"
 
     def get_queryset(self):
-        return Post.objects.filter(published=True)
+        return Post.objects.filter(published=True).order_by("-created_date")
 
 
 class NoteListView(ListView):
