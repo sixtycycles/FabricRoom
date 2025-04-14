@@ -30,6 +30,7 @@ class AboutPageView(TemplateView):
 
 class PrivateHome(LoginRequiredMixin, TemplateView):
     login_url = "/accounts/login/"
+    logout_url = "/accounts/logout/"
     redirect_field_name = "redirect_to"
     raise_exception = True
 
