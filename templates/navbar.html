@@ -12,11 +12,18 @@
           <a class="nav-link" href="/">Home</a>
         </li>
         {% if user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'stat_new' %}">New Temperature</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'symptom_new' %}">New Symptom</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'stat_plot' %}"> Plots </a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'stat_list' %}">List of Temperatures</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'symptoms' %}"> List of Symptoms</a></li>
+          <li class="nav-item dropdown"></li>
+            <a class="nav-link dropdown-toggle" href="#" id="healthDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Health
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="healthDropdown">
+              <li><a class="dropdown-item" href="{% url 'stat_new' %}">New Temperature</a></li>
+              <li><a class="dropdown-item" href="{% url 'symptom_new' %}">New Symptom</a></li>
+              <li><a class="dropdown-item" href="{% url 'stat_plot' %}">Plots</a></li>
+              <li><a class="dropdown-item" href="{% url 'stat_list' %}">List of Temperatures</a></li>
+              <li><a class="dropdown-item" href="{% url 'symptoms' %}">List of Symptoms</a></li>
+            </ul>
+          </li>
         {% endif%}
     {% block user_login %}
         {% if user.is_authenticated %}
