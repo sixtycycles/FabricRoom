@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+form django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -14,7 +15,7 @@ class Post(models.Model):
         on_delete=models.CASCADE,
     )
     published = models.BooleanField(default=True)
-    created_date = models.DateTimeField(auto_now_add=True)
+    created_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
