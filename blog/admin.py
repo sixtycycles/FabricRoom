@@ -10,6 +10,8 @@ class PostAdmin(SummernoteModelAdmin):
         "author",
         "title",
         "body",
+        "created_date",
+        "published"
     ]
     list_filter = ["author"]
 
