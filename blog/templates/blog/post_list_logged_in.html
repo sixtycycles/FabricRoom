@@ -26,3 +26,13 @@
 
 {% endfor %}
 {% endblock content %}
+{% else %}
+{% block content %}
+<div class="alert alert-danger" role="alert">
+  <h4 class="alert-heading">You are not logged in!</h4>
+  <p>Please log in to view the blog posts.</p>
+  <hr>
+  <p class="mb-0"><a href="{% url 'login' %}" class="btn btn-primary">Log In</a></p>
+</div>
+{% endblock content %}
+{% endif %}
