@@ -12,6 +12,14 @@ class BlogListView(ListView):
     model = Post
     template_name = "post_list.html"
     context_object_name = "all_posts_list"
+    paginate_by = 2
+    ordering = ["-created_date"]
+    queryset = Post.objects.filter(published=True).order_by("-created_date")
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["all_posts_list"] = queryset
+        return context
 
     def get_queryset(self):
         return Post.objects.filter(published=True).order_by("-created_date")
@@ -83,12 +91,13 @@ class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "post_update.html"
-    fields = ["title", "author", "body"]
-
-    def test_func(self):
-        obj = self.get_object()
-        return obj.author == self.request.user
-
+    fields = ["title", "author", "body","created_date", "tags"]
+    
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["author"] = self.request.user
+        return initial
+    
 
 class NoteUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Note
@@ -110,10 +119,6 @@ class BlogDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     raise_exception = True
     template_name = "post_delete.html"
     success_url = reverse_lazy("blog_list")
-
-    def test_func(self):
-        obj = self.get_object()
-        return obj.author == self.request.user
 
     def test_func(self):
         obj = self.get_object()

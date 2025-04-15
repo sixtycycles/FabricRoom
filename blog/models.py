@@ -16,6 +16,8 @@ class Post(models.Model):
     )
     published = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
+    updated_date = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField("Tag", blank=True)
 
     def __str__(self):
         return self.title
@@ -26,6 +28,10 @@ class Post(models.Model):
 
 class Tag(models.Model):
     tag_slug = models.SlugField(max_length=200, unique=True)
+    tag_name = models.CharField(max_length=200, unique=True)
+    tag_description = models.TextField(blank=True)
+    created_date = models.DateTimeField(default=timezone.now)
+    updated_date = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.tag_slug
