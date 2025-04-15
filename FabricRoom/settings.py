@@ -187,7 +187,9 @@ SUMMERNOTE_CONFIG = {
         ['color', ['color']],
         ['para', ['ul', 'ol', 'paragraph']],
         ['insert', ['picture', 'link', 'hr']],
-        ['edit', ['undo', 'redo']]
+        ['edit', ['undo', 'redo'],
+        ['view', ['codeview']
+        ]
     ]
 }
 
