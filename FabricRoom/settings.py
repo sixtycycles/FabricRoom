@@ -176,20 +176,19 @@ LOGGING = {
     },
 }
 
+
 SUMMERNOTE_THEME = 'bs5'
 SUMMERNOTE_CONFIG = {
-    # Wtf are these numbers?  
-   'attachment_filesize_limit': 1024 * 1024 * 10,
-   'toolbar': [
+    'attachment_filesize_limit': 1024 * 1024 * 10,
+    'toolbar': [
         ['style', ['bold', 'italic', 'clear']],
-        ['font', ['strikethrough', 'superscript', 'subscript']],
         ['fontsize', ['fontsize']],
         ['color', ['color']],
         ['para', ['ul', 'ol', 'paragraph']],
         ['insert', ['picture', 'link', 'hr']],
-        ['edit', ['undo', 'redo'],
-        ['view', ['codeview']]
-        ]
+        ['edit', ['undo', 'redo']],
+        ['view', ['codeview']]  # Added the code view button
     ]
 }
+
 
