@@ -19,6 +19,15 @@ class Post(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField("Tag", blank=True)
 
+    def get_tags(self):
+        tags = self.tags.all()
+        return tags
+    
+    def get_author(self):
+        author = self.author
+        return author
+   
+
     def __str__(self):
         return self.title
 

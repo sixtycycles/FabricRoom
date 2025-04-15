@@ -15,9 +15,6 @@ class BlogListView(ListView):
     ordering = ["-created_date"]
     queryset = Post.objects.filter(published=True).order_by("-created_date")
 
-    def get_tags(self):
-        tags = self.object.tags.all()
-        return tags
 
     def get_template_names(self):
         if self.request.user.is_authenticated:
