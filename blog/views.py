@@ -15,12 +15,20 @@ class BlogListView(ListView):
     ordering = ["-created_date"]
     queryset = Post.objects.filter(published=True).order_by("-created_date")
 
+    def get_tags(self):
+        tags = self.object.tags.all()
+        return tags
+
     def get_template_names(self):
         if self.request.user.is_authenticated:
             return ["post_list_logged_in.html"]
         return ["post_list.html"]
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["all_posts_list"] = self.get_queryset()
+        context["tags"] = self.get_tags()
+        return context
         context = super().get_context_data(**kwargs)
         context["all_posts_list"] = self.get_queryset()
         return context
