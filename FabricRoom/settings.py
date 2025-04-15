@@ -188,7 +188,7 @@ SUMMERNOTE_CONFIG = {
         ['para', ['ul', 'ol', 'paragraph']],
         ['insert', ['picture', 'link', 'hr']],
         ['edit', ['undo', 'redo'],
-        ['view', ['codeview']
+        ['view', ['codeview']]
         ]
     ]
 }
