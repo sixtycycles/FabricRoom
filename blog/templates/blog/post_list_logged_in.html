@@ -9,7 +9,9 @@
   </div>
 
   <div class="card-body">
-    <p><div class="badge badge-primary">{{post.tags}}</div></p>
+    {% if post.tags %}
+    <p><div class="badge badge-primary">{{ post.tags }}</div></p>
+    {% endif %}
    {% autoescape off %}  
     <p>{{ post.body }}</p> 
     {% endautoescape %}
