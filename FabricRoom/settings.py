@@ -58,7 +58,7 @@ TEMPLATES = [
         "DIRS": [
             BASE_DIR / "templates",
             BASE_DIR / "main/templates/main",
-            BASE_DIR / '/blog',
+            BASE_DIR / "blog/templates/blog",
             BASE_DIR / "healthstats/templates/healthstats",
         ],
         "APP_DIRS": True,
