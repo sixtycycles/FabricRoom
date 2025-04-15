@@ -4,6 +4,8 @@ from django.views.generic.edit import DeleteView
 from blog.models import Post, Note
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+from django import forms
+from django_summernote.widgets import SummernoteWidget
 
 
 class BlogListView(ListView):
@@ -36,13 +38,21 @@ class NoteDetailView(DetailView):  # new model = Post
     context_object_name = "note"
 
 
+class BlogCreateForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ["title", "author", "body"]
+        widgets = {
+            "body": SummernoteWidget(),
+        }
+
 class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Post
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "post_new.html"
-    fields = ["title", "author", "body"]
+    form_class = BlogCreateForm
 
     def get_initial(self):
         initial = super().get_initial()
