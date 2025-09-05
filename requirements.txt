@@ -18,3 +18,5 @@ sqlparse
 tenacity
 tzdata
 webencodings
+
+django-simple-deploy==1.1.0
