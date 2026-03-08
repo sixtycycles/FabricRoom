@@ -1,0 +1,75 @@
+2025-09-08 13:30:24,692 INFO: Logging run of `manage.py deploy`...
+2025-09-08 13:30:24,692 INFO: Created /Users/rod/PycharmProjects/FabricRoom/dsd_logs/dsd_2025-09-08-133024.log.
+2025-09-08 13:30:24,692 INFO: 
+2025-09-08 13:30:24,692 INFO: CLI args:
+2025-09-08 13:30:24,692 INFO:   verbosity: 1
+2025-09-08 13:30:24,692 INFO:   settings: None
+2025-09-08 13:30:24,692 INFO:   pythonpath: None
+2025-09-08 13:30:24,692 INFO:   traceback: False
+2025-09-08 13:30:24,692 INFO:   no_color: False
+2025-09-08 13:30:24,692 INFO:   force_color: False
+2025-09-08 13:30:24,692 INFO:   automate_all: True
+2025-09-08 13:30:24,692 INFO:   no_logging: False
+2025-09-08 13:30:24,692 INFO:   ignore_unclean_git: False
+2025-09-08 13:30:24,692 INFO:   deployed_project_name: 
+2025-09-08 13:30:24,692 INFO:   region: us-3.platform.sh
+2025-09-08 13:30:24,692 INFO:   unit_testing: False
+2025-09-08 13:30:24,692 INFO:   e2e_testing: False
+2025-09-08 13:30:24,800 INFO:   Using plugin: dsd_vps
+2025-09-08 13:30:24,921 INFO: 
+2025-09-08 13:30:24,921 INFO: Deployment target: VPS
+2025-09-08 13:30:24,921 INFO: Local platform identified: macOS
+2025-09-08 13:30:24,921 INFO: Local project name: FabricRoom
+2025-09-08 13:30:24,921 INFO: Project root: /Users/rod/PycharmProjects/FabricRoom
+2025-09-08 13:30:24,921 INFO: Found .git dir at /Users/rod/PycharmProjects/FabricRoom.
+2025-09-08 13:30:24,921 INFO: 
+2025-09-08 13:30:24,921 INFO: git status --porcelain
+2025-09-08 13:30:24,944 INFO: 
+2025-09-08 13:30:24,945 INFO: git diff --unified=0
+2025-09-08 13:30:24,963 INFO: 
+2025-09-08 13:30:24,963 INFO: No uncommitted changes, other than django-simple-deploy work.
+2025-09-08 13:30:24,963 INFO: Dependency management system: req_txt
+2025-09-08 13:30:24,963 INFO: Checking current project requirements...
+2025-09-08 13:30:24,964 INFO:   Found existing dependencies:
+2025-09-08 13:30:24,964 INFO:     asgiref
+2025-09-08 13:30:24,964 INFO:     bleach
+2025-09-08 13:30:24,964 INFO:     Django
+2025-09-08 13:30:24,964 INFO:     django-environ
+2025-09-08 13:30:24,964 INFO:     django-pandas
+2025-09-08 13:30:24,964 INFO:     django-summernote
+2025-09-08 13:30:24,964 INFO:     django-widget-tweaks
+2025-09-08 13:30:24,964 INFO:     numpy
+2025-09-08 13:30:24,964 INFO:     packaging
+2025-09-08 13:30:24,964 INFO:     pandas
+2025-09-08 13:30:24,964 INFO:     pillow
+2025-09-08 13:30:24,964 INFO:     plotly
+2025-09-08 13:30:24,964 INFO:     psycopg2
+2025-09-08 13:30:24,964 INFO:     python-dateutil
+2025-09-08 13:30:24,964 INFO:     pytz
+2025-09-08 13:30:24,964 INFO:     six
+2025-09-08 13:30:24,964 INFO:     sqlparse
+2025-09-08 13:30:24,964 INFO:     tenacity
+2025-09-08 13:30:24,964 INFO:     tzdata
+2025-09-08 13:30:24,964 INFO:     webencodings
+2025-09-08 13:30:24,964 INFO:     django-simple-deploy
+2025-09-08 13:30:24,964 INFO:     gunicorn
+2025-09-08 13:30:24,964 INFO: 
+2025-09-08 13:30:24,964 INFO: Looking for django-simple-deploy in requirements...
+2025-09-08 13:30:24,964 INFO: 
+2025-09-08 13:30:24,964 INFO: Looking for django-simple-deploy...
+2025-09-08 13:30:24,964 INFO:   Found django-simple-deploy in requirements file.
+2025-09-08 13:30:24,964 INFO: 
+2025-09-08 13:30:24,964 INFO: The --automate-all flag means django-simple-deploy will:
+2025-09-08 13:30:24,964 INFO: - ...
+2025-09-08 13:30:24,964 INFO: - Commit all changes to your project that are necessary for deployment.
+2025-09-08 13:30:24,964 INFO: - Push these changes to the remote server.
+2025-09-08 13:30:24,964 INFO: - Open your deployed project in a new browser tab.
+2025-09-08 13:30:24,964 INFO: 
+2025-09-08 13:30:24,964 INFO: Are you sure you want to do this? (yes|no) 
+2025-09-08 13:30:27,667 INFO: yes
+2025-09-08 13:30:27,667 INFO: Automating all steps...
+2025-09-08 13:30:27,668 INFO: 
+2025-09-08 13:30:27,668 INFO: Configuring project for deployment...
+2025-09-08 13:30:27,668 INFO: Determining server username...
+2025-09-08 13:30:27,668 INFO: Running server command over SSH...
+2025-09-08 13:30:27,668 INFO:   command: uptime

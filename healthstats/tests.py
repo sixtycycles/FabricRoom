@@ -1,101 +1,310 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from healthstats.models import HealthEvent, EventType
-from datetime import datetime
+from healthstats.models import (
+    HealthEvent, Symptom, BloodPressure, HeartRate, StepData, OxygenData, AppleHealthUpload
+)
+from datetime import datetime, timedelta
 
 
-class HealthEventTest(TestCase):
+class SymptomModelTest(TestCase):
+    """Test Symptom model"""
+
+    def test_symptom_creation(self):
+        """Test that Symptom is created successfully"""
+        symptom = Symptom.objects.create(
+            slug="fever",
+            description="High body temperature"
+        )
+        self.assertEqual(symptom.slug, "fever")
+        self.assertEqual(symptom.description, "High body temperature")
+
+    def test_symptom_slug_is_unique(self):
+        """Test that symptom slug must be unique"""
+        Symptom.objects.create(slug="fever", description="High temperature")
+        with self.assertRaises(Exception):
+            Symptom.objects.create(slug="fever", description="Different description")
+
+    def test_symptom_string_representation(self):
+        """Test Symptom __str__ method"""
+        symptom = Symptom.objects.create(slug="cough", description="Persistent cough")
+        self.assertEqual(str(symptom), "cough")
+
+    def test_symptom_get_absolute_url(self):
+        """Test Symptom get_absolute_url method"""
+        symptom = Symptom.objects.create(slug="headache", description="Head pain")
+        expected_url = reverse("symptom_detail", args=[str(symptom.slug)])
+        self.assertEqual(symptom.get_absolute_url(), expected_url)
+
+
+class HealthEventModelTest(TestCase):
+    """Test HealthEvent model"""
+
     def setUp(self):
-
-        # self.client = Client()
-
         self.user = get_user_model().objects.create_user(
-            username="testuser", email="test@email.com", password="secret"
+            username="testuser",
+            email="test@example.com",
+            password="testpass123"
         )
+        self.symptom = Symptom.objects.create(slug="fever", description="High temperature")
 
-        self.temp_event_type = EventType.objects.create(
-            name="Temperature", description="a measurement of body temperature"
-        )
-
-        self.event = HealthEvent.objects.create(
+    def test_health_event_creation(self):
+        """Test that HealthEvent is created successfully"""
+        event = HealthEvent.objects.create(
             author=self.user,
-            event_type=self.temp_event_type,
-            when=datetime.datetime.now(),
-            value=100.00,
-            notes="a thought about this temp!",
+            temperature=99.5,
+            note="Feeling better"
+        )
+        self.assertEqual(event.author, self.user)
+        self.assertEqual(event.temperature, 99.5)
+        self.assertEqual(event.note, "Feeling better")
+
+    def test_health_event_temperature_optional(self):
+        """Test that temperature is optional"""
+        event = HealthEvent.objects.create(
+            author=self.user,
+            note="Just a note"
+        )
+        self.assertIsNone(event.temperature)
+
+    def test_health_event_note_optional(self):
+        """Test that note is optional"""
+        event = HealthEvent.objects.create(
+            author=self.user,
+            temperature=98.6
+        )
+        self.assertIsNone(event.note)
+
+    def test_health_event_with_symptoms(self):
+        """Test HealthEvent with symptoms"""
+        event = HealthEvent.objects.create(
+            author=self.user,
+            temperature=100.0
+        )
+        event.symptoms.add(self.symptom)
+        self.assertEqual(event.symptoms.count(), 1)
+        self.assertIn(self.symptom, event.symptoms.all())
+
+    def test_health_event_get_symptoms(self):
+        """Test HealthEvent get_symptoms method"""
+        event = HealthEvent.objects.create(author=self.user, temperature=99.0)
+        event.symptoms.add(self.symptom)
+        symptoms = event.get_symptoms()
+        self.assertIn(self.symptom, symptoms)
+
+    def test_health_event_string_representation(self):
+        """Test HealthEvent __str__ method"""
+        event = HealthEvent.objects.create(author=self.user, temperature=98.6)
+        # The __str__ includes author first_name, so check for format
+        result = str(event)
+        self.assertIsNotNone(result)
+        self.assertIn("@", result)  # Check for timestamp format
+
+    def test_health_event_get_absolute_url(self):
+        """Test HealthEvent get_absolute_url method"""
+        event = HealthEvent.objects.create(author=self.user, temperature=98.6)
+        expected_url = reverse("stat_detail", args=[str(event.id)])
+        self.assertEqual(event.get_absolute_url(), expected_url)
+
+    def test_health_event_foreign_key_cascade_delete(self):
+        """Test that deleting user deletes their events"""
+        event = HealthEvent.objects.create(author=self.user, temperature=98.6)
+        event_id = event.id
+        self.user.delete()
+        self.assertFalse(HealthEvent.objects.filter(id=event_id).exists())
+
+
+class BloodPressureModelTest(TestCase):
+    """Test BloodPressure model"""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123"
         )
 
-    # def test_string_representation(self):
-    #     event = EventType(title='A sample title')
-    #     self.assertEqual(str(post), post.title)
+    def test_blood_pressure_creation(self):
+        """Test that BloodPressure is created successfully"""
+        bp = BloodPressure.objects.create(
+            author=self.user,
+            systolic_pressure=120,
+            diastolic_pressure=80,
+            position="sitting"
+        )
+        self.assertEqual(bp.systolic_pressure, 120)
+        self.assertEqual(bp.diastolic_pressure, 80)
+        self.assertEqual(bp.position, "sitting")
 
-    # def test_post_content(self):
-    #     self.assertEqual(f'{self.post.title}', 'test title')
-    #     self.assertEqual(f'{self.post.author}', 'testuser')
-    #     self.assertEqual(f'{self.post.body}',
-    #                      'test body content that is longer')
+    def test_blood_pressure_position_choices(self):
+        """Test that position can be sitting, laying, or standing"""
+        for position in ["sitting", "laying down", "standing"]:
+            bp = BloodPressure.objects.create(
+                author=self.user,
+                systolic_pressure=120,
+                diastolic_pressure=80,
+                position=position
+            )
+            self.assertEqual(bp.position, position)
 
-    def test_post_list_view(self):
-        response = self.client.get(reverse("home"))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, self.event.value)
-        self.assertTemplateUsed(response, "home.html")
+    def test_blood_pressure_default_position_is_sitting(self):
+        """Test that default position is sitting"""
+        bp = BloodPressure.objects.create(
+            author=self.user,
+            systolic_pressure=120,
+            diastolic_pressure=80
+        )
+        self.assertEqual(bp.position, "sitting")
 
-    # def test_post_detail_view(self):
-    #     # not sure why self.post from setUp() is put in the second index but w/e.
-    #     # print(f'the value of "id" self.post in this test case is: {self.post.id}')
-    #     # so im just asking if its there at the ID.
-    #     response = self.client.get(f'/blog/post/{self.post.id}/')
-    #     no_response = self.client.get('/blog/post/100000/')
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(no_response.status_code, 404)
-    #     self.assertContains(response, 'test title')
-    #     self.assertTemplateUsed(response, 'post_detail.html')
+    def test_blood_pressure_string_representation(self):
+        """Test BloodPressure __str__ method"""
+        bp = BloodPressure.objects.create(
+            author=self.user,
+            systolic_pressure=120,
+            diastolic_pressure=80
+        )
+        self.assertEqual(str(bp), "120 / 80")
 
-    # def test_post_create_view_when_logged_in(self):  # new
-    #     self.client.login(username='testuser', password='secret')
-    #     response = self.client.post(reverse('post_new'), {
-    #         'title': 'New title',
-    #         'body': 'New text',
-    #         'author': self.user.id,
-    #     })
-    #     self.assertEqual(response.status_code, 302)
-    #     self.assertEqual(Post.objects.last().title, 'New title')
-    #     self.assertEqual(Post.objects.last().body, 'New text')
+    def test_blood_pressure_get_absolute_url(self):
+        """Test BloodPressure get_absolute_url method"""
+        bp = BloodPressure.objects.create(
+            author=self.user,
+            systolic_pressure=120,
+            diastolic_pressure=80
+        )
+        expected_url = reverse("bp_detail", args=[str(bp.id)])
+        self.assertEqual(bp.get_absolute_url(), expected_url)
 
-    # def test_post_create_view_when_logged_out(self):  # new
-    #     response = self.client.post(reverse('post_new'), {
-    #         'title': 'New title',
-    #         'body': 'New text',
-    #         'author': self.user.id,
-    #     })
-    #     self.assertEqual(response.status_code, 403)
 
-    # def test_post_update_view_when_logged_in(self):
-    #     self.client.login(username='testuser', password='secret')
-    #     response = self.client.post(reverse('post_update', args=f'{self.post.id}'), {
-    #         'title': 'Updated title',
-    #         'body': 'Updated text',
-    #     })
+class HeartRateModelTest(TestCase):
+    """Test HeartRate model"""
 
-    #     self.assertEqual(response.status_code, 200)
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123"
+        )
+        self.now = datetime.now()
 
-    # def test_post_update_view_when_logged_out(self):
+    def test_heart_rate_creation(self):
+        """Test that HeartRate is created successfully"""
+        hr = HeartRate.objects.create(
+            author=self.user,
+            creation_date=self.now,
+            start_date=self.now,
+            end_date=self.now + timedelta(minutes=1),
+            value=72.5
+        )
+        self.assertEqual(hr.author, self.user)
+        self.assertEqual(hr.value, 72.5)
 
-    #     response = self.client.post(
-    #         reverse('post_update', args=[f'{self.post.id}']),
-    #         {'title': 'Updated title', 'body': 'Updated text', }
-    #     )
+    def test_heart_rate_string_representation(self):
+        """Test HeartRate __str__ method"""
+        hr = HeartRate.objects.create(
+            author=self.user,
+            creation_date=self.now,
+            start_date=self.now,
+            end_date=self.now + timedelta(minutes=1),
+            value=75.0
+        )
+        result = str(hr)
+        self.assertIsNotNone(result)
+        self.assertIn("75", result)  # Value should be in string
 
-    #     self.assertEqual(response.status_code, 403)
 
-    # def test_if_user_can_delete_a_new_post_without_login(self):
-    #     response = self.client.post(
-    #         reverse('post_delete', args=f'{self.post.id}'))
-    #     self.assertEqual(response.status_code, 403)
+class OxygenDataModelTest(TestCase):
+    """Test OxygenData model"""
 
-    # def test_if_user_can_delete_post_when_logged_in(self):
-    #     self.client.login(username='testuser', password='secret')
-    #     response = self.client.get(f'/blog/post/{self.post.id}/delete')
-    #     self.assertEqual(response.status_code, 200)
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123"
+        )
+        self.now = datetime.now()
+
+    def test_oxygen_data_creation(self):
+        """Test that OxygenData is created successfully"""
+        oxygen = OxygenData.objects.create(
+            author=self.user,
+            creation_date=self.now,
+            start_date=self.now,
+            end_date=self.now + timedelta(minutes=1),
+            value=98.5
+        )
+        self.assertEqual(oxygen.author, self.user)
+        self.assertEqual(oxygen.value, 98.5)
+
+    def test_oxygen_data_with_different_values(self):
+        """Test oxygen values are stored correctly"""
+        for value in [95.0, 98.0, 99.5, 100.0]:
+            oxygen = OxygenData.objects.create(
+                author=self.user,
+                creation_date=self.now,
+                start_date=self.now,
+                end_date=self.now + timedelta(minutes=1),
+                value=value
+            )
+            self.assertEqual(oxygen.value, value)
+
+
+class AppleHealthUploadModelTest(TestCase):
+    """Test AppleHealthUpload model"""
+
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="testpass123"
+        )
+
+    def test_apple_health_upload_creation(self):
+        """Test that AppleHealthUpload is created successfully"""
+        upload = AppleHealthUpload.objects.create(
+            author=self.user,
+            health_data_xml="export.xml",
+            csv_data_dir="/path/to/csv"
+        )
+        self.assertEqual(upload.author, self.user)
+        self.assertFalse(upload.is_processed)
+        self.assertFalse(upload.is_imported)
+
+    def test_apple_health_upload_processed_flag(self):
+        """Test that processed flag can be set"""
+        upload = AppleHealthUpload.objects.create(
+            author=self.user,
+            health_data_xml="export.xml",
+            csv_data_dir="/path",
+            is_processed=True
+        )
+        self.assertTrue(upload.is_processed)
+
+    def test_apple_health_upload_imported_flag(self):
+        """Test that imported flag can be set"""
+        upload = AppleHealthUpload.objects.create(
+            author=self.user,
+            health_data_xml="export.xml",
+            csv_data_dir="/path",
+            is_imported=True
+        )
+        self.assertTrue(upload.is_imported)
+
+    def test_apple_health_upload_string_representation(self):
+        """Test AppleHealthUpload __str__ method"""
+        upload = AppleHealthUpload.objects.create(
+            author=self.user,
+            health_data_xml="export.xml",
+            csv_data_dir="/path"
+        )
+        self.assertIn("testuser", str(upload))
+
+    def test_apple_health_upload_get_absolute_url(self):
+        """Test AppleHealthUpload get_absolute_url method"""
+        upload = AppleHealthUpload.objects.create(
+            author=self.user,
+            health_data_xml="export.xml",
+            csv_data_dir="/path"
+        )
+        expected_url = f"/health/apple-health/{upload.id}"
+        self.assertEqual(upload.get_absolute_url(), expected_url)

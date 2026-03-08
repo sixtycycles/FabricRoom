@@ -13,8 +13,6 @@ class BlogListView(ListView):
     context_object_name = "all_posts_list"
     paginate_by = 2
     ordering = ["-created_date"]
-    queryset = Post.objects.filter(published=True).order_by("-created_date")
-
 
     def get_template_names(self):
         if self.request.user.is_authenticated:
@@ -24,9 +22,7 @@ class BlogListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["all_posts_list"] = self.get_queryset()
-        
         return context
-    
 
     def get_queryset(self):
         return Post.objects.filter(published=True).order_by("-created_date")
@@ -38,7 +34,7 @@ class NoteListView(ListView):
     context_object_name = "all_notes_list"
 
     def get_queryset(self):
-        return Post.objects.filter(published=True)
+        return Note.objects.all()
 
 
 class BlogDetailView(DetailView):  # new model = Post
@@ -56,7 +52,7 @@ class NoteDetailView(DetailView):  # new model = Post
 class BlogCreateForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ["title", "author", "body"]
+        fields = ["title", "body"]
         widgets = {
             "body": SummernoteWidget(),
         }
@@ -98,12 +94,16 @@ class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "post_update.html"
-    fields = ["title", "author", "body","created_date", "tags"]
-    
+    fields = ["title", "body", "created_date", "tags"]
+
     def get_initial(self):
         initial = super().get_initial()
         initial["author"] = self.request.user
         return initial
+
+    def test_func(self):
+        obj = self.get_object()
+        return obj.author == self.request.user
     
 
 class NoteUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

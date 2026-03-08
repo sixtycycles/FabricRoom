@@ -1,4 +1,5 @@
 import environ
+import sys
 from pathlib import Path
 
 # Load the Environment vars from FabricRoom/.env
@@ -93,6 +94,13 @@ DATABASES = {
         "PORT": env("DATABASE_PORT"),
     }
 }
+
+# Use SQLite for tests (faster and no database creation permissions needed)
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
 
 
 AUTH_USER_MODEL = "main.CustomUser"

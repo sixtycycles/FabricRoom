@@ -13,20 +13,26 @@ class Post(models.Model):
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
+        related_name="blog_posts",
     )
     published = models.BooleanField(default=True)
     created_date = models.DateTimeField(default=timezone.now)
     updated_date = models.DateTimeField(auto_now=True)
     tags = models.ManyToManyField("Tag", blank=True)
 
+    class Meta:
+        verbose_name = "Post"
+        verbose_name_plural = "Posts"
+        ordering = ["-created_date"]
+
     def get_tags(self):
         tags = self.tags.all()
         return tags
-    
+
     def get_author(self):
         author = self.author
         return author
-   
+
 
     def __str__(self):
         return self.title
@@ -42,8 +48,16 @@ class Tag(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     updated_date = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "Tag"
+        verbose_name_plural = "Tags"
+        ordering = ["tag_name"]
+
     def __str__(self):
         return self.tag_slug
+
+    def get_absolute_url(self):
+        return reverse("tag_detail", args=[str(self.tag_slug)])
 
 
 class Note(models.Model):
@@ -56,6 +70,11 @@ class Note(models.Model):
     link = models.URLField(blank=True)
     title = models.CharField(max_length=100, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
+
+    class Meta:
+        verbose_name = "Note"
+        verbose_name_plural = "Notes"
+        ordering = ["-id"]
 
     def __str__(self):
         return f"{self.title}"

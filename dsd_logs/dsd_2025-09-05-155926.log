@@ -1,0 +1,498 @@
+2025-09-05 15:59:26,535 INFO: Logging run of `manage.py deploy`...
+2025-09-05 15:59:26,535 INFO: Created /Users/rod/PycharmProjects/FabricRoom/dsd_logs/dsd_2025-09-05-155926.log.
+2025-09-05 15:59:26,535 INFO: 
+2025-09-05 15:59:26,535 INFO: CLI args:
+2025-09-05 15:59:26,535 INFO:   verbosity: 1
+2025-09-05 15:59:26,535 INFO:   settings: None
+2025-09-05 15:59:26,536 INFO:   pythonpath: None
+2025-09-05 15:59:26,536 INFO:   traceback: False
+2025-09-05 15:59:26,536 INFO:   no_color: False
+2025-09-05 15:59:26,536 INFO:   force_color: False
+2025-09-05 15:59:26,536 INFO:   automate_all: True
+2025-09-05 15:59:26,536 INFO:   no_logging: False
+2025-09-05 15:59:26,536 INFO:   ignore_unclean_git: False
+2025-09-05 15:59:26,536 INFO:   deployed_project_name: 
+2025-09-05 15:59:26,536 INFO:   region: us-3.platform.sh
+2025-09-05 15:59:26,536 INFO:   unit_testing: False
+2025-09-05 15:59:26,536 INFO:   e2e_testing: False
+2025-09-05 15:59:26,644 INFO:   Using plugin: dsd_vps
+2025-09-05 15:59:26,793 INFO: 
+2025-09-05 15:59:26,793 INFO: Deployment target: VPS
+2025-09-05 15:59:26,793 INFO: Local platform identified: macOS
+2025-09-05 15:59:26,793 INFO: Local project name: FabricRoom
+2025-09-05 15:59:26,794 INFO: Project root: /Users/rod/PycharmProjects/FabricRoom
+2025-09-05 15:59:26,794 INFO: Found .git dir at /Users/rod/PycharmProjects/FabricRoom.
+2025-09-05 15:59:26,794 INFO: 
+2025-09-05 15:59:26,794 INFO: git status --porcelain
+2025-09-05 15:59:26,820 INFO: 
+2025-09-05 15:59:26,820 INFO: git diff --unified=0
+2025-09-05 15:59:26,838 INFO: 
+2025-09-05 15:59:26,839 INFO: No uncommitted changes, other than django-simple-deploy work.
+2025-09-05 15:59:26,839 INFO: Dependency management system: req_txt
+2025-09-05 15:59:26,839 INFO: Checking current project requirements...
+2025-09-05 15:59:26,839 INFO:   Found existing dependencies:
+2025-09-05 15:59:26,839 INFO:     asgiref
+2025-09-05 15:59:26,839 INFO:     bleach
+2025-09-05 15:59:26,839 INFO:     Django
+2025-09-05 15:59:26,839 INFO:     django-environ
+2025-09-05 15:59:26,840 INFO:     django-pandas
+2025-09-05 15:59:26,840 INFO:     django-summernote
+2025-09-05 15:59:26,840 INFO:     django-widget-tweaks
+2025-09-05 15:59:26,840 INFO:     numpy
+2025-09-05 15:59:26,840 INFO:     packaging
+2025-09-05 15:59:26,840 INFO:     pandas
+2025-09-05 15:59:26,840 INFO:     pillow
+2025-09-05 15:59:26,840 INFO:     plotly
+2025-09-05 15:59:26,840 INFO:     psycopg2
+2025-09-05 15:59:26,840 INFO:     python-dateutil
+2025-09-05 15:59:26,840 INFO:     pytz
+2025-09-05 15:59:26,840 INFO:     six
+2025-09-05 15:59:26,840 INFO:     sqlparse
+2025-09-05 15:59:26,840 INFO:     tenacity
+2025-09-05 15:59:26,840 INFO:     tzdata
+2025-09-05 15:59:26,840 INFO:     webencodings
+2025-09-05 15:59:26,840 INFO:     django-simple-deploy
+2025-09-05 15:59:26,840 INFO:     gunicorn
+2025-09-05 15:59:26,840 INFO: 
+2025-09-05 15:59:26,840 INFO: Looking for django-simple-deploy in requirements...
+2025-09-05 15:59:26,840 INFO: 
+2025-09-05 15:59:26,840 INFO: Looking for django-simple-deploy...
+2025-09-05 15:59:26,840 INFO:   Found django-simple-deploy in requirements file.
+2025-09-05 15:59:26,840 INFO: 
+2025-09-05 15:59:26,840 INFO: The --automate-all flag means django-simple-deploy will:
+2025-09-05 15:59:26,840 INFO: - ...
+2025-09-05 15:59:26,840 INFO: - Commit all changes to your project that are necessary for deployment.
+2025-09-05 15:59:26,840 INFO: - Push these changes to the remote server.
+2025-09-05 15:59:26,840 INFO: - Open your deployed project in a new browser tab.
+2025-09-05 15:59:26,840 INFO: 
+2025-09-05 15:59:26,840 INFO: Are you sure you want to do this? (yes|no) 
+2025-09-05 15:59:28,687 INFO: yes
+2025-09-05 15:59:28,687 INFO: Automating all steps...
+2025-09-05 15:59:28,688 INFO: 
+2025-09-05 15:59:28,688 INFO: Configuring project for deployment...
+2025-09-05 15:59:28,688 INFO: Determining server username...
+2025-09-05 15:59:28,688 INFO: Running server command over SSH...
+2025-09-05 15:59:28,688 INFO:   command: uptime
+2025-09-05 15:59:28,744 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:29,199 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:29,256 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:29,425 INFO: Authentication (password) successful!
+2025-09-05 15:59:30,080 INFO: 22:59:30 up 5 min,  3 users,  load average: 0.31, 0.34, 0.17
+2025-09-05 15:59:30,080 INFO:   username: django_user
+2025-09-05 15:59:30,080 INFO: Configuring firewall...
+2025-09-05 15:59:30,081 INFO: Running server command over SSH...
+2025-09-05 15:59:30,081 INFO:   command: sudo ufw allow OpenSSH
+2025-09-05 15:59:30,130 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:30,576 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:30,637 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:30,745 INFO: Authentication (password) successful!
+2025-09-05 15:59:30,988 INFO: Skipping adding existing rule
+2025-09-05 15:59:30,989 INFO: Skipping adding existing rule (v6)
+2025-09-05 15:59:30,989 INFO: Running server command over SSH...
+2025-09-05 15:59:30,989 INFO:   command: sudo ufw --force enable
+2025-09-05 15:59:31,042 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:31,451 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:31,512 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:31,618 INFO: Authentication (password) successful!
+2025-09-05 15:59:31,988 INFO: Firewall is active and enabled on system startup
+2025-09-05 15:59:31,988 INFO: Running server command over SSH...
+2025-09-05 15:59:31,989 INFO:   command: sudo ufw allow 80/tcp
+2025-09-05 15:59:32,038 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:32,473 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:32,532 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:32,700 INFO: Authentication (password) successful!
+2025-09-05 15:59:32,940 INFO: Skipping adding existing rule
+2025-09-05 15:59:32,940 INFO: Skipping adding existing rule (v6)
+2025-09-05 15:59:32,940 INFO: Running server command over SSH...
+2025-09-05 15:59:32,941 INFO:   command: sudo ufw allow 443/tcp
+2025-09-05 15:59:32,996 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:33,812 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:33,875 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:33,980 INFO: Authentication (password) successful!
+2025-09-05 15:59:34,215 INFO: Skipping adding existing rule
+2025-09-05 15:59:34,215 INFO: Skipping adding existing rule (v6)
+2025-09-05 15:59:34,215 INFO: Updating server (this may take a few minutes)...
+2025-09-05 15:59:34,216 INFO: Running server command over SSH...
+2025-09-05 15:59:34,216 INFO:   command: sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get full-upgrade -y
+2025-09-05 15:59:34,263 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:34,704 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:34,763 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:34,930 INFO: Authentication (password) successful!
+2025-09-05 15:59:38,734 INFO: Get:1 https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version InRelease [14.8 kB]
+2025-09-05 15:59:38,735 INFO: Hit:2 https://repos-droplet.digitalocean.com/apt/droplet-agent main InRelease
+2025-09-05 15:59:38,735 INFO: Hit:3 http://mirrors.digitalocean.com/ubuntu plucky InRelease
+2025-09-05 15:59:38,735 INFO: Hit:4 http://security.ubuntu.com/ubuntu plucky-security InRelease
+2025-09-05 15:59:38,735 INFO: Hit:5 http://mirrors.digitalocean.com/ubuntu plucky-updates InRelease
+2025-09-05 15:59:38,735 INFO: Hit:6 http://mirrors.digitalocean.com/ubuntu plucky-backports InRelease
+2025-09-05 15:59:38,735 INFO: Fetched 14.8 kB in 1s (22.7 kB/s)
+2025-09-05 15:59:38,735 INFO: Reading package lists...
+2025-09-05 15:59:38,735 INFO: Reading package lists...
+2025-09-05 15:59:38,735 INFO: Building dependency tree...
+2025-09-05 15:59:38,735 INFO: Reading state information...
+2025-09-05 15:59:38,735 INFO: Calculating upgrade...
+2025-09-05 15:59:38,735 INFO: Calculating upgrade...
+2025-09-05 15:59:38,736 INFO: The following upgrades have been deferred due to phasing:
+2025-09-05 15:59:38,736 INFO:   fwupd landscape-common libfwupd3
+2025-09-05 15:59:38,736 INFO: 0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+2025-09-05 15:59:38,736 INFO:   Finished updating server.
+2025-09-05 15:59:38,736 INFO: Checking if reboot required...
+2025-09-05 15:59:38,736 INFO: Running server command over SSH...
+2025-09-05 15:59:38,736 INFO:   (command not shown)
+2025-09-05 15:59:38,789 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:39,176 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:39,233 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:39,354 INFO: Authentication (password) successful!
+2025-09-05 15:59:39,478 INFO:   No reboot required.
+2025-09-05 15:59:39,479 INFO: Installing uv...
+2025-09-05 15:59:39,479 INFO: Running server command over SSH...
+2025-09-05 15:59:39,479 INFO:   command: curl -LsSf https://astral.sh/uv/install.sh | sh
+2025-09-05 15:59:39,545 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:39,997 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:40,079 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:40,213 INFO: Authentication (password) successful!
+2025-09-05 15:59:41,425 INFO: no checksums to verify
+2025-09-05 15:59:41,425 INFO: installing to /home/django_user/.local/bin
+2025-09-05 15:59:41,425 INFO:   uv
+2025-09-05 15:59:41,425 INFO:   uvx
+2025-09-05 15:59:41,425 INFO: everything's installed!
+2025-09-05 15:59:41,425 INFO: downloading uv 0.8.15 x86_64-unknown-linux-gnu
+2025-09-05 15:59:41,425 INFO: Installing Python...
+2025-09-05 15:59:41,425 INFO: Running server command over SSH...
+2025-09-05 15:59:41,425 INFO:   command: /home/django_user/.local/bin/uv python install 3.12
+2025-09-05 15:59:41,470 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:41,926 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:42,010 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:42,124 INFO: Authentication (password) successful!
+2025-09-05 15:59:42,314 INFO: Initializing Git project on server...
+2025-09-05 15:59:42,315 INFO: 
+2025-09-05 15:59:42,315 INFO: ssh-keygen -t rsa -b 4096 -C "django_user@143.198.144.107" -f /Users/rod/.ssh/id_rsa_git -N ""
+2025-09-05 15:59:44,235 INFO: Generating public/private rsa key pair.
+2025-09-05 15:59:44,235 INFO: Your identification has been saved in /Users/rod/.ssh/id_rsa_git
+2025-09-05 15:59:44,235 INFO: Your public key has been saved in /Users/rod/.ssh/id_rsa_git.pub
+2025-09-05 15:59:44,235 INFO: The key fingerprint is:
+2025-09-05 15:59:44,235 INFO: SHA256:wcsheXMC+4/aU52n6MKCZGYxRVWXHmo5omlC5WcgS6Q django_user@143.198.144.107
+2025-09-05 15:59:44,235 INFO: The key's randomart image is:
+2025-09-05 15:59:44,235 INFO: +---[RSA 4096]----+
+2025-09-05 15:59:44,235 INFO: |   ...o.... ..   |
+2025-09-05 15:59:44,235 INFO: |   .o +=   .o    |
+2025-09-05 15:59:44,235 INFO: |  E. *+.B .+ .   |
+2025-09-05 15:59:44,235 INFO: |    = .=+B= .    |
+2025-09-05 15:59:44,235 INFO: |   . o =So o .   |
+2025-09-05 15:59:44,235 INFO: |    * +  o. o .  |
+2025-09-05 15:59:44,235 INFO: |   = + ..... o   |
+2025-09-05 15:59:44,235 INFO: |    . .o+ . .    |
+2025-09-05 15:59:44,235 INFO: |      ...+.      |
+2025-09-05 15:59:44,235 INFO: +----[SHA256]-----+
+2025-09-05 15:59:44,235 INFO: 
+2025-09-05 15:59:44,235 INFO: ssh-copy-id -i ~/.ssh/id_rsa_git.pub git@143.198.144.107
+2025-09-05 15:59:44,274 INFO: --- Error ---
+2025-09-05 15:59:44,275 INFO: 
+2025-09-05 15:59:44,275 INFO: /usr/bin/ssh-copy-id: ERROR: failed to open ID file '~/.ssh/id_rsa_git.pub': No such file or directory
+2025-09-05 15:59:44,276 INFO: Running server command over SSH...
+2025-09-05 15:59:44,276 INFO:   command: mkdir -p /home/django_user/FabricRoom
+2025-09-05 15:59:44,327 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:44,765 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:44,827 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:44,939 INFO: Authentication (password) successful!
+2025-09-05 15:59:45,062 INFO: Running server command over SSH...
+2025-09-05 15:59:45,062 INFO:   command: chown -R django_user:django_user /home/django_user/FabricRoom
+2025-09-05 15:59:45,122 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:45,557 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:45,611 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:45,720 INFO: Authentication (password) successful!
+2025-09-05 15:59:45,839 INFO:   Setting default branch to main.
+2025-09-05 15:59:45,839 INFO: Running server command over SSH...
+2025-09-05 15:59:45,839 INFO:   command: git config --global init.defaultBranch main
+2025-09-05 15:59:45,892 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:46,332 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:46,392 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:46,567 INFO: Authentication (password) successful!
+2025-09-05 15:59:46,690 INFO: Running server command over SSH...
+2025-09-05 15:59:46,690 INFO:   command: git init --bare /home/django_user/FabricRoom.git
+2025-09-05 15:59:46,756 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:47,182 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:47,242 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:47,343 INFO: Authentication (password) successful!
+2025-09-05 15:59:47,493 INFO: Reinitialized existing Git repository in /home/django_user/FabricRoom.git/
+2025-09-05 15:59:47,495 INFO: Running server command over SSH...
+2025-09-05 15:59:47,495 INFO:   command: echo "#!/bin/sh
+2025-09-05 15:59:47,495 INFO: 
+2025-09-05 15:59:47,495 INFO: # Update refs before checking out code.
+2025-09-05 15:59:47,495 INFO: git --git-dir=/home/django_user/FabricRoom.git update-ref HEAD refs/heads/main
+2025-09-05 15:59:47,495 INFO: 
+2025-09-05 15:59:47,495 INFO: # Check out code files.
+2025-09-05 15:59:47,495 INFO: git --work-tree=/home/django_user/FabricRoom --git-dir=/home/django_user/FabricRoom.git checkout -f main
+2025-09-05 15:59:47,496 INFO: " > /home/django_user/FabricRoom.git/hooks/post-receive
+2025-09-05 15:59:47,552 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:47,993 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:48,047 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:48,151 INFO: Authentication (password) successful!
+2025-09-05 15:59:48,289 INFO:   Making hook executable...
+2025-09-05 15:59:48,289 INFO: Running server command over SSH...
+2025-09-05 15:59:48,290 INFO:   command: chmod +x /home/django_user/FabricRoom.git/hooks/post-receive 
+2025-09-05 15:59:48,343 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:48,794 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:48,847 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:48,954 INFO: Authentication (password) successful!
+2025-09-05 15:59:49,072 INFO:   Adding remote to local Git project.
+2025-09-05 15:59:49,072 INFO: 
+2025-09-05 15:59:49,072 INFO: git remote add do_server 'git-server:/home/django_user/FabricRoom.git'
+2025-09-05 15:59:49,106 INFO: --- Error ---
+2025-09-05 15:59:49,106 INFO: error: remote do_server already exists.
+2025-09-05 15:59:49,106 INFO: Installing Caddy, to serve static files.
+2025-09-05 15:59:49,106 INFO: Running server command over SSH...
+2025-09-05 15:59:49,106 INFO:   command: sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+2025-09-05 15:59:49,169 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:49,621 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:49,680 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:49,798 INFO: Authentication (password) successful!
+2025-09-05 15:59:49,918 INFO: sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+2025-09-05 15:59:49,918 INFO: sudo: a password is required
+2025-09-05 15:59:49,919 INFO: Running server command over SSH...
+2025-09-05 15:59:49,919 INFO:   command: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+2025-09-05 15:59:49,970 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:50,417 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:50,479 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:50,587 INFO: Authentication (password) successful!
+2025-09-05 15:59:50,756 INFO: gpg: cannot open '/dev/tty': No such device or address
+2025-09-05 15:59:50,756 INFO: Running server command over SSH...
+2025-09-05 15:59:50,757 INFO:   command: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+2025-09-05 15:59:50,809 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:51,204 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:51,259 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:51,368 INFO: Authentication (password) successful!
+2025-09-05 15:59:51,557 INFO: # Source: Caddy
+2025-09-05 15:59:51,557 INFO: # Site: https://github.com/caddyserver/caddy
+2025-09-05 15:59:51,557 INFO: # Repository: Caddy / stable
+2025-09-05 15:59:51,557 INFO: # Description: Fast, multi-platform web server with automatic HTTPS
+2025-09-05 15:59:51,557 INFO: 
+2025-09-05 15:59:51,557 INFO: 
+2025-09-05 15:59:51,557 INFO: deb [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+2025-09-05 15:59:51,557 INFO: 
+2025-09-05 15:59:51,557 INFO: deb-src [signed-by=/usr/share/keyrings/caddy-stable-archive-keyring.gpg] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main
+2025-09-05 15:59:51,558 INFO: Running server command over SSH...
+2025-09-05 15:59:51,558 INFO:   command: sudo apt-get update && sudo apt-get install caddy
+2025-09-05 15:59:51,616 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 15:59:52,066 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:52,120 INFO: Authentication (publickey) failed.
+2025-09-05 15:59:52,249 INFO: Authentication (password) successful!
+2025-09-05 15:59:56,349 INFO: Get:1 https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version InRelease [14.8 kB]
+2025-09-05 15:59:56,349 INFO: Hit:2 https://repos-droplet.digitalocean.com/apt/droplet-agent main InRelease
+2025-09-05 15:59:56,349 INFO: Hit:3 http://mirrors.digitalocean.com/ubuntu plucky InRelease
+2025-09-05 15:59:56,349 INFO: Hit:4 http://mirrors.digitalocean.com/ubuntu plucky-updates InRelease
+2025-09-05 15:59:56,349 INFO: Hit:5 http://mirrors.digitalocean.com/ubuntu plucky-backports InRelease
+2025-09-05 15:59:56,349 INFO: Hit:6 http://security.ubuntu.com/ubuntu plucky-security InRelease
+2025-09-05 15:59:56,349 INFO: Fetched 14.8 kB in 2s (9812 B/s)
+2025-09-05 15:59:56,349 INFO: Reading package lists...
+2025-09-05 15:59:56,349 INFO: Reading package lists...
+2025-09-05 15:59:56,349 INFO: Building dependency tree...
+2025-09-05 15:59:56,350 INFO: Reading state information...
+2025-09-05 15:59:56,350 INFO: caddy is already the newest version (2.10.2).
+2025-09-05 15:59:56,350 INFO: Solving dependencies...
+2025-09-05 15:59:56,350 INFO: 0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+2025-09-05 15:59:56,350 INFO:   Adding server-specific requirements...
+2025-09-05 15:59:56,350 INFO: 
+2025-09-05 15:59:56,350 INFO: Looking for gunicorn...
+2025-09-05 15:59:56,350 INFO:   Found gunicorn in requirements file.
+2025-09-05 15:59:56,354 INFO:   Modified file: /Users/rod/PycharmProjects/FabricRoom/FabricRoom/settings.py
+2025-09-05 15:59:56,355 INFO: 
+2025-09-05 15:59:56,355 INFO:   Looking in /Users/rod/PycharmProjects/FabricRoom for serve_project.sh...
+2025-09-05 15:59:56,355 INFO: 
+2025-09-05 15:59:56,355 INFO: 
+2025-09-05 15:59:56,355 INFO: The file serve_project.sh already exists. Is it okay to replace this file?
+2025-09-05 15:59:56,355 INFO:  (yes|no) 
+2025-09-05 16:00:01,531 INFO: yes
+2025-09-05 16:00:01,533 INFO: 
+2025-09-05 16:00:01,533 INFO:     Wrote serve_project.sh to /Users/rod/PycharmProjects/FabricRoom/serve_project.sh
+2025-09-05 16:00:01,536 INFO: Copying /var/folders/wl/l3p0m2zn1m72bj3f__b3095w0000gn/T/tmp71ja7tuo to server.
+2025-09-05 16:00:01,602 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:02,083 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:02,155 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:02,328 INFO: Authentication (password) successful!
+2025-09-05 16:00:02,562 INFO: [chan 0] Opened sftp connection (server version 3)
+2025-09-05 16:00:02,666 INFO: [chan 0] sftp session closed.
+2025-09-05 16:00:02,667 INFO: Running server command over SSH...
+2025-09-05 16:00:02,667 INFO:   command: sudo mv /home/django_user/Caddyfile /etc/caddy/Caddyfile
+2025-09-05 16:00:02,747 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:03,190 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:03,248 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:03,422 INFO: Authentication (password) successful!
+2025-09-05 16:00:03,652 INFO:   Configuring gunicorn to run as a service.
+2025-09-05 16:00:03,653 INFO: Copying /Users/rod/PycharmProjects/FabricRoom/venv/lib/python3.13/site-packages/dsd_vps/templates/gunicorn.socket to server.
+2025-09-05 16:00:03,725 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:04,167 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:04,227 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:04,402 INFO: Authentication (password) successful!
+2025-09-05 16:00:04,613 INFO: [chan 0] Opened sftp connection (server version 3)
+2025-09-05 16:00:04,712 INFO: [chan 0] sftp session closed.
+2025-09-05 16:00:04,713 INFO: Running server command over SSH...
+2025-09-05 16:00:04,713 INFO:   command: sudo mv /home/django_user/gunicorn.socket /etc/systemd/system/gunicorn.socket
+2025-09-05 16:00:04,779 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:05,233 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:05,295 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:05,465 INFO: Authentication (password) successful!
+2025-09-05 16:00:05,654 INFO: Copying /var/folders/wl/l3p0m2zn1m72bj3f__b3095w0000gn/T/tmptzt13x_g to server.
+2025-09-05 16:00:05,706 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:06,120 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:06,176 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:06,343 INFO: Authentication (password) successful!
+2025-09-05 16:00:06,528 INFO: [chan 0] Opened sftp connection (server version 3)
+2025-09-05 16:00:06,623 INFO: [chan 0] sftp session closed.
+2025-09-05 16:00:06,623 INFO: Running server command over SSH...
+2025-09-05 16:00:06,624 INFO:   command: sudo mv /home/django_user/gunicorn.service /etc/systemd/system/gunicorn.service
+2025-09-05 16:00:06,681 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:07,125 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:07,181 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:07,347 INFO: Authentication (password) successful!
+2025-09-05 16:00:07,509 INFO:   Committing changes...
+2025-09-05 16:00:07,509 INFO: 
+2025-09-05 16:00:07,509 INFO: git add .
+2025-09-05 16:00:07,545 INFO: 
+2025-09-05 16:00:07,545 INFO: git commit -m "Configured project for deployment."
+2025-09-05 16:00:07,575 INFO: [main 84f7fda] Configured project for deployment.
+2025-09-05 16:00:07,575 INFO:  1 file changed, 30 insertions(+)
+2025-09-05 16:00:07,575 INFO:   Deploying project...
+2025-09-05 16:00:07,576 INFO:   Pushing project code to server.
+2025-09-05 16:00:07,576 INFO: 
+2025-09-05 16:00:07,576 INFO: git push do_server main --force
+2025-09-05 16:00:17,115 INFO: --- Error ---
+2025-09-05 16:00:17,115 INFO: remote: Already on 'main'        
+2025-09-05 16:00:17,115 INFO: To git-server:/home/django_user/FabricRoom.git
+2025-09-05 16:00:17,115 INFO:    56849ed..84f7fda  main -> main
+2025-09-05 16:00:17,116 INFO: Running server command over SSH...
+2025-09-05 16:00:17,116 INFO:   command: chmod +x /home/django_user/FabricRoom/serve_project.sh
+2025-09-05 16:00:17,171 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:17,606 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:17,664 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:17,777 INFO: Authentication (password) successful!
+2025-09-05 16:00:17,915 INFO: Running server command over SSH...
+2025-09-05 16:00:17,915 INFO:   command: /home/django_user/FabricRoom/serve_project.sh
+2025-09-05 16:00:17,967 INFO: Connected (version 2.0, client OpenSSH_9.9p1)
+2025-09-05 16:00:18,398 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:18,461 INFO: Authentication (publickey) failed.
+2025-09-05 16:00:18,576 INFO: Authentication (password) successful!
+2025-09-05 16:00:24,566 INFO: Using CPython 3.12.11
+2025-09-05 16:00:24,566 INFO: Creating virtual environment at: .venv
+2025-09-05 16:00:24,566 INFO: warning: A virtual environment already exists at `.venv`. In the future, uv will require `--clear` to replace it
+2025-09-05 16:00:24,567 INFO: /home/django_user/FabricRoom/serve_project.sh: 6: source: not found
+2025-09-05 16:00:24,567 INFO: Resolved 30 packages in 54ms
+2025-09-05 16:00:24,567 INFO:    Building psycopg2==2.9.10
+2025-09-05 16:00:24,567 INFO: Downloading plotly (9.3MiB)
+2025-09-05 16:00:24,567 INFO: Downloading pandas (11.4MiB)
+2025-09-05 16:00:24,567 INFO: Downloading numpy (15.9MiB)
+2025-09-05 16:00:24,567 INFO: Downloading django (7.9MiB)
+2025-09-05 16:00:24,567 INFO:  Downloading numpy
+2025-09-05 16:00:24,567 INFO:  Downloading plotly
+2025-09-05 16:00:24,567 INFO:  Downloading pandas
+2025-09-05 16:00:24,567 INFO:  Downloading django
+2025-09-05 16:00:24,567 INFO:   × Failed to build `psycopg2==2.9.10`
+2025-09-05 16:00:24,567 INFO:   ├─▶ The build backend returned an error
+2025-09-05 16:00:24,567 INFO:   ╰─▶ Call to `setuptools.build_meta:__legacy__.build_wheel` failed (exit
+2025-09-05 16:00:24,567 INFO:       status: 1)
+2025-09-05 16:00:24,567 INFO: 
+2025-09-05 16:00:24,567 INFO:       [stdout]
+2025-09-05 16:00:24,567 INFO:       running bdist_wheel
+2025-09-05 16:00:24,567 INFO:       running build
+2025-09-05 16:00:24,567 INFO:       running build_py
+2025-09-05 16:00:24,567 INFO:       creating build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,567 INFO:       copying lib/__init__.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,567 INFO:       copying lib/_ipaddress.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/extras.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/pool.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/errorcodes.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/_json.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/_range.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/sql.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/errors.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/extensions.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       copying lib/tz.py -> build/lib.linux-x86_64-cpython-312/psycopg2
+2025-09-05 16:00:24,568 INFO:       running build_ext
+2025-09-05 16:00:24,568 INFO:       building 'psycopg2._psycopg' extension
+2025-09-05 16:00:24,568 INFO:       creating build/temp.linux-x86_64-cpython-312/psycopg
+2025-09-05 16:00:24,568 INFO:       cc -pthread -fno-strict-overflow -Wsign-compare
+2025-09-05 16:00:24,568 INFO:       -Wunreachable-code -DNDEBUG -g -O3 -Wall -fPIC -fPIC
+2025-09-05 16:00:24,568 INFO:       "-DPSYCOPG_VERSION=2.9.10 (dt dec pq3 ext lo64)" -DPSYCOPG_DEBUG=1
+2025-09-05 16:00:24,568 INFO:       -DPG_VERSION_NUM=170005 -DHAVE_LO64=1 -DPSYCOPG_DEBUG=1
+2025-09-05 16:00:24,568 INFO:       -I/home/django_user/.cache/uv/builds-v0/.tmplXkadF/include
+2025-09-05 16:00:24,568 INFO:       -I/home/django_user/.local/share/uv/python/cpython-3.12.11-linux-x86_64-gnu/include/python3.12
+2025-09-05 16:00:24,568 INFO:       -I. -I/usr/include/postgresql -I/usr/include/postgresql/17/server
+2025-09-05 16:00:24,568 INFO:       -I/usr/include/libxml2 -c psycopg/adapter_asis.c -o
+2025-09-05 16:00:24,568 INFO:       build/temp.linux-x86_64-cpython-312/psycopg/adapter_asis.o
+2025-09-05 16:00:24,568 INFO:       -Wdeclaration-after-statement
+2025-09-05 16:00:24,568 INFO: 
+2025-09-05 16:00:24,568 INFO:       [stderr]
+2025-09-05 16:00:24,569 INFO:       /home/django_user/.cache/uv/builds-v0/.tmplXkadF/lib/python3.12/site-packages/setuptools/dist.py:759:
+2025-09-05 16:00:24,569 INFO:       SetuptoolsDeprecationWarning: License classifiers are deprecated.
+2025-09-05 16:00:24,569 INFO:       !!
+2025-09-05 16:00:24,569 INFO: 
+2025-09-05 16:00:24,569 INFO:       
+2025-09-05 16:00:24,569 INFO:       ********************************************************************************
+2025-09-05 16:00:24,569 INFO:               Please consider removing the following classifiers in favor of a
+2025-09-05 16:00:24,569 INFO:       SPDX license expression:
+2025-09-05 16:00:24,569 INFO: 
+2025-09-05 16:00:24,569 INFO:               License :: OSI Approved :: GNU Library or Lesser General Public
+2025-09-05 16:00:24,569 INFO:       License (LGPL)
+2025-09-05 16:00:24,569 INFO: 
+2025-09-05 16:00:24,569 INFO:               See
+2025-09-05 16:00:24,569 INFO:       https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license
+2025-09-05 16:00:24,569 INFO:       for details.
+2025-09-05 16:00:24,569 INFO:       
+2025-09-05 16:00:24,569 INFO:       ********************************************************************************
+2025-09-05 16:00:24,569 INFO: 
+2025-09-05 16:00:24,569 INFO:       !!
+2025-09-05 16:00:24,569 INFO:         self._finalize_license_expression()
+2025-09-05 16:00:24,569 INFO: 
+2025-09-05 16:00:24,569 INFO:       It appears you are missing some prerequisite to build the package from
+2025-09-05 16:00:24,569 INFO:       source.
+2025-09-05 16:00:24,569 INFO: 
+2025-09-05 16:00:24,569 INFO:       You may install a binary package by installing 'psycopg2-binary' from
+2025-09-05 16:00:24,569 INFO:       PyPI.
+2025-09-05 16:00:24,569 INFO:       If you want to install psycopg2 from source, please install the packages
+2025-09-05 16:00:24,570 INFO:       required for the build and try again.
+2025-09-05 16:00:24,570 INFO: 
+2025-09-05 16:00:24,570 INFO:       For further information please check the 'doc/src/install.rst' file
+2025-09-05 16:00:24,570 INFO:       (also at
+2025-09-05 16:00:24,570 INFO:       <https://www.psycopg.org/docs/install.html>).
+2025-09-05 16:00:24,570 INFO: 
+2025-09-05 16:00:24,570 INFO:       error: command 'cc' failed: No such file or directory
+2025-09-05 16:00:24,570 INFO: 
+2025-09-05 16:00:24,570 INFO:       hint: This usually indicates a problem with the package or the build
+2025-09-05 16:00:24,570 INFO:       environment.
+2025-09-05 16:00:24,570 INFO: Traceback (most recent call last):
+2025-09-05 16:00:24,570 INFO:   File "/home/django_user/FabricRoom/manage.py", line 11, in main
+2025-09-05 16:00:24,570 INFO:     from django.core.management import execute_from_command_line
+2025-09-05 16:00:24,570 INFO: ModuleNotFoundError: No module named 'django'
+2025-09-05 16:00:24,570 INFO: 
+2025-09-05 16:00:24,570 INFO: The above exception was the direct cause of the following exception:
+2025-09-05 16:00:24,570 INFO: 
+2025-09-05 16:00:24,570 INFO: Traceback (most recent call last):
+2025-09-05 16:00:24,570 INFO:   File "/home/django_user/FabricRoom/manage.py", line 22, in <module>
+2025-09-05 16:00:24,570 INFO:     main()
+2025-09-05 16:00:24,570 INFO:   File "/home/django_user/FabricRoom/manage.py", line 13, in main
+2025-09-05 16:00:24,570 INFO:     raise ImportError(
+2025-09-05 16:00:24,570 INFO: ImportError: Couldn't import Django. Are you sure it's installed and available on your PYTHONPATH environment variable? Did you forget to activate a virtual environment?
+2025-09-05 16:00:24,570 INFO: Traceback (most recent call last):
+2025-09-05 16:00:24,570 INFO:   File "/home/django_user/FabricRoom/manage.py", line 11, in main
+2025-09-05 16:00:24,570 INFO:     from django.core.management import execute_from_command_line
+2025-09-05 16:00:24,570 INFO: ModuleNotFoundError: No module named 'django'
+2025-09-05 16:00:24,570 INFO: 
+2025-09-05 16:00:24,570 INFO: The above exception was the direct cause of the following exception:
+2025-09-05 16:00:24,571 INFO: 
+2025-09-05 16:00:24,571 INFO: Traceback (most recent call last):
+2025-09-05 16:00:24,571 INFO:   File "/home/django_user/FabricRoom/manage.py", line 22, in <module>
+2025-09-05 16:00:24,571 INFO:     main()
+2025-09-05 16:00:24,571 INFO:   File "/home/django_user/FabricRoom/manage.py", line 13, in main
+2025-09-05 16:00:24,571 INFO:     raise ImportError(
+2025-09-05 16:00:24,571 INFO: ImportError: Couldn't import Django. Are you sure it's installed and available on your PYTHONPATH environment variable? Did you forget to activate a virtual environment?
+2025-09-05 16:00:24,724 INFO: 
+2025-09-05 16:00:24,725 INFO: 
+2025-09-05 16:00:24,725 INFO: --- Your project should now be deployed. ---
+2025-09-05 16:00:24,725 INFO: 
+2025-09-05 16:00:24,725 INFO: It should have opened up in a new browser tab. If you see a
+2025-09-05 16:00:24,725 INFO:   "server not available" message, wait a minute or two and
+2025-09-05 16:00:24,725 INFO:   refresh the tab. It sometimes takes a few minutes for the
+2025-09-05 16:00:24,726 INFO:   server to be ready.
+2025-09-05 16:00:24,726 INFO: - You can also visit your project at http://143.198.144.107/
+2025-09-05 16:00:24,726 INFO: 
+2025-09-05 16:00:24,726 INFO: If you make further changes and want to push them to the remote server,
+2025-09-05 16:00:24,726 INFO: commit your changes and then run `...`.

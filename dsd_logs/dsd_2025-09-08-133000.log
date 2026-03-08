@@ -1,0 +1,65 @@
+2025-09-08 13:30:00,697 INFO: Logging run of `manage.py deploy`...
+2025-09-08 13:30:00,697 INFO: Created /Users/rod/PycharmProjects/FabricRoom/dsd_logs/dsd_2025-09-08-133000.log.
+2025-09-08 13:30:00,697 INFO: 
+2025-09-08 13:30:00,697 INFO: CLI args:
+2025-09-08 13:30:00,697 INFO:   verbosity: 1
+2025-09-08 13:30:00,697 INFO:   settings: None
+2025-09-08 13:30:00,697 INFO:   pythonpath: None
+2025-09-08 13:30:00,697 INFO:   traceback: False
+2025-09-08 13:30:00,697 INFO:   no_color: False
+2025-09-08 13:30:00,697 INFO:   force_color: False
+2025-09-08 13:30:00,697 INFO:   automate_all: False
+2025-09-08 13:30:00,697 INFO:   no_logging: False
+2025-09-08 13:30:00,697 INFO:   ignore_unclean_git: False
+2025-09-08 13:30:00,697 INFO:   deployed_project_name: 
+2025-09-08 13:30:00,697 INFO:   region: us-3.platform.sh
+2025-09-08 13:30:00,697 INFO:   unit_testing: False
+2025-09-08 13:30:00,697 INFO:   e2e_testing: False
+2025-09-08 13:30:00,906 INFO:   Using plugin: dsd_vps
+2025-09-08 13:30:01,133 INFO: 
+2025-09-08 13:30:01,133 INFO: Deployment target: VPS
+2025-09-08 13:30:01,133 INFO: Local platform identified: macOS
+2025-09-08 13:30:01,133 INFO: Local project name: FabricRoom
+2025-09-08 13:30:01,133 INFO: Project root: /Users/rod/PycharmProjects/FabricRoom
+2025-09-08 13:30:01,133 INFO: Found .git dir at /Users/rod/PycharmProjects/FabricRoom.
+2025-09-08 13:30:01,133 INFO: 
+2025-09-08 13:30:01,133 INFO: git status --porcelain
+2025-09-08 13:30:01,160 INFO: 
+2025-09-08 13:30:01,161 INFO: git diff --unified=0
+2025-09-08 13:30:01,179 INFO: 
+2025-09-08 13:30:01,179 INFO: No uncommitted changes, other than django-simple-deploy work.
+2025-09-08 13:30:01,179 INFO: Dependency management system: req_txt
+2025-09-08 13:30:01,179 INFO: Checking current project requirements...
+2025-09-08 13:30:01,180 INFO:   Found existing dependencies:
+2025-09-08 13:30:01,180 INFO:     asgiref
+2025-09-08 13:30:01,180 INFO:     bleach
+2025-09-08 13:30:01,180 INFO:     Django
+2025-09-08 13:30:01,180 INFO:     django-environ
+2025-09-08 13:30:01,180 INFO:     django-pandas
+2025-09-08 13:30:01,180 INFO:     django-summernote
+2025-09-08 13:30:01,180 INFO:     django-widget-tweaks
+2025-09-08 13:30:01,180 INFO:     numpy
+2025-09-08 13:30:01,180 INFO:     packaging
+2025-09-08 13:30:01,180 INFO:     pandas
+2025-09-08 13:30:01,180 INFO:     pillow
+2025-09-08 13:30:01,180 INFO:     plotly
+2025-09-08 13:30:01,180 INFO:     psycopg2
+2025-09-08 13:30:01,180 INFO:     python-dateutil
+2025-09-08 13:30:01,180 INFO:     pytz
+2025-09-08 13:30:01,180 INFO:     six
+2025-09-08 13:30:01,180 INFO:     sqlparse
+2025-09-08 13:30:01,180 INFO:     tenacity
+2025-09-08 13:30:01,180 INFO:     tzdata
+2025-09-08 13:30:01,180 INFO:     webencodings
+2025-09-08 13:30:01,180 INFO:     django-simple-deploy
+2025-09-08 13:30:01,180 INFO:     gunicorn
+2025-09-08 13:30:01,180 INFO: 
+2025-09-08 13:30:01,180 INFO: Looking for django-simple-deploy in requirements...
+2025-09-08 13:30:01,180 INFO: 
+2025-09-08 13:30:01,180 INFO: Looking for django-simple-deploy...
+2025-09-08 13:30:01,180 INFO:   Found django-simple-deploy in requirements file.
+2025-09-08 13:30:01,180 INFO: 
+2025-09-08 13:30:01,180 INFO: Configuring project for deployment...
+2025-09-08 13:30:01,180 INFO: Determining server username...
+2025-09-08 13:30:01,180 INFO: Running server command over SSH...
+2025-09-08 13:30:01,180 INFO:   command: uptime

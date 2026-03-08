@@ -1,0 +1,72 @@
+2025-09-05 15:41:03,978 INFO: Logging run of `manage.py deploy`...
+2025-09-05 15:41:03,978 INFO: Created /Users/rod/PycharmProjects/FabricRoom/dsd_logs/dsd_2025-09-05-154103.log.
+2025-09-05 15:41:03,978 INFO: 
+2025-09-05 15:41:03,978 INFO: CLI args:
+2025-09-05 15:41:03,978 INFO:   verbosity: 1
+2025-09-05 15:41:03,978 INFO:   settings: None
+2025-09-05 15:41:03,978 INFO:   pythonpath: None
+2025-09-05 15:41:03,978 INFO:   traceback: False
+2025-09-05 15:41:03,978 INFO:   no_color: False
+2025-09-05 15:41:03,978 INFO:   force_color: False
+2025-09-05 15:41:03,978 INFO:   automate_all: True
+2025-09-05 15:41:03,978 INFO:   no_logging: False
+2025-09-05 15:41:03,978 INFO:   ignore_unclean_git: False
+2025-09-05 15:41:03,978 INFO:   deployed_project_name: 
+2025-09-05 15:41:03,978 INFO:   region: us-3.platform.sh
+2025-09-05 15:41:03,978 INFO:   unit_testing: False
+2025-09-05 15:41:03,978 INFO:   e2e_testing: False
+2025-09-05 15:41:04,153 INFO:   Using plugin: dsd_vps
+2025-09-05 15:41:04,385 INFO: 
+2025-09-05 15:41:04,385 INFO: Deployment target: VPS
+2025-09-05 15:41:04,385 INFO: Local platform identified: macOS
+2025-09-05 15:41:04,385 INFO: Local project name: FabricRoom
+2025-09-05 15:41:04,385 INFO: Project root: /Users/rod/PycharmProjects/FabricRoom
+2025-09-05 15:41:04,385 INFO: Found .git dir at /Users/rod/PycharmProjects/FabricRoom.
+2025-09-05 15:41:04,385 INFO: 
+2025-09-05 15:41:04,385 INFO: git status --porcelain
+2025-09-05 15:41:04,411 INFO:  M .gitignore
+2025-09-05 15:41:04,411 INFO:  M FabricRoom/settings.py
+2025-09-05 15:41:04,411 INFO:  M requirements.txt
+2025-09-05 15:41:04,411 INFO: 
+2025-09-05 15:41:04,411 INFO: git diff --unified=0
+2025-09-05 15:41:04,433 INFO: diff --git a/.gitignore b/.gitignore
+2025-09-05 15:41:04,433 INFO: index e744178..086909e 100644
+2025-09-05 15:41:04,433 INFO: --- a/.gitignore
+2025-09-05 15:41:04,433 INFO: +++ b/.gitignore
+2025-09-05 15:41:04,433 INFO: @@ -19 +19,2 @@ debug.log
+2025-09-05 15:41:04,433 INFO: -.idea
+2025-09-05 15:41:04,433 INFO: \ No newline at end of file
+2025-09-05 15:41:04,433 INFO: +.idea
+2025-09-05 15:41:04,433 INFO: +dsd_logs/
+2025-09-05 15:41:04,433 INFO: diff --git a/FabricRoom/settings.py b/FabricRoom/settings.py
+2025-09-05 15:41:04,433 INFO: index f68576e..2480840 100644
+2025-09-05 15:41:04,433 INFO: --- a/FabricRoom/settings.py
+2025-09-05 15:41:04,433 INFO: +++ b/FabricRoom/settings.py
+2025-09-05 15:41:04,433 INFO: @@ -32,0 +33 @@ INSTALLED_APPS = [
+2025-09-05 15:41:04,433 INFO: +    "django_simple_deploy",
+2025-09-05 15:41:04,433 INFO: diff --git a/requirements.txt b/requirements.txt
+2025-09-05 15:41:04,433 INFO: index 0e2a111..e8978f4 100644
+2025-09-05 15:41:04,433 INFO: --- a/requirements.txt
+2025-09-05 15:41:04,433 INFO: +++ b/requirements.txt
+2025-09-05 15:41:04,433 INFO: @@ -20,0 +21,2 @@ webencodings
+2025-09-05 15:41:04,433 INFO: +
+2025-09-05 15:41:04,433 INFO: +django-simple-deploy==1.1.0
+2025-09-05 15:41:04,433 INFO: \ No newline at end of file
+2025-09-05 15:41:04,433 INFO: 
+2025-09-05 15:41:04,433 INFO: 
+2025-09-05 15:41:04,434 INFO: DSDCommandError:
+2025-09-05 15:41:04,434 INFO: 
+2025-09-05 15:41:04,434 INFO: The output of `git status` indicates that you have uncommitted changes.
+2025-09-05 15:41:04,434 INFO: 
+2025-09-05 15:41:04,434 INFO: We highly recommend you commit all changes before running the deploy command,
+2025-09-05 15:41:04,434 INFO: so you can easily undo configuration changes if deployment doesn't work, or if
+2025-09-05 15:41:04,434 INFO: you wish to deploy to a different platform.
+2025-09-05 15:41:04,434 INFO: 
+2025-09-05 15:41:04,434 INFO: Please commit all changes and then run the deploy command again. If you really
+2025-09-05 15:41:04,434 INFO: wish to continue without committing current changes, you can use
+2025-09-05 15:41:04,434 INFO: the --ignore-unclean-git flag.
+2025-09-05 15:41:04,434 INFO: 
+2025-09-05 15:41:04,434 INFO: It's especially important to have a clean status when using the --automate-all
+2025-09-05 15:41:04,434 INFO: flag. In this case, django-simple-deploy will make commits on your behalf. It's a
+2025-09-05 15:41:04,434 INFO: really good idea to keep your commits separate from the commits that
+2025-09-05 15:41:04,434 INFO: django-simple-deploy makes.
