@@ -14,6 +14,7 @@ urlpatterns = [
     path("summernote/", include("django_summernote.urls")),
 ]
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler403 = "main.views.custom_error_403"

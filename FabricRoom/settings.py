@@ -2,28 +2,37 @@ import environ
 import sys
 from pathlib import Path
 
-# Load the Environment vars from FabricRoom/.env
+# ============================================================================
+# ENVIRONMENT & CORE SETTINGS
+# ============================================================================
+
 env = environ.Env()
 environ.Env.read_env()
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = True
-# SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_HSTS_SECONDS = 3600
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ALLOWED_HOSTS = ["60hz.dev"]
-ALLOWED_HOSTS = ["60hz.dev", "127.0.0.1","localhost"]
+# ============================================================================
+# SECURITY SETTINGS
+# ============================================================================
 
-# Application definition
+ALLOWED_HOSTS = ["60hz.dev", "127.0.0.1", "localhost"]
+
+SECURE_SSL_REDIRECT = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_HSTS_SECONDS = 3600 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+
+
+# ============================================================================
+# APPLICATION DEFINITION
+# ============================================================================
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -31,11 +40,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # my apps
+    # Local apps
     "main",
     "blog",
     "healthstats",
-    # 3rd party packages
+    # Third-party apps
     "django_summernote",
     "widget_tweaks",
 ]
@@ -51,8 +60,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "FabricRoom.urls"
+WSGI_APPLICATION = "FabricRoom.wsgi.application"
 
-# template dirs not working on this droplet.
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -75,16 +84,12 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "FabricRoom.wsgi.application"
 
-
-# Database
+# ============================================================================
+# DATABASE
+# ============================================================================
 
 DATABASES = {
-    # 'test': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # },
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": env("DATABASE_NAME"),
@@ -96,18 +101,21 @@ DATABASES = {
 }
 
 # Use SQLite for tests (faster and no database creation permissions needed)
-if 'test' in sys.argv:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+if "test" in sys.argv:
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": ":memory:",
     }
 
+
+# ============================================================================
+# AUTHENTICATION & AUTHORIZATION
+# ============================================================================
 
 AUTH_USER_MODEL = "main.CustomUser"
 LOGIN_REDIRECT_URL = "health_event_home"
 LOGOUT_REDIRECT_URL = "home"
 
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -124,28 +132,32 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
+# ============================================================================
+# INTERNATIONALIZATION
+# ============================================================================
 
 LANGUAGE_CODE = "en-us"
-# TIME_ZONE = "UTC"
-TIME_ZONE = 'America/Los_Angeles'
+TIME_ZONE = "America/Los_Angeles"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
+# ============================================================================
+# STATIC FILES & MEDIA
+# ============================================================================
 
 STATIC_URL = "/static/"
-# STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATIC_ROOT = BASE_DIR / "static"
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-MEDIA_ROOT = BASE_DIR / "media"
 MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+
+# ============================================================================
+# LOGGING
+# ============================================================================
 
 LOGGING = {
     "version": 1,
@@ -166,37 +178,31 @@ LOGGING = {
             "formatter": "verbose",
             "filename": "debug.log",
         },
-        # "syslog": {
-        #     "level": "DEBUG",
-        #     "class": "logging.handlers.SysLogHandler",
-        #     "facility": "user",
-        #     "formatter": "django",
-        #     "address": "/dev/log",
-        # },
     },
     "loggers": {
         "django": {
             "handlers": ["file"],
             "level": "DEBUG",
             "propagate": True,
-            # 'format': 'django: %(meassage)s'
         },
     },
 }
 
 
-SUMMERNOTE_THEME = 'bs5'
+# ============================================================================
+# THIRD-PARTY APP CONFIGURATION
+# ============================================================================
+
+SUMMERNOTE_THEME = "bs5"
 SUMMERNOTE_CONFIG = {
-    'attachment_filesize_limit': 1024 * 1024 * 10,
-    'toolbar': [
-        ['style', ['bold', 'italic', 'clear']],
-        ['fontsize', ['fontsize']],
-        ['color', ['color']],
-        ['para', ['ul', 'ol', 'paragraph']],
-        ['insert', ['picture', 'link', 'hr']],
-        ['edit', ['undo', 'redo']],
-        ['view', ['codeview']]  # Added the code view button
-    ]
+    "attachment_filesize_limit": 1024 * 1024 * 10,
+    "toolbar": [
+        ["style", ["bold", "italic", "clear"]],
+        ["fontsize", ["fontsize"]],
+        ["color", ["color"]],
+        ["para", ["ul", "ol", "paragraph"]],
+        ["insert", ["picture", "link", "hr"]],
+        ["edit", ["undo", "redo"]],
+        ["view", ["codeview"]],
+    ],
 }
-
-
