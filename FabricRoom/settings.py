@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "blog",
     "healthstats",
     # Third-party apps
-    "django_summernote",
     "widget_tweaks",
 ]
 
@@ -113,7 +112,7 @@ if "test" in sys.argv:
 # ============================================================================
 
 AUTH_USER_MODEL = "main.CustomUser"
-LOGIN_REDIRECT_URL = "health_event_home"
+LOGIN_REDIRECT_URL = "blog"
 LOGOUT_REDIRECT_URL = "home"
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -193,16 +192,3 @@ LOGGING = {
 # THIRD-PARTY APP CONFIGURATION
 # ============================================================================
 
-SUMMERNOTE_THEME = "bs5"
-SUMMERNOTE_CONFIG = {
-    "attachment_filesize_limit": 1024 * 1024 * 10,
-    "toolbar": [
-        ["style", ["bold", "italic", "clear"]],
-        ["fontsize", ["fontsize"]],
-        ["color", ["color"]],
-        ["para", ["ul", "ol", "paragraph"]],
-        ["insert", ["picture", "link", "hr"]],
-        ["edit", ["undo", "redo"]],
-        ["view", ["codeview"]],
-    ],
-}

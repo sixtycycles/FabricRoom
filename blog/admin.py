@@ -1,11 +1,9 @@
 from django.contrib import admin
-from .models import Post, Note, Tag
-from django_summernote.admin import SummernoteModelAdmin
+from .models import Post, Note, Tag, InlineImage
 
 
 @admin.register(Post)
-class PostAdmin(SummernoteModelAdmin):
-    summernote_fields = ("body",)
+class PostAdmin(admin.ModelAdmin):
     list_display = [
         "author",
         "title",
@@ -33,3 +31,13 @@ class NoteAdmin(admin.ModelAdmin):
         "link",
     ]
     list_filter = ["author"]
+
+
+@admin.register(InlineImage)
+class InlineImageAdmin(admin.ModelAdmin):
+    list_display = [
+        "post",
+        "created_at",
+    ]
+    list_filter = ["created_at", "post"]
+    readonly_fields = ["created_at"]

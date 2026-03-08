@@ -11,7 +11,6 @@ urlpatterns = [
     path("blog/", include("blog.urls")),
     path("health/", include("healthstats.urls")),
     # path("snacks/", include("foodtown.urls")),
-    path("summernote/", include("django_summernote.urls")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

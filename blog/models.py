@@ -81,3 +81,26 @@ class Note(models.Model):
 
     def get_absolute_url(self):
         return reverse("note_detail", args=[str(self.id)])
+
+
+class InlineImage(models.Model):
+    post = models.ForeignKey(
+        Post,
+        on_delete=models.CASCADE,
+        related_name="inline_images",
+        null=True,
+        blank=True,
+    )
+    image = models.ImageField(upload_to="inline-images/%Y/%m/%d/")
+    session_key = models.CharField(max_length=40, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Inline Image"
+        verbose_name_plural = "Inline Images"
+        ordering = ["created_at"]
+
+    def __str__(self):
+        if self.post:
+            return f"Image for {self.post.title}"
+        return f"Pending image ({self.session_key})"

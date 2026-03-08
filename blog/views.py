@@ -1,11 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
-from blog.models import Post, Note
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from blog.models import Post, Note, InlineImage
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django import forms
-from django_summernote.widgets import SummernoteWidget
 
 
 class BlogListView(ListView):
@@ -53,9 +56,6 @@ class BlogCreateForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ["title", "body"]
-        widgets = {
-            "body": SummernoteWidget(),
-        }
 
 class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -72,7 +72,17 @@ class BlogCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        # Link any pending images (uploaded before post was created) to this post
+        session_key = self.request.session.session_key
+        if session_key:
+            InlineImage.objects.filter(
+                session_key=session_key,
+                post__isnull=True
+            ).update(post=form.instance)
+
+        return response
 
 
 class NoteCreateView(LoginRequiredMixin, CreateView):
@@ -88,23 +98,32 @@ class NoteCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class BlogUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class BlogUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
-    raise_exception = True
     template_name = "post_update.html"
-    fields = ["title", "body", "created_date", "tags"]
+    form_class = BlogCreateForm
+
+    def dispatch(self, request, *args, **kwargs):
+        """Handle both authentication and authorization"""
+        # Check authentication first using LoginRequiredMixin
+        if not request.user.is_authenticated:
+            # Use parent's dispatch which will redirect via LoginRequiredMixin
+            return super().dispatch(request, *args, **kwargs)
+
+        # User is authenticated, check authorization
+        post = Post.objects.get(pk=kwargs['pk'])
+        if post.author != request.user:
+            return HttpResponseForbidden("You are not authorized to edit this post.")
+
+        # User is authorized, proceed normally
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         initial = super().get_initial()
         initial["author"] = self.request.user
         return initial
-
-    def test_func(self):
-        obj = self.get_object()
-        return obj.author == self.request.user
-    
 
 class NoteUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Note
@@ -143,3 +162,52 @@ class NoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+
+
+@method_decorator(require_http_methods(["POST"]), name="dispatch")
+class UploadPostImageView(LoginRequiredMixin, UpdateView):
+    """Handle image uploads for the rich text editor."""
+    model = Post
+    fields = []
+    http_method_names = ["post"]
+    login_url = "/accounts/login/"
+
+    def post(self, request, *args, **kwargs):
+        post_id = kwargs.get('pk')
+
+        # For new posts, post_id will be 'new'
+        is_new_post = post_id == 'new'
+
+        # If not a new post, verify authorization
+        if not is_new_post:
+            post = self.get_object()
+            if post.author != request.user:
+                return JsonResponse({"error": "Unauthorized"}, status=403)
+
+        # Handle image upload
+        if "image" not in request.FILES:
+            return JsonResponse({"error": "No image provided"}, status=400)
+
+        image_file = request.FILES["image"]
+
+        # Create InlineImage record
+        if is_new_post:
+            # For new posts, create with session_key instead of post
+            inline_image = InlineImage.objects.create(
+                image=image_file,
+                session_key=request.session.session_key
+            )
+        else:
+            # For existing posts, create with post reference
+            post = self.get_object()
+            inline_image = InlineImage.objects.create(
+                post=post,
+                image=image_file
+            )
+
+        # Return image URL for the editor to insert
+        return JsonResponse({
+            "success": True,
+            "image_url": inline_image.image.url,
+            "image_id": inline_image.id
+        })
