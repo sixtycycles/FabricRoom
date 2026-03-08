@@ -11,7 +11,7 @@ environ.Env.read_env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env("SECRET_KEY")
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
@@ -147,7 +147,8 @@ USE_TZ = True
 # ============================================================================
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+if DEBUG:
+    STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
