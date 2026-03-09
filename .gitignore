@@ -2,11 +2,13 @@
 */__pycache__
 .sass-cache/
 /secrets
-/static
 .vscode/settings.json
 venv/*
 *.sqlite3
-static/
+# Ignore most static files, but track the rich-text-editor
+static/*
+!static/js/
+!static/js/rich-text-editor.js
 media/
 /srv/code/media
 .env
