@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
@@ -165,11 +166,8 @@ class NoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 @method_decorator(require_http_methods(["POST"]), name="dispatch")
-class UploadPostImageView(LoginRequiredMixin, UpdateView):
+class UploadPostImageView(LoginRequiredMixin, View):
     """Handle image uploads for the rich text editor."""
-    model = Post
-    fields = []
-    http_method_names = ["post"]
     login_url = "/accounts/login/"
 
     def post(self, request, *args, **kwargs):
@@ -180,7 +178,7 @@ class UploadPostImageView(LoginRequiredMixin, UpdateView):
 
         # If not a new post, verify authorization
         if not is_new_post:
-            post = self.get_object()
+            post = Post.objects.get(pk=post_id)
             if post.author != request.user:
                 return JsonResponse({"error": "Unauthorized"}, status=403)
 
@@ -199,7 +197,7 @@ class UploadPostImageView(LoginRequiredMixin, UpdateView):
             )
         else:
             # For existing posts, create with post reference
-            post = self.get_object()
+            post = Post.objects.get(pk=post_id)
             inline_image = InlineImage.objects.create(
                 post=post,
                 image=image_file
