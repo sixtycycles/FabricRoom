@@ -144,7 +144,7 @@ class BlogDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "post_delete.html"
-    success_url = reverse_lazy("blog_list")
+    success_url = reverse_lazy("blog")
 
     def test_func(self):
         obj = self.get_object()
