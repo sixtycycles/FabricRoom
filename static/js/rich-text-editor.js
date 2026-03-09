@@ -1,5 +1,6 @@
 /**
  * Rich Text Editor
+ * Version: 1.0.0
  * Handles formatting, image uploads, and content management
  */
 

@@ -5,10 +5,13 @@
 .vscode/settings.json
 venv/*
 *.sqlite3
-# Ignore most static files, but track the rich-text-editor
+# Ignore most static files, but track the rich-text-editor and SCSS customizations
 static/*
 !static/js/
 !static/js/rich-text-editor.js
+!static/bootstrap-5.3.8/
+!static/bootstrap-5.3.8/scss/
+!static/bootstrap-5.3.8/scss/fabricroom.scss
 media/
 /srv/code/media
 .env
