@@ -9,9 +9,7 @@ venv/*
 static/*
 !static/js/
 !static/js/rich-text-editor.js
-!static/bootstrap-5.3.8/
-!static/bootstrap-5.3.8/scss/
-!static/bootstrap-5.3.8/scss/fabricroom.scss
+static/bootstrap-*/
 media/
 /srv/code/media
 .env
