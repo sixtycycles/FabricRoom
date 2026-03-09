@@ -1,0 +1,52 @@
+
+// FabricRoom Custom Styles
+// Version: 1.0.0
+// Include any default variable overrides here (though functions won't be available)
+@import "bootstrap";
+
+
+// $text-muted: #2a5547;
+
+//$primary: #00dd33;
+.special{
+color:aqua;
+background:#333333;
+}
+
+.nope{
+  color: red;
+}
+
+// Accessibility: Skip-to-main link
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+  font-weight: bold;
+
+  &:focus {
+    top: 0;
+  }
+}
+
+// Styling for inline images in posts
+.editor-image {
+  padding: 12px;
+  max-width: 700px !important;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 8px auto;
+
+  // Responsive padding on smaller screens
+  @media (max-width: 768px) {
+    padding: 10px;
+    max-width: 100% !important;
+  }
+}
+
