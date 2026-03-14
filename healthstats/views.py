@@ -1,5 +1,4 @@
 import os
-import csv
 import logging
 from django.shortcuts import render
 from django.views.generic import (
@@ -26,7 +25,6 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from plotly.offline import plot
 from plotly.graph_objs import Scatter
-from .apple_health_data_parse import *
 from datetime import datetime
 
 
@@ -229,11 +227,7 @@ class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "apple_health_update.html"
-    fields = ["author", "health_data_xml", "is_processed"]
-
-    # def process_health_data(self):
-    #     # call the script, output to csv for now.
-    #     return HttpResponseRedirect(f"apple-health/update/{self.id}")
+    fields = ["author", "health_data_xml"]
 
     def test_func(self):
         obj = self.get_object()
@@ -277,62 +271,6 @@ def upload_file_success(request):
 
     return render(request, "upload_success.html")
 
-
-def process_apple_health_data(request, pk):
-    file = AppleHealthUpload.objects.get(pk=pk)
-    try:
-        os.mkdir(f"/srv/code/media/processed/{request.user.first_name}")
-    except OSError as error:
-        print(error)
-    data = HealthDataExtractor(
-        f"/srv/code/media/{file.health_data_xml}",
-        f"/srv/code/media/processed/{request.user.first_name}",
-    )
-    data.report_stats()
-    data.extract()
-    file.is_processed = True
-    file.csv_data_dir = f"/srv/code/media/processed/{request.user.first_name}"
-    file.save()
-    return HttpResponseRedirect("/health/apple-health/process/success")
-
-
-def import_processed_apple_health_data(request, pk):
-    obj = AppleHealthUpload.objects.get(pk=pk)
-    csv_dir = f"{obj.csv_data_dir}"
-    heart_rate_path = f"{csv_dir}/HeartRate.csv"
-
-    # HearRate.csv header fields:
-    # sourceName(0), sourceVersion(1), device(2), type(3), unit(4), creationDate(5), startDate(6), endDate(7), value(8)
-    with open(heart_rate_path) as f:
-        reader = csv.reader(f)
-        # dont spend hours troubleshooting the header data?
-        next(reader)
-        # actual data.
-        for row in reader:
-            c_date = datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S %z")
-            created_date = datetime.strftime(c_date, "%Y-%m-%d %H:%M:%S.%f")
-            s_date = datetime.strptime(row[6], "%Y-%m-%d %H:%M:%S %z")
-            start_date = datetime.strftime(s_date, "%Y-%m-%d %H:%M:%S.%f")
-            e_date = datetime.strptime(row[7], "%Y-%m-%d %H:%M:%S %z")
-            end_date = datetime.strftime(e_date, "%Y-%m-%d %H:%M:%S.%f")
-
-            _, created = HeartRate.objects.get_or_create(
-                author=request.user,
-                creation_date=created_date,
-                start_date=start_date,
-                end_date=end_date,
-                value=row[8],
-            )
-        # tell the db its imported.
-        obj.is_imported = True
-        obj.save()
-
-    return HttpResponseRedirect("/health/apple-health/process/success")
-
-
-def process_file_success(request):
-
-    return render(request, "process_success.html")
 
 
 def stat_plot_view(request):
