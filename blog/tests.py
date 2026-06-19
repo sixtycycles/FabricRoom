@@ -113,6 +113,92 @@ class BlogTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+class PostPermissionAndDeleteTest(TestCase):
+    """Tests for post creation and deletion permissions."""
+
+    def setUp(self):
+        self.author = get_user_model().objects.create_user(
+            username="author",
+            email="author@example.com",
+            password="secretpass",
+        )
+        self.other_user = get_user_model().objects.create_user(
+            username="otheruser",
+            email="other@example.com",
+            password="anotherpass",
+        )
+        self.post = Post.objects.create(
+            author=self.author,
+            title="Editable Post",
+            body="Original content",
+            published=True,
+        )
+
+    def test_anonymous_user_cannot_create_post(self):
+        initial_count = Post.objects.count()
+
+        response = self.client.post(
+            reverse("post_new"),
+            {
+                "title": "Attempted Post",
+                "body": "Should not be created",
+            },
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Post.objects.count(), initial_count)
+        self.assertFalse(
+            Post.objects.filter(title="Attempted Post").exists()
+        )
+
+    def test_create_post_requires_login(self):
+        response = self.client.get(reverse("post_new"))
+        self.assertEqual(response.status_code, 302)
+
+    def test_author_can_delete_post_with_post_request(self):
+        self.client.login(username="author", password="secretpass")
+
+        response = self.client.post(
+            reverse("post_delete", args=[self.post.id]),
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Post.objects.filter(pk=self.post.pk).exists())
+
+    def test_delete_page_renders_for_author(self):
+        self.client.login(username="author", password="secretpass")
+
+        response = self.client.get(
+            reverse("post_delete", args=[self.post.id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "post_delete.html")
+        self.assertContains(response, self.post.title)
+
+    def test_anonymous_user_cannot_delete_post(self):
+        response = self.client.post(
+            reverse("post_delete", args=[self.post.id]),
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Post.objects.filter(pk=self.post.pk).exists())
+
+    def test_non_author_cannot_delete_post(self):
+        self.client.login(username="otheruser", password="anotherpass")
+
+        response = self.client.post(
+            reverse("post_delete", args=[self.post.id]),
+            follow=False,
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Post.objects.filter(pk=self.post.pk).exists())
+
+
 class RichTextEditorTest(TestCase):
     """Tests for the custom rich text editor functionality"""
 
