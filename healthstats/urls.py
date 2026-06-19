@@ -29,9 +29,6 @@ from healthstats.views import (
     AppleHealthDetailView,
     AppleHealthUpdateView,
     AppleHealthDeleteView,
-    process_apple_health_data,
-    process_file_success,
-    import_processed_apple_health_data,
 )
 
 urlpatterns = [
@@ -71,14 +68,6 @@ urlpatterns = [
         AppleHealthDetailView.as_view(),
         name="apple-health-detail",
     ),
-    path(
-        "apple-health/process/<int:pk>", process_apple_health_data, name="process-data"
-    ),
-    path(
-        "apple-health/import/<int:pk>",
-        import_processed_apple_health_data,
-        name="import-data",
-    ),
     path("apple-health/upload", upload_file, name="apple-health-upload"),
     path(
         "apple-health/delete/<int:pk>",
@@ -94,10 +83,5 @@ urlpatterns = [
         "apple-health/upload/success",
         upload_file_success,
         name="apple-health-upload-success",
-    ),
-    path(
-        "apple-health/process/success",
-        process_file_success,
-        name="apple-health-process-success",
     ),
 ]

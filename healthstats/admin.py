@@ -45,16 +45,19 @@ class AppleHealthUploadAdmin(admin.ModelAdmin):
     fields = (
         "author",
         "health_data_xml",
-        "is_processed",
-        "is_imported",
+        "processing_status",
+        "records_imported",
+        "processing_error",
     )
     list_display = (
         "author",
         "health_data_xml",
-        "is_processed",
-        "is_imported",
+        "processing_status",
+        "records_imported",
     )
     readonly_fields = (
         "health_data_xml",
-        "csv_data_dir",
+        "processing_status",
+        "records_imported",
+        "processing_error",
     )

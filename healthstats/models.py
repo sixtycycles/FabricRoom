@@ -125,6 +125,13 @@ class HeartRate(models.Model):
 
 
 class AppleHealthUpload(models.Model):
+    PROCESSING_STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('processing', 'Processing'),
+        ('complete', 'Complete'),
+        ('error', 'Error'),
+    )
+
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -134,9 +141,21 @@ class AppleHealthUpload(models.Model):
     health_data_xml = models.FileField(
         upload_to="apple_health_xml/",
     )
-    csv_data_dir = models.CharField(max_length=500)
-    is_processed = models.BooleanField(default=False)
-    is_imported = models.BooleanField(default=False)
+    processing_status = models.CharField(
+        max_length=20,
+        choices=PROCESSING_STATUS_CHOICES,
+        default='pending',
+        help_text="Current status of the import process"
+    )
+    processing_error = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Error message if processing failed"
+    )
+    records_imported = models.IntegerField(
+        default=0,
+        help_text="Number of health records successfully imported"
+    )
 
     class Meta:
         verbose_name = "Apple Health Upload"
