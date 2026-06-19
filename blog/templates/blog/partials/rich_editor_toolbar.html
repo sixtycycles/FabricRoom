@@ -1,0 +1,63 @@
+<div class="btn-group mb-3" role="toolbar" aria-label="Rich text formatting">
+  <!-- Heading -->
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-sm btn-outline-secondary" id="heading-dropdown" title="Heading">
+      ¶
+    </button>
+    <div class="btn-group" role="group" style="display: none;" id="heading-menu">
+      <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="h1" title="Heading 1">H1</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="h2" title="Heading 2">H2</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="h3" title="Heading 3">H3</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="p" title="Paragraph">P</button>
+    </div>
+  </div>
+
+  <!-- Text formatting -->
+  <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="bold" title="Bold (Ctrl+B)">
+    <strong>B</strong>
+  </button>
+  <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="italic" title="Italic (Ctrl+I)">
+    <i>I</i>
+  </button>
+  <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="underline" title="Underline (Ctrl+U)">
+    <u>U</u>
+  </button>
+
+  <!-- Lists -->
+  <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="insertUnorderedList" title="Bullet List">
+    ◆ List
+  </button>
+  <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="insertOrderedList" title="Numbered List">
+    1. List
+  </button>
+
+  <!-- Link -->
+  <button type="button" class="btn btn-sm btn-outline-secondary" id="link-btn" title="Insert Link">
+    🔗 Link
+  </button>
+
+  <!-- Image -->
+  <button type="button" class="btn btn-sm btn-outline-secondary" id="image-btn" title="Insert Image">
+    🖼 Image
+  </button>
+</div>
+
+<!-- Link dialog -->
+<div id="link-dialog" style="display: none;" class="mb-3">
+  <div class="input-group input-group-sm">
+    <input type="text" class="form-control" id="link-url" placeholder="https://example.com">
+    <button class="btn btn-outline-secondary" type="button" id="link-apply">Apply</button>
+    <button class="btn btn-outline-secondary" type="button" id="link-cancel">Cancel</button>
+  </div>
+</div>
+
+<!-- Image upload form -->
+<div id="image-upload-form" style="display: none;" class="mb-3">
+  <div class="input-group input-group-sm">
+    <input type="file" class="form-control" id="image-file-input" accept="image/*">
+    <button class="btn btn-outline-secondary" type="button" id="image-upload-btn">Upload</button>
+    <button class="btn btn-outline-secondary" type="button" id="image-cancel">Cancel</button>
+  </div>
+  <small class="text-muted d-block mt-1">Max file size: 10MB. Formats: JPG, PNG, GIF, WebP</small>
+</div>
+

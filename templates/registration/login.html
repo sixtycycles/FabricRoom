@@ -5,7 +5,7 @@
 {% block content %}
 
 <h1>Login to 60hz.dev</h1>
-<p> Dont be a bad robot!</p>
+<p>Dont be a bad robot!</p>
 
 <form method="post">
   {% csrf_token %}
@@ -16,7 +16,7 @@
   {% endfor %}
 
   {% if form.non_field_errors %}
-  <div class="alert alert-danger" role="alert">
+  <div id="form-errors" class="alert alert-danger" role="alert" aria-live="polite" aria-label="Form validation errors">
     {% for error in form.non_field_errors %}
     {{ error }}
     {% endfor %}
@@ -29,21 +29,37 @@
 
     {% if form.is_bound %}
       {% if field.errors %}
-      {% render_field field class="form-control is-invalid" %}
+      {% with error_ids=field.auto_id|add:"_error" %}
+      {% render_field field class="form-control is-invalid" aria-describedby=error_ids %}
       {% for error in field.errors %}
-        <div class="alert alert-warning">
+        <div class="alert alert-warning" id="{{ error_ids }}" role="alert">
         {{ error }}
         </div>
       {% endfor %}
+      {% endwith %}
     {% else %}
+      {% if field.help_text %}
+      {% with help_id=field.auto_id|add:"_help" %}
+      {% render_field field class="form-control is-valid" aria-describedby=help_id %}
+      {% endwith %}
+      {% else %}
       {% render_field field class="form-control is-valid" %}
+      {% endif %}
     {% endif %}
+    {% else %}
+    {% if field.help_text %}
+    {% with help_id=field.auto_id|add:"_help" %}
+    {% render_field field class="form-control" aria-describedby=help_id %}
+    {% endwith %}
     {% else %}
     {% render_field field class="form-control" %}
     {% endif %}
+    {% endif %}
 
     {% if field.help_text %}
-    <small class="form-text text-muted">{{ field.help_text }}</small>
+    {% with help_id=field.auto_id|add:"_help" %}
+    <small class="form-text text-muted" id="{{ help_id }}">{{ field.help_text|safe }}</small>
+    {% endwith %}
     {% endif %}
   </div>
 

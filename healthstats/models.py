@@ -14,6 +14,11 @@ class Symptom(models.Model):
     )
     description = models.CharField(max_length=500, blank=True, null=True)
 
+    class Meta:
+        verbose_name = "Symptom"
+        verbose_name_plural = "Symptoms"
+        ordering = ["slug"]
+
     def __str__(self):
         return self.slug
 
@@ -22,11 +27,15 @@ class Symptom(models.Model):
 
 
 class HealthEvent(models.Model):
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="health_events",
+    )
     when = models.DateTimeField(auto_now_add=True)
     symptoms = models.ManyToManyField(
         Symptom,
-        related_name="symptoms",
+        related_name="health_events",
         blank=True,
         help_text="hold command or ctrl key to select more than one symptom",
     )
@@ -45,6 +54,11 @@ class HealthEvent(models.Model):
     #     help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
     # )
     objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = "Health Event"
+        verbose_name_plural = "Health Events"
+        ordering = ["-when"]
 
     def __str__(self):
         return f"{self.author.first_name} - @{self.when}"
@@ -67,30 +81,55 @@ class BloodPressure(models.Model):
     systolic_pressure = models.PositiveIntegerField(default=0)
     diastolic_pressure = models.PositiveIntegerField(default=0)
     position = models.CharField(max_length=15, choices = POSITIONS, default = "sitting")
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="blood_pressures",
+    )
+
+    class Meta:
+        verbose_name = "Blood Pressure"
+        verbose_name_plural = "Blood Pressures"
+        ordering = ["-sample_date"]
 
     def __str__(self) -> str:
         return f"{self.systolic_pressure} / {self.diastolic_pressure}"
-    
+
     def get_absolute_url(self):
         return reverse("bp_detail", args=[str(self.id)])
 
 
 class HeartRate(models.Model):
 
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="heart_rates",
+    )
     # unit = count/minute
     creation_date = models.DateTimeField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     value = models.FloatField()
 
+    class Meta:
+        verbose_name = "Heart Rate"
+        verbose_name_plural = "Heart Rates"
+        ordering = ["-creation_date"]
+
     def __str__(self):
         return f"{self.author.first_name} - @{self.creation_date}: {self.value}"
 
+    def get_absolute_url(self):
+        return reverse("heart_rate_detail", args=[str(self.id)])
+
 
 class AppleHealthUpload(models.Model):
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=2)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="apple_health_uploads",
+    )
     when = models.DateTimeField(auto_now=True)
     health_data_xml = models.FileField(
         upload_to="apple_health_xml/",
@@ -98,6 +137,11 @@ class AppleHealthUpload(models.Model):
     csv_data_dir = models.CharField(max_length=500)
     is_processed = models.BooleanField(default=False)
     is_imported = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Apple Health Upload"
+        verbose_name_plural = "Apple Health Uploads"
+        ordering = ["-when"]
 
     def __str__(self):
         return f"{self.author}-{self.health_data_xml}"
@@ -107,19 +151,49 @@ class AppleHealthUpload(models.Model):
 
 
 class StepData(models.Model):
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="step_data",
+    )
     # unit = count
     creation_date = models.DateTimeField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     value = models.FloatField()
 
+    class Meta:
+        verbose_name = "Step Data"
+        verbose_name_plural = "Step Data"
+        ordering = ["-creation_date"]
+
+    def __str__(self):
+        return f"{self.author.first_name} - @{self.creation_date}: {self.value} steps"
+
+    def get_absolute_url(self):
+        return reverse("step_data_detail", args=[str(self.id)])
+
 
 class OxygenData(models.Model):
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=4)
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="oxygen_data",
+    )
     # unit = %
     creation_date = models.DateTimeField()
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     value = models.FloatField()
     objects = DataFrameManager()
+
+    class Meta:
+        verbose_name = "Oxygen Data"
+        verbose_name_plural = "Oxygen Data"
+        ordering = ["-creation_date"]
+
+    def __str__(self):
+        return f"{self.author.first_name} - @{self.creation_date}: {self.value}%"
+
+    def get_absolute_url(self):
+        return reverse("oxygen_data_detail", args=[str(self.id)])

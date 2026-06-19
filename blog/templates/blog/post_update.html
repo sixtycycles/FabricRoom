@@ -1,49 +1,53 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load widget_tweaks %}
-<h1> Updating 2"{{post.title}}"</h1>
+<h1>Updating "{{post.title}}"</h1>
 
-<form action="" method="post">
+<form action="" method="post" id="blog-post-form">
     {% csrf_token %}
     {% load widget_tweaks %}
-  
+
     {% for hidden_field in form.hidden_fields %}
       {{ hidden_field }}
     {% endfor %}
-  
+
     {% if form.non_field_errors %}
-    <div class="alert alert-danger" role="alert">
+    <div id="form-errors" class="alert alert-danger" role="alert" aria-live="polite" aria-label="Form validation errors">
       {% for error in form.non_field_errors %}
       {{ error }}
       {% endfor %}
     </div>
     {% endif %}
-  
-    {% for field in form.visible_fields %}
+
+    <!-- Title field -->
+    {% with field=form.title %}
     <div class="form-group">
       {{ field.label_tag }}
-  
-      {% if form.is_bound %}
-        {% if field.errors %}
-        {% render_field field class="form-control is-invalid" %}
-        {% for error in field.errors %}
-          <div class="alert alert-warning">
-          {{ error }}
-          </div>
-        {% endfor %}
-      {% else %}
-        {% render_field field class="form-control is-valid" %}
-      {% endif %}
-      {% else %}
       {% render_field field class="form-control" %}
-      {% endif %}
-  
       {% if field.help_text %}
-      <small class="form-text text-muted">{{ field.help_text }}</small>
+      <small class="form-text text-muted">{{ field.help_text|safe }}</small>
       {% endif %}
     </div>
-  
-    {% endfor %}
+    {% endwith %}
 
-<input class=' form-control btn btn-success' type="submit" value="Save"> </form>
+    <!-- Body field with custom rich text editor -->
+    <div class="form-group">
+      <label for="post-editor">{{ form.body.label }}</label>
+
+      <!-- Toolbar -->
+      {% include 'blog/partials/rich_editor_toolbar.html' %}
+
+      <!-- Editor area (contenteditable) -->
+      <div id="post-editor" class="form-control" style="min-height: 400px; overflow-y: auto; white-space: normal; word-wrap: break-word;"
+           contenteditable="true" role="textbox" aria-label="Post content editor"></div>
+
+      <!-- Hidden input to store HTML content (populated by JavaScript on form submit) -->
+      <!-- Render the form field to get initial value, but hide it -->
+      {% render_field form.body style="display: none;" id="id_body" %}
+    </div>
+
+    <input class="btn btn-success" type="submit" value="Save">
+</form>
+
+{% include 'blog/partials/editor_scripts.html' %}
 {% endblock content %}

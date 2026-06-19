@@ -1,11 +1,10 @@
 from django.contrib import admin
-from .models import Post, Note, Tag
-from django_summernote.admin import SummernoteModelAdmin
+from django.utils.html import format_html
+from .models import Post, Note, Tag, InlineImage
 
 
 @admin.register(Post)
-class PostAdmin(SummernoteModelAdmin):
-    summernote_fields = ("body",)
+class PostAdmin(admin.ModelAdmin):
     list_display = [
         "author",
         "title",
@@ -33,3 +32,23 @@ class NoteAdmin(admin.ModelAdmin):
         "link",
     ]
     list_filter = ["author"]
+
+
+@admin.register(InlineImage)
+class InlineImageAdmin(admin.ModelAdmin):
+    list_display = [
+        "image_preview",
+        "post",
+        "created_at",
+    ]
+    list_filter = ["created_at", "post"]
+    readonly_fields = ["created_at", "image_preview"]
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" width="100" height="auto" />',
+                obj.image.url
+            )
+        return "No image"
+    image_preview.short_description = "Preview"

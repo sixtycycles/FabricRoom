@@ -1,10 +1,10 @@
-asgiref
+asgiref>=3.9.1
 bleach
-Django
-django-environ
-django-pandas
-django-summernote
-django-widget-tweaks
+Django>=6.0.3
+django-environ>=0.12.0
+django-pandas>=0.6.7
+django-summernote>=0.8.20.0
+django-widget-tweaks>=1.5.0
 numpy
 packaging
 pandas
@@ -14,7 +14,7 @@ psycopg2
 python-dateutil
 pytz
 six
-sqlparse
+sqlparse>=0.5.0
 tenacity
 tzdata
 webencodings
