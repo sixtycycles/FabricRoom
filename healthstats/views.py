@@ -24,8 +24,21 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from plotly.offline import plot
-from plotly.graph_objs import Scatter
+import plotly.graph_objects as go
 from datetime import datetime
+
+
+def _render_plotly_figure(fig):
+    return plot(
+        fig,
+        output_type="div",
+        include_plotlyjs="cdn",
+        config={
+            "responsive": True,
+            "displayModeBar": False,
+            "scrollZoom": True,
+        },
+    )
 
 
 class HealthEventHomeView(LoginRequiredMixin, TemplateView):
@@ -278,39 +291,64 @@ def stat_plot_view(request):
 
 
 def temp_stat_plot_view(request):
+    health_events = (
+        HealthEvent.objects.filter(author=request.user)
+        .exclude(temperature=None)
+        .order_by("when")
+    )
+    timestamps = [event.when for event in health_events]
+    temperatures = [event.temperature for event in health_events]
 
-    health_events = HealthEvent.objects.filter(author=request.user)
-    onlytemps = HealthEvent.objects.filter(author=request.user).exclude(
-        temperature=None
+    raw_temp_fig = go.Figure()
+    raw_temp_fig.add_trace(
+        go.Scatter(
+            x=timestamps,
+            y=temperatures,
+            mode="markers",
+            name="Temperature",
+            marker=dict(size=7, color="#2ca02c", opacity=0.75),
+            hovertemplate="%{x}<br>%{y:.1f}°F<extra></extra>",
+        )
     )
-    df = health_events.to_timeseries(index="when")
-    seven_day_average = df.temperature.rolling(7).mean().shift(-3)
-    raw_temp_data = plot(
-        [
-            Scatter(
-                x=[event.when for event in onlytemps],
-                y=[event.temperature for event in onlytemps],
-                mode="markers",
-                name="raw daily temperatures",
-                opacity=0.8,
-                marker_color="green",
-            ),
-        ],
-        output_type="div",
+    raw_temp_fig.update_layout(
+        template="plotly_white",
+        title="Temperature",
+        xaxis_title="Date",
+        yaxis_title="°F",
+        height=420,
+        margin=dict(l=10, r=10, t=50, b=10),
+        hovermode="x unified",
     )
-    seven_day_rolling_average = plot(
-        [
-            Scatter(
-                x=[event.when for event in onlytemps],
+    raw_temp_data = _render_plotly_figure(raw_temp_fig)
+
+    if len(temperatures) >= 7:
+        df = health_events.to_timeseries(index="when")
+        seven_day_average = df.temperature.rolling(7).mean().dropna()
+        seven_day_fig = go.Figure()
+        seven_day_fig.add_trace(
+            go.Scatter(
+                x=seven_day_average.index,
                 y=seven_day_average,
                 mode="lines+markers",
-                name="7 day rolling average temperature",
-                opacity=0.8,
-                marker_color="blue",
-            ),
-        ],
-        output_type="div",
-    )
+                name="7-day rolling average",
+                line=dict(color="#1f77b4", width=2),
+                marker=dict(size=5, color="#1f77b4"),
+                hovertemplate="%{x}<br>%{y:.1f}°F<extra></extra>",
+            )
+        )
+        seven_day_fig.update_layout(
+            template="plotly_white",
+            title="7-day rolling average",
+            xaxis_title="Date",
+            yaxis_title="°F",
+            height=420,
+            margin=dict(l=10, r=10, t=50, b=10),
+            hovermode="x unified",
+        )
+        seven_day_rolling_average = _render_plotly_figure(seven_day_fig)
+    else:
+        seven_day_rolling_average = "<p class='text-muted'>Not enough temperature data for a rolling average.</p>"
+
     return render(
         request,
         "stat_plot_temp.html",
@@ -322,26 +360,39 @@ def temp_stat_plot_view(request):
 
 
 def heart_stat_plot_view(request):
-    heart_rates = HeartRate.objects.filter(author=request.user)
-    heart_rate = plot(
-        [
-            Scatter(
-                x=[sample.creation_date for sample in heart_rates],
-                y=[sample.value for sample in heart_rates],
-                mode="markers",
-                name="Heart rate from apple watch",
-                opacity=0.8,
-                marker=dict(
-                    size=3,
-                    color=[sample.value**3 for sample in heart_rates],
-                    colorscale="gray",
-                    line_width=0,
-                ),
-                # marker_color="blue",
-            ),
-        ],
-        output_type="div",
+    heart_rates = (
+        HeartRate.objects.filter(author=request.user)
+        .order_by("creation_date")
     )
+    if heart_rates.exists():
+        x_values = [sample.creation_date for sample in heart_rates]
+        y_values = [sample.value for sample in heart_rates]
+
+        heart_rate_fig = go.Figure()
+        heart_rate_fig.add_trace(
+            go.Scatter(
+                x=x_values,
+                y=y_values,
+                mode="lines+markers",
+                name="Heart Rate",
+                line=dict(color="#e74c3c", width=2),
+                marker=dict(size=6, color="#e74c3c", opacity=0.8),
+                hovertemplate="%{x}<br>%{y:.0f} bpm<extra></extra>",
+            )
+        )
+        heart_rate_fig.update_layout(
+            template="plotly_white",
+            title="Heart Rate",
+            xaxis_title="Date",
+            yaxis_title="BPM",
+            height=420,
+            margin=dict(l=10, r=10, t=50, b=10),
+            hovermode="x unified",
+        )
+        heart_rate = _render_plotly_figure(heart_rate_fig)
+    else:
+        heart_rate = "<p class='text-muted'>No heart rate data available yet.</p>"
+
     return render(
         request,
         "stat_plot_heart.html",
@@ -352,22 +403,39 @@ def heart_stat_plot_view(request):
 
 
 def steps_stat_plot_view(request):
-
-    steps_data = StepData.objects.filter(author=request.user)
-    # step_dict = {event.creation_date: event.value for event in step_data}
-    step_data = plot(
-        [
-            Scatter(
-                x=[sample.creation_date for sample in steps_data],
-                y=[sample.value for sample in steps_data],
-                mode="lines+markers",
-                name="Steps from apple watch",
-                opacity=0.8,
-                marker_color="blue",
-            ),
-        ],
-        output_type="div",
+    steps_data = (
+        StepData.objects.filter(author=request.user)
+        .order_by("creation_date")
     )
+    if steps_data.exists():
+        x_values = [sample.creation_date for sample in steps_data]
+        y_values = [sample.value for sample in steps_data]
+
+        step_fig = go.Figure()
+        step_fig.add_trace(
+            go.Scatter(
+                x=x_values,
+                y=y_values,
+                mode="lines+markers",
+                name="Steps",
+                line=dict(color="#4c72b0", width=2),
+                marker=dict(size=6, color="#4c72b0", opacity=0.8),
+                hovertemplate="%{x}<br>%{y:.0f} steps<extra></extra>",
+            )
+        )
+        step_fig.update_layout(
+            template="plotly_white",
+            title="Steps",
+            xaxis_title="Date",
+            yaxis_title="Steps",
+            height=420,
+            margin=dict(l=10, r=10, t=50, b=10),
+            hovermode="x unified",
+        )
+        step_data = _render_plotly_figure(step_fig)
+    else:
+        step_data = "<p class='text-muted'>No step data available yet.</p>"
+
     return render(
         request,
         "stat_plot_steps.html",
@@ -378,20 +446,39 @@ def steps_stat_plot_view(request):
 
 
 def oxygen_stat_plot_view(request):
-    oxygen_data = OxygenData.objects.filter(author=request.user)
-    oxygen_data_plot = plot(
-        [
-            Scatter(
-                x=[sample.creation_date for sample in oxygen_data],
-                y=[sample.value for sample in oxygen_data],
-                mode="lines+markers",
-                name="Heart rate from apple watch",
-                opacity=0.8,
-                marker_color="brown",
-            ),
-        ],
-        output_type="div",
+    oxygen_data = (
+        OxygenData.objects.filter(author=request.user)
+        .order_by("creation_date")
     )
+    if oxygen_data.exists():
+        x_values = [sample.creation_date for sample in oxygen_data]
+        y_values = [sample.value for sample in oxygen_data]
+
+        oxygen_fig = go.Figure()
+        oxygen_fig.add_trace(
+            go.Scatter(
+                x=x_values,
+                y=y_values,
+                mode="lines+markers",
+                name="Oxygen Saturation",
+                line=dict(color="#9c5b00", width=2),
+                marker=dict(size=6, color="#9c5b00", opacity=0.8),
+                hovertemplate="%{x}<br>%{y:.1f}%<extra></extra>",
+            )
+        )
+        oxygen_fig.update_layout(
+            template="plotly_white",
+            title="Oxygen Saturation",
+            xaxis_title="Date",
+            yaxis_title="%",
+            height=420,
+            margin=dict(l=10, r=10, t=50, b=10),
+            hovermode="x unified",
+        )
+        oxygen_data_plot = _render_plotly_figure(oxygen_fig)
+    else:
+        oxygen_data_plot = "<p class='text-muted'>No oxygen data available yet.</p>"
+
     return render(
         request,
         "stat_plot_oxygen.html",
@@ -402,43 +489,62 @@ def oxygen_stat_plot_view(request):
 
 
 def oxygen_temperature_stat_plot_view(request):
-    oxygen_data = OxygenData.objects.filter(author=request.user)
-    step_data = StepData.objects.filter(author=request.user)
+    oxygen_data = (
+        OxygenData.objects.filter(author=request.user)
+        .order_by("creation_date")
+    )
     temp_data = (
         HealthEvent.objects.filter(author=request.user)
         .exclude(temperature=None)
         .exclude(note="")
+        .order_by("when")
     )
 
-    dfo = oxygen_data.to_timeseries(index="start_date")
-    dft = temp_data.to_timeseries(index="when")
-    day_average = dfo.value.rolling(7).mean().shift(-3)
-    day_average_t = dft.value.rolling(7).mean().shift(-3)
+    oxygen_temperature_fig = go.Figure()
 
-    oxygen_temperature_plot = plot(
-        [
-            Scatter(
-                x=[sample.creation_date for sample in oxygen_data],
-                y=day_average * 100,
-                # y=[sample.value*100 for sample in oxygen_data],
+    if oxygen_data.exists():
+        oxygen_x = [sample.creation_date for sample in oxygen_data]
+        oxygen_y = [sample.value for sample in oxygen_data]
+        oxygen_temperature_fig.add_trace(
+            go.Scatter(
+                x=oxygen_x,
+                y=oxygen_y,
+                mode="lines+markers",
+                name="Oxygen",
+                line=dict(color="#d62728", width=2),
+                marker=dict(size=6, color="#d62728", opacity=0.8),
+                hovertemplate="%{x}<br>%{y:.1f}%<extra></extra>",
+            )
+        )
+
+    if temp_data.exists():
+        temp_x = [sample.when for sample in temp_data]
+        temp_y = [sample.temperature for sample in temp_data]
+        oxygen_temperature_fig.add_trace(
+            go.Scatter(
+                x=temp_x,
+                y=temp_y,
                 mode="markers",
-                name="oxygen",
-                opacity=0.8,
-                marker_color="red",
-            ),
-            Scatter(
-                x=[sample.when for sample in temp_data],
-                y=day_average_t,
-                # y=[sample.temperature for sample in temp_data],
-                mode="markers",
-                name="temp",
-                opacity=0.8,
-                marker_color="black",
-                hovertext=[sample.note for sample in temp_data],
-            ),
-        ],
-        output_type="div",
-    )
+                name="Temperature",
+                marker=dict(size=7, color="#2f2f2f", opacity=0.8),
+                hovertemplate="%{x}<br>%{y:.1f}°F<extra></extra>",
+            )
+        )
+
+    if oxygen_temperature_fig.data:
+        oxygen_temperature_fig.update_layout(
+            template="plotly_white",
+            title="Oxygen + Temperature",
+            xaxis_title="Date",
+            yaxis_title="Value",
+            height=420,
+            margin=dict(l=10, r=10, t=50, b=10),
+            hovermode="x unified",
+        )
+        oxygen_temperature_plot = _render_plotly_figure(oxygen_temperature_fig)
+    else:
+        oxygen_temperature_plot = "<p class='text-muted'>No chart data available yet.</p>"
+
     return render(
         request,
         "stat_plot_oxygen.html",

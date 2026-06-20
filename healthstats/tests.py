@@ -249,6 +249,27 @@ class OxygenDataModelTest(TestCase):
             self.assertEqual(oxygen.value, value)
 
 
+class PlotViewTest(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            username="plotuser",
+            email="plot@example.com",
+            password="plotpass123"
+        )
+        self.client.login(username="plotuser", password="plotpass123")
+
+    def test_temperature_plot_view_renders_chart(self):
+        response = self.client.get(reverse("temp-plot"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Temperature")
+        self.assertContains(response, "plotly")
+
+    def test_heart_plot_view_renders_chart(self):
+        response = self.client.get(reverse("heart-plot"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Heart Rate")
+
+
 class AppleHealthUploadModelTest(TestCase):
     """Test AppleHealthUpload model"""
 
