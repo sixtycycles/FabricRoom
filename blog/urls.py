@@ -11,11 +11,13 @@ from blog.views import (
     NoteUpdateView,
     NoteDeleteView,
     UploadPostImageView,
+    PostQRCodeView,
 )
 
 urlpatterns = [
     path("", BlogListView.as_view(), name="blog"),
     path("post/<int:pk>/", BlogDetailView.as_view(), name="post_detail"),
+    path("post/<int:pk>/qr/", PostQRCodeView.as_view(), name="post_qr_code"),
     path("post/new/", BlogCreateView.as_view(), name="post_new"),
     path("post/<int:pk>/delete/", BlogDeleteView.as_view(), name="post_delete"),
     path("post/<int:pk>/update/", BlogUpdateView.as_view(), name="post_edit"),

@@ -10,6 +10,7 @@ packaging
 pandas
 pillow
 plotly
+qrcode
 psycopg2
 python-dateutil
 pytz

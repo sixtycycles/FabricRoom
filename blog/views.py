@@ -1,8 +1,10 @@
+from io import BytesIO
+
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -10,6 +12,7 @@ from blog.models import Post, Note, InlineImage
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django import forms
+import qrcode
 
 
 class BlogListView(ListView):
@@ -51,6 +54,28 @@ class NoteDetailView(DetailView):  # new model = Post
     model = Note
     template_name = "note_detail.html"
     context_object_name = "note"
+
+
+class PostQRCodeView(View):
+    def get(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, pk=pk)
+        post_url = request.build_absolute_uri(post.get_absolute_url())
+
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(post_url)
+        qr.make(fit=True)
+
+        image = qr.make_image(fill_color="black", back_color="white")
+        buffer = BytesIO()
+        image.save(buffer, format="PNG")
+        buffer.seek(0)
+
+        return HttpResponse(buffer.getvalue(), content_type="image/png")
 
 
 class BlogCreateForm(forms.ModelForm):

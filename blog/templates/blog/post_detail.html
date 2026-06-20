@@ -9,11 +9,17 @@
   <div class="card-body rounded-0 border-0">
     <p>{{ post.body |safe}}</p>
   </div>
-  <div class="card-footer">by {{post.author.first_name}} {{post.author.last_name}}
-    {% if user.is_authenticated %}
-<a href="{% url 'post_edit' post.id %}" class="btn btn-info">Edit this post? </a>
-<a href="{% url 'post_delete' post.id %}" class="btn btn-danger">Delete this post? </a>
-{% endif%}
+  <div class="card-footer">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
+      <div>by {{post.author.first_name}} {{post.author.last_name}}</div>
+      <div class="d-flex align-items-center gap-2">
+        <img src="{% url 'post_qr_code' post.id %}" alt="QR code for {{ post.title }}" class="img-fluid" style="max-width: 90px; height: auto;">
+        {% if user.is_authenticated %}
+        <a href="{% url 'post_edit' post.id %}" class="btn btn-info">Edit this post? </a>
+        <a href="{% url 'post_delete' post.id %}" class="btn btn-danger">Delete this post? </a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 </div>
 {% else %}

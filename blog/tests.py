@@ -46,6 +46,14 @@ class BlogTest(TestCase):
         self.assertContains(response, "test title")
         self.assertTemplateUsed(response, "post_detail.html")
 
+    def test_post_qr_code_view(self):
+        response = self.client.get(reverse("post_qr_code", args=[self.post.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "image/png")
+
+        image = Image.open(BytesIO(response.content))
+        self.assertEqual(image.format, "PNG")
+
     @skip("View form integration issue - requires CSRF token handling")
     def test_post_create_view_when_logged_in(self):
         self.client.login(username="testuser", password="secret")
