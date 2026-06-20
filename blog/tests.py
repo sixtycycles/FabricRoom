@@ -40,6 +40,13 @@ class BlogTest(TestCase):
         self.assertContains(response, "test title")
         self.assertTemplateUsed(response, "post_list.html")
 
+    def test_post_title_links_to_detail_view(self):
+        response = self.client.get(reverse("blog"))
+        self.assertContains(
+            response,
+            f'<a href="{reverse("post_detail", args=[self.post.id])}">test title</a>'
+        )
+
     def test_post_detail_view(self):
         response = self.client.get(f"/blog/post/{self.post.id}/")
         self.assertEqual(response.status_code, 200)
