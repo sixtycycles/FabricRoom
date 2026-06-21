@@ -10,6 +10,7 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("blog/", include("blog.urls")),
     path("health/", include("healthstats.urls")),
+    path("feeds/", include("feeds.urls")),
     # path("snacks/", include("foodtown.urls")),
 ]
 if settings.DEBUG:

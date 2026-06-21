@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "main",
     "blog",
     "healthstats",
+    "feeds",
     # Third-party apps
     "widget_tweaks",
 ]

@@ -21,3 +21,4 @@ stat_data.txt
 debug.log
 .idea
 dsd_logs/
+.DS_Store

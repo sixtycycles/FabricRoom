@@ -12,6 +12,9 @@
           <a class="nav-link" href="/">Home</a>
         </li>
         {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'feeds_dashboard' %}">Feeds</a>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="healthDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
               Health

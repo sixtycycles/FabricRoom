@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h3 class="h5">Add folder</h3>
+          <form method="post" action="{% url 'feeds_folder_create' %}">
+            {% csrf_token %}
+            {{ folder_form.as_p }}
+            <button class="btn btn-primary" type="submit">Save folder</button>
+          </form>
+        </div>
+      </div>
+      <div class="card shadow-sm mb-3">
+        <div class="card-body">
+          <h3 class="h5">Add feed</h3>
+          <form method="post" action="{% url 'feeds_add' %}">
+            {% csrf_token %}
+            {{ feed_form.as_p }}
+            <button class="btn btn-primary" type="submit">Add feed</button>
+          </form>
+        </div>
+      </div>
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h3 class="h5">Folders</h3>
+          {% if folders %}
+            <ul class="list-group list-group-flush">
+              {% for folder in folders %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{{ folder.name }}</span>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'feeds_folder_delete' folder.pk %}">Delete</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="mb-0">No folders yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+            <h2 class="h4 mb-0">Feed reader</h2>
+            <div class="d-flex flex-wrap gap-2">
+              <a class="btn btn-sm {% if not selected_folder %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{% url 'feeds_dashboard' %}">All</a>
+              {% for folder in folders %}
+                <a class="btn btn-sm {% if selected_folder and selected_folder.pk == folder.pk %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{% url 'feeds_dashboard' %}?folder={{ folder.pk }}">{{ folder.name }}</a>
+              {% endfor %}
+            </div>
+          </div>
+          {% if entries %}
+            <div class="row g-3" style="max-height: 75vh; overflow-y: auto;">
+              {% for item in entries %}
+                <div class="col-md-6">
+                  <article class="border rounded p-3 h-100 shadow-sm">
+                    <p class="small text-muted mb-1">{{ item.feed.title }}</p>
+                    <h3 class="h6"><a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a></h3>
+                    <p class="small text-muted">{{ item.published }}</p>
+                    <p class="mb-0">{{ item.summary|striptags|truncatewords:30 }}</p>
+                  </article>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="mb-0">Add a feed to see article previews here.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
