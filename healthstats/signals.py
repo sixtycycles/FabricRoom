@@ -30,12 +30,12 @@ def process_apple_health_upload(sender, instance, created, **kwargs):
 
     # Start processing in background thread (non-blocking)
     thread = threading.Thread(
-        target=_process_health_data_background,
-        args=(instance.id,),
-        daemon=True
+        target=_process_health_data_background, args=(instance.id,), daemon=True
     )
     thread.start()
-    logger.info(f"Started background processing thread for AppleHealthUpload {instance.id}")
+    logger.info(
+        f"Started background processing thread for AppleHealthUpload {instance.id}"
+    )
 
 
 def _process_health_data_background(upload_id):
@@ -48,8 +48,8 @@ def _process_health_data_background(upload_id):
         upload = AppleHealthUpload.objects.get(id=upload_id)
 
         # Update status to processing
-        upload.processing_status = 'processing'
-        upload.save(update_fields=['processing_status'])
+        upload.processing_status = "processing"
+        upload.save(update_fields=["processing_status"])
         logger.info(f"Starting import process for AppleHealthUpload {upload_id}")
 
         # Get actual file path
@@ -60,11 +60,11 @@ def _process_health_data_background(upload_id):
         records_imported = importer.import_records()
 
         # Update status and record count on success
-        upload.processing_status = 'complete'
+        upload.processing_status = "complete"
         upload.records_imported = records_imported
         upload.processing_error = None
         upload.save(
-            update_fields=['processing_status', 'records_imported', 'processing_error']
+            update_fields=["processing_status", "records_imported", "processing_error"]
         )
         logger.info(
             f"Successfully imported {records_imported} records for AppleHealthUpload {upload_id}"
@@ -73,14 +73,15 @@ def _process_health_data_background(upload_id):
     except Exception as e:
         # Log error and update status
         error_message = str(e)
-        logger.error(f"Error processing AppleHealthUpload {upload_id}: {error_message}", exc_info=True)
+        logger.error(
+            f"Error processing AppleHealthUpload {upload_id}: {error_message}",
+            exc_info=True,
+        )
 
         try:
             upload = AppleHealthUpload.objects.get(id=upload_id)
-            upload.processing_status = 'error'
+            upload.processing_status = "error"
             upload.processing_error = error_message
-            upload.save(
-                update_fields=['processing_status', 'processing_error']
-            )
+            upload.save(update_fields=["processing_status", "processing_error"])
         except AppleHealthUpload.DoesNotExist:
             logger.error(f"AppleHealthUpload {upload_id} not found when handling error")

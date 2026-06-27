@@ -12,7 +12,7 @@ class LandingPageView(TemplateView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return redirect('blog')
+            return redirect("blog")
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

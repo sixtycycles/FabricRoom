@@ -7,18 +7,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blog', '0009_inlineimage'),
+        ("blog", "0009_inlineimage"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='inlineimage',
-            name='session_key',
+            model_name="inlineimage",
+            name="session_key",
             field=models.CharField(blank=True, max_length=40, null=True),
         ),
         migrations.AlterField(
-            model_name='inlineimage',
-            name='post',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='inline_images', to='blog.post'),
+            model_name="inlineimage",
+            name="post",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="inline_images",
+                to="blog.post",
+            ),
         ),
     ]

@@ -69,11 +69,12 @@ class BPCreateView(LoginRequiredMixin, CreateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "bp_new.html"
-    fields = ['systolic_pressure','diastolic_pressure',"position"]
-    
+    fields = ["systolic_pressure", "diastolic_pressure", "position"]
+
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
 
 class BPListView(LoginRequiredMixin, ListView):
     model = BloodPressure
@@ -86,6 +87,7 @@ class BPListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return BloodPressure.objects.all()
 
+
 class BPDetailView(LoginRequiredMixin, DetailView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
@@ -96,13 +98,14 @@ class BPDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         return BloodPressure.objects.filter(author=self.request.user)
 
+
 class BPUpdateView(LoginRequiredMixin, UpdateView):
     model = BloodPressure
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
     template_name = "bp_update.html"
-    fields = ["systolic_pressure","diastolic_pressure"]
+    fields = ["systolic_pressure", "diastolic_pressure"]
 
 
 class BPDeleteView(LoginRequiredMixin, DeleteView):
@@ -285,7 +288,6 @@ def upload_file_success(request):
     return render(request, "upload_success.html")
 
 
-
 def stat_plot_view(request):
     return render(request, "stat_plot.html", context={})
 
@@ -360,9 +362,8 @@ def temp_stat_plot_view(request):
 
 
 def heart_stat_plot_view(request):
-    heart_rates = (
-        HeartRate.objects.filter(author=request.user)
-        .order_by("creation_date")
+    heart_rates = HeartRate.objects.filter(author=request.user).order_by(
+        "creation_date"
     )
     if heart_rates.exists():
         x_values = [sample.creation_date for sample in heart_rates]
@@ -403,10 +404,7 @@ def heart_stat_plot_view(request):
 
 
 def steps_stat_plot_view(request):
-    steps_data = (
-        StepData.objects.filter(author=request.user)
-        .order_by("creation_date")
-    )
+    steps_data = StepData.objects.filter(author=request.user).order_by("creation_date")
     if steps_data.exists():
         x_values = [sample.creation_date for sample in steps_data]
         y_values = [sample.value for sample in steps_data]
@@ -446,9 +444,8 @@ def steps_stat_plot_view(request):
 
 
 def oxygen_stat_plot_view(request):
-    oxygen_data = (
-        OxygenData.objects.filter(author=request.user)
-        .order_by("creation_date")
+    oxygen_data = OxygenData.objects.filter(author=request.user).order_by(
+        "creation_date"
     )
     if oxygen_data.exists():
         x_values = [sample.creation_date for sample in oxygen_data]
@@ -489,9 +486,8 @@ def oxygen_stat_plot_view(request):
 
 
 def oxygen_temperature_stat_plot_view(request):
-    oxygen_data = (
-        OxygenData.objects.filter(author=request.user)
-        .order_by("creation_date")
+    oxygen_data = OxygenData.objects.filter(author=request.user).order_by(
+        "creation_date"
     )
     temp_data = (
         HealthEvent.objects.filter(author=request.user)
@@ -543,7 +539,9 @@ def oxygen_temperature_stat_plot_view(request):
         )
         oxygen_temperature_plot = _render_plotly_figure(oxygen_temperature_fig)
     else:
-        oxygen_temperature_plot = "<p class='text-muted'>No chart data available yet.</p>"
+        oxygen_temperature_plot = (
+            "<p class='text-muted'>No chart data available yet.</p>"
+        )
 
     return render(
         request,

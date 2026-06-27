@@ -4,7 +4,12 @@ from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
-from django.http import JsonResponse, HttpResponse, HttpResponseForbidden, HttpResponseRedirect
+from django.http import (
+    JsonResponse,
+    HttpResponse,
+    HttpResponseForbidden,
+    HttpResponseRedirect,
+)
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -83,6 +88,7 @@ class BlogCreateForm(forms.ModelForm):
         model = Post
         fields = ["title", "body"]
 
+
 class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Post
     login_url = "/accounts/login/"
@@ -104,8 +110,7 @@ class BlogCreateView(LoginRequiredMixin, CreateView):
         session_key = self.request.session.session_key
         if session_key:
             InlineImage.objects.filter(
-                session_key=session_key,
-                post__isnull=True
+                session_key=session_key, post__isnull=True
             ).update(post=form.instance)
 
         return response
@@ -139,7 +144,7 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
             return super().dispatch(request, *args, **kwargs)
 
         # User is authenticated, check authorization
-        post = Post.objects.get(pk=kwargs['pk'])
+        post = Post.objects.get(pk=kwargs["pk"])
         if post.author != request.user:
             return HttpResponseForbidden("You are not authorized to edit this post.")
 
@@ -150,6 +155,7 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
         initial = super().get_initial()
         initial["author"] = self.request.user
         return initial
+
 
 class NoteUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Note
@@ -193,13 +199,14 @@ class NoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 @method_decorator(require_http_methods(["POST"]), name="dispatch")
 class UploadPostImageView(LoginRequiredMixin, View):
     """Handle image uploads for the rich text editor."""
+
     login_url = "/accounts/login/"
 
     def post(self, request, *args, **kwargs):
-        post_id = kwargs.get('pk')
+        post_id = kwargs.get("pk")
 
         # For new posts, post_id will be 'new'
-        is_new_post = post_id == 'new'
+        is_new_post = post_id == "new"
 
         # If not a new post, verify authorization
         if not is_new_post:
@@ -217,20 +224,18 @@ class UploadPostImageView(LoginRequiredMixin, View):
         if is_new_post:
             # For new posts, create with session_key instead of post
             inline_image = InlineImage.objects.create(
-                image=image_file,
-                session_key=request.session.session_key
+                image=image_file, session_key=request.session.session_key
             )
         else:
             # For existing posts, create with post reference
             post = Post.objects.get(pk=post_id)
-            inline_image = InlineImage.objects.create(
-                post=post,
-                image=image_file
-            )
+            inline_image = InlineImage.objects.create(post=post, image=image_file)
 
         # Return image URL for the editor to insert
-        return JsonResponse({
-            "success": True,
-            "image_url": inline_image.image.url,
-            "image_id": inline_image.id
-        })
+        return JsonResponse(
+            {
+                "success": True,
+                "image_url": inline_image.image.url,
+                "image_id": inline_image.id,
+            }
+        )

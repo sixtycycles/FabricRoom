@@ -7,18 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0001_initial'),
+        ("main", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='customuser',
-            name='birthdate',
+            model_name="customuser",
+            name="birthdate",
             field=models.DateField(default=django.utils.timezone.now),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='profile_image',
-            field=models.ImageField(default='default_profile.jpg', upload_to='uploads/'),
+            model_name="profile",
+            name="profile_image",
+            field=models.ImageField(
+                default="default_profile.jpg", upload_to="uploads/"
+            ),
         ),
     ]

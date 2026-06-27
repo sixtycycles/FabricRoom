@@ -7,22 +7,37 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blog', '0008_alter_note_options_alter_post_options_and_more'),
+        ("blog", "0008_alter_note_options_alter_post_options_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InlineImage',
+            name="InlineImage",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='inline-images/%Y/%m/%d/')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('post', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='inline_images', to='blog.post')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("image", models.ImageField(upload_to="inline-images/%Y/%m/%d/")),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "post",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="inline_images",
+                        to="blog.post",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Inline Image',
-                'verbose_name_plural': 'Inline Images',
-                'ordering': ['created_at'],
+                "verbose_name": "Inline Image",
+                "verbose_name_plural": "Inline Images",
+                "ordering": ["created_at"],
             },
         ),
     ]

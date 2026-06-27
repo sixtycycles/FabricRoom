@@ -7,7 +7,6 @@ from blog.models import Post, Note, Tag, InlineImage
 from io import BytesIO
 from PIL import Image
 
-
 # NOTE: These tests cover blog models and views including Posts, Tags, and Notes.
 # All required database schema has been applied via migrations.
 
@@ -44,7 +43,7 @@ class BlogTest(TestCase):
         response = self.client.get(reverse("blog"))
         self.assertContains(
             response,
-            f'<a href="{reverse("post_detail", args=[self.post.id])}">test title</a>'
+            f'<a href="{reverse("post_detail", args=[self.post.id])}">test title</a>',
         )
 
     def test_post_detail_view(self):
@@ -163,9 +162,7 @@ class PostPermissionAndDeleteTest(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Post.objects.count(), initial_count)
-        self.assertFalse(
-            Post.objects.filter(title="Attempted Post").exists()
-        )
+        self.assertFalse(Post.objects.filter(title="Attempted Post").exists())
 
     def test_create_post_requires_login(self):
         response = self.client.get(reverse("post_new"))
@@ -185,9 +182,7 @@ class PostPermissionAndDeleteTest(TestCase):
     def test_delete_page_renders_for_author(self):
         self.client.login(username="author", password="secretpass")
 
-        response = self.client.get(
-            reverse("post_delete", args=[self.post.id])
-        )
+        response = self.client.get(reverse("post_delete", args=[self.post.id]))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "post_delete.html")
@@ -225,19 +220,19 @@ class RichTextEditorTest(TestCase):
 
     def create_test_image(self):
         """Helper method to create a test image file"""
-        image = Image.new('RGB', (100, 100), color='red')
+        image = Image.new("RGB", (100, 100), color="red")
         image_io = BytesIO()
-        image.save(image_io, format='JPEG')
+        image.save(image_io, format="JPEG")
         image_io.seek(0)
         return SimpleUploadedFile(
-            "test_image.jpg",
-            image_io.getvalue(),
-            content_type="image/jpeg"
+            "test_image.jpg", image_io.getvalue(), content_type="image/jpeg"
         )
 
     def test_post_with_html_content(self):
         """Test that posts can store HTML content from the rich text editor"""
-        html_content = "<h1>Test Heading</h1><p>This is a <strong>bold</strong> paragraph.</p>"
+        html_content = (
+            "<h1>Test Heading</h1><p>This is a <strong>bold</strong> paragraph.</p>"
+        )
         post = Post.objects.create(
             author=self.user,
             title="HTML Post",
@@ -270,10 +265,7 @@ class RichTextEditorTest(TestCase):
             published=True,
         )
         image_file = self.create_test_image()
-        inline_image = InlineImage.objects.create(
-            post=post,
-            image=image_file
-        )
+        inline_image = InlineImage.objects.create(post=post, image=image_file)
         self.assertEqual(inline_image.post, post)
         self.assertTrue(inline_image.image)
         self.assertIn("test_image", inline_image.image.name)
@@ -287,14 +279,8 @@ class RichTextEditorTest(TestCase):
             published=True,
         )
         # Create multiple inline images for the post
-        image1 = InlineImage.objects.create(
-            post=post,
-            image=self.create_test_image()
-        )
-        image2 = InlineImage.objects.create(
-            post=post,
-            image=self.create_test_image()
-        )
+        image1 = InlineImage.objects.create(post=post, image=self.create_test_image())
+        image2 = InlineImage.objects.create(post=post, image=self.create_test_image())
         image_ids = [image1.id, image2.id]
 
         # Verify images exist
@@ -321,7 +307,7 @@ class RichTextEditorTest(TestCase):
         response = self.client.post(
             reverse("upload_post_image", args=[post.id]),
             {"image": image_file},
-            format="multipart"
+            format="multipart",
         )
 
         self.assertEqual(response.status_code, 200)
@@ -347,7 +333,7 @@ class RichTextEditorTest(TestCase):
             reverse("upload_post_image", args=[post.id]),
             {"image": image_file},
             format="multipart",
-            follow=False
+            follow=False,
         )
 
         # Should redirect to login
@@ -372,7 +358,7 @@ class RichTextEditorTest(TestCase):
         response = self.client.post(
             reverse("upload_post_image", args=[post.id]),
             {"image": image_file},
-            format="multipart"
+            format="multipart",
         )
 
         self.assertEqual(response.status_code, 403)
@@ -393,7 +379,7 @@ class RichTextEditorTest(TestCase):
         response = self.client.post(
             reverse("upload_post_image", args=[post.id]),
             {},  # No image provided
-            format="multipart"
+            format="multipart",
         )
 
         self.assertEqual(response.status_code, 400)
@@ -421,9 +407,7 @@ class PostEditAuthTest(TestCase):
     def test_author_can_access_edit_page(self):
         """Test that post author can access the edit page"""
         self.client.login(username="author", password="authorpass")
-        response = self.client.get(
-            reverse("post_edit", args=[self.post.id])
-        )
+        response = self.client.get(reverse("post_edit", args=[self.post.id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "post_update.html")
         self.assertContains(response, "Updating")
@@ -456,7 +440,7 @@ class PostEditAuthTest(TestCase):
                 "title": "Hacked Title",
                 "body": "<p>Hacked content</p>",
             },
-            follow=False
+            follow=False,
         )
         # Should get 403 Forbidden
         self.assertEqual(response.status_code, 403)
@@ -470,8 +454,7 @@ class PostEditAuthTest(TestCase):
         """Test that other users cannot see edit page for posts they don't own"""
         self.client.login(username="otheruser", password="otherpass")
         response = self.client.get(
-            reverse("post_edit", args=[self.post.id]),
-            follow=False
+            reverse("post_edit", args=[self.post.id]), follow=False
         )
         # Should get 403 Forbidden
         self.assertEqual(response.status_code, 403)
@@ -479,8 +462,7 @@ class PostEditAuthTest(TestCase):
     def test_unauthenticated_user_redirects_to_login(self):
         """Test that unauthenticated users are redirected to login"""
         response = self.client.get(
-            reverse("post_edit", args=[self.post.id]),
-            follow=False
+            reverse("post_edit", args=[self.post.id]), follow=False
         )
         # Should redirect to login
         self.assertEqual(response.status_code, 302)
@@ -516,11 +498,8 @@ class PostEditAuthTest(TestCase):
     def test_edit_view_loads_existing_content(self):
         """Test that edit page loads with existing post content"""
         self.client.login(username="author", password="authorpass")
-        response = self.client.get(
-            reverse("post_edit", args=[self.post.id])
-        )
+        response = self.client.get(reverse("post_edit", args=[self.post.id]))
         # The content should be in the response (in the textarea or visible in HTML)
         self.assertContains(response, "Editable Post")  # title should be in form
         # The body content should be present in some form (in hidden textarea or form data)
         self.assertIn(b"Original content", response.content)
-

@@ -8,67 +8,119 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0021_alter_applehealthupload_author_and_more'),
+        ("healthstats", "0021_alter_applehealthupload_author_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='applehealthupload',
-            options={'ordering': ['-when'], 'verbose_name': 'Apple Health Upload', 'verbose_name_plural': 'Apple Health Uploads'},
+            name="applehealthupload",
+            options={
+                "ordering": ["-when"],
+                "verbose_name": "Apple Health Upload",
+                "verbose_name_plural": "Apple Health Uploads",
+            },
         ),
         migrations.AlterModelOptions(
-            name='bloodpressure',
-            options={'ordering': ['-sample_date'], 'verbose_name': 'Blood Pressure', 'verbose_name_plural': 'Blood Pressures'},
+            name="bloodpressure",
+            options={
+                "ordering": ["-sample_date"],
+                "verbose_name": "Blood Pressure",
+                "verbose_name_plural": "Blood Pressures",
+            },
         ),
         migrations.AlterModelOptions(
-            name='healthevent',
-            options={'ordering': ['-when'], 'verbose_name': 'Health Event', 'verbose_name_plural': 'Health Events'},
+            name="healthevent",
+            options={
+                "ordering": ["-when"],
+                "verbose_name": "Health Event",
+                "verbose_name_plural": "Health Events",
+            },
         ),
         migrations.AlterModelOptions(
-            name='heartrate',
-            options={'ordering': ['-creation_date'], 'verbose_name': 'Heart Rate', 'verbose_name_plural': 'Heart Rates'},
+            name="heartrate",
+            options={
+                "ordering": ["-creation_date"],
+                "verbose_name": "Heart Rate",
+                "verbose_name_plural": "Heart Rates",
+            },
         ),
         migrations.AlterModelOptions(
-            name='oxygendata',
-            options={'ordering': ['-creation_date'], 'verbose_name': 'Oxygen Data', 'verbose_name_plural': 'Oxygen Data'},
+            name="oxygendata",
+            options={
+                "ordering": ["-creation_date"],
+                "verbose_name": "Oxygen Data",
+                "verbose_name_plural": "Oxygen Data",
+            },
         ),
         migrations.AlterModelOptions(
-            name='stepdata',
-            options={'ordering': ['-creation_date'], 'verbose_name': 'Step Data', 'verbose_name_plural': 'Step Data'},
+            name="stepdata",
+            options={
+                "ordering": ["-creation_date"],
+                "verbose_name": "Step Data",
+                "verbose_name_plural": "Step Data",
+            },
         ),
         migrations.AlterModelOptions(
-            name='symptom',
-            options={'ordering': ['slug'], 'verbose_name': 'Symptom', 'verbose_name_plural': 'Symptoms'},
+            name="symptom",
+            options={
+                "ordering": ["slug"],
+                "verbose_name": "Symptom",
+                "verbose_name_plural": "Symptoms",
+            },
         ),
         migrations.AlterField(
-            model_name='applehealthupload',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='apple_health_uploads', to=settings.AUTH_USER_MODEL),
+            model_name="applehealthupload",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="apple_health_uploads",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='bloodpressure',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blood_pressures', to=settings.AUTH_USER_MODEL),
+            model_name="bloodpressure",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="blood_pressures",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='healthevent',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='health_events', to=settings.AUTH_USER_MODEL),
+            model_name="healthevent",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="health_events",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='heartrate',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='heart_rates', to=settings.AUTH_USER_MODEL),
+            model_name="heartrate",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="heart_rates",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='oxygendata',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='oxygen_data', to=settings.AUTH_USER_MODEL),
+            model_name="oxygendata",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="oxygen_data",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='stepdata',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='step_data', to=settings.AUTH_USER_MODEL),
+            model_name="stepdata",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="step_data",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

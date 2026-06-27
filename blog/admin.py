@@ -5,13 +5,7 @@ from .models import Post, Note, Tag, InlineImage
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = [
-        "author",
-        "title",
-        "body",
-        "created_date",
-        "published"
-    ]
+    list_display = ["author", "title", "body", "created_date", "published"]
     list_filter = ["author"]
     readonly_fields = []
     fields = ["author", "title", "body", "created_date", "published"]
@@ -47,8 +41,8 @@ class InlineImageAdmin(admin.ModelAdmin):
     def image_preview(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" width="100" height="auto" />',
-                obj.image.url
+                '<img src="{}" width="100" height="auto" />', obj.image.url
             )
         return "No image"
+
     image_preview.short_description = "Preview"

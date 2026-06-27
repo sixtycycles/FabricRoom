@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blog', '0008_post_tags_post_updated_date_tag_created_date_and_more'),
-        ('blog', '0010_inlineimage_session_key_alter_inlineimage_post'),
+        ("blog", "0008_post_tags_post_updated_date_tag_created_date_and_more"),
+        ("blog", "0010_inlineimage_session_key_alter_inlineimage_post"),
     ]
 
-    operations = [
-    ]
+    operations = []

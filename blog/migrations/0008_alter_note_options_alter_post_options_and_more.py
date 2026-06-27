@@ -8,26 +8,42 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('blog', '0007_post_created_date_post_tags_post_updated_date_and_more'),
+        ("blog", "0007_post_created_date_post_tags_post_updated_date_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='note',
-            options={'ordering': ['-id'], 'verbose_name': 'Note', 'verbose_name_plural': 'Notes'},
+            name="note",
+            options={
+                "ordering": ["-id"],
+                "verbose_name": "Note",
+                "verbose_name_plural": "Notes",
+            },
         ),
         migrations.AlterModelOptions(
-            name='post',
-            options={'ordering': ['-created_date'], 'verbose_name': 'Post', 'verbose_name_plural': 'Posts'},
+            name="post",
+            options={
+                "ordering": ["-created_date"],
+                "verbose_name": "Post",
+                "verbose_name_plural": "Posts",
+            },
         ),
         migrations.AlterModelOptions(
-            name='tag',
-            options={'ordering': ['tag_name'], 'verbose_name': 'Tag', 'verbose_name_plural': 'Tags'},
+            name="tag",
+            options={
+                "ordering": ["tag_name"],
+                "verbose_name": "Tag",
+                "verbose_name_plural": "Tags",
+            },
         ),
         migrations.AlterField(
-            model_name='post',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='blog_posts', to=settings.AUTH_USER_MODEL),
+            model_name="post",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="blog_posts",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

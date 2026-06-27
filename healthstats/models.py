@@ -73,14 +73,14 @@ class HealthEvent(models.Model):
 class BloodPressure(models.Model):
 
     POSITIONS = (
-        ('sitting', 'Sitting'),
-        ('laying down','Laying Down'),
-        ('standing', 'Standing')
+        ("sitting", "Sitting"),
+        ("laying down", "Laying Down"),
+        ("standing", "Standing"),
     )
     sample_date = models.DateTimeField(auto_now_add=True)
     systolic_pressure = models.PositiveIntegerField(default=0)
     diastolic_pressure = models.PositiveIntegerField(default=0)
-    position = models.CharField(max_length=15, choices = POSITIONS, default = "sitting")
+    position = models.CharField(max_length=15, choices=POSITIONS, default="sitting")
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
@@ -126,10 +126,10 @@ class HeartRate(models.Model):
 
 class AppleHealthUpload(models.Model):
     PROCESSING_STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('processing', 'Processing'),
-        ('complete', 'Complete'),
-        ('error', 'Error'),
+        ("pending", "Pending"),
+        ("processing", "Processing"),
+        ("complete", "Complete"),
+        ("error", "Error"),
     )
 
     author = models.ForeignKey(
@@ -144,17 +144,14 @@ class AppleHealthUpload(models.Model):
     processing_status = models.CharField(
         max_length=20,
         choices=PROCESSING_STATUS_CHOICES,
-        default='pending',
-        help_text="Current status of the import process"
+        default="pending",
+        help_text="Current status of the import process",
     )
     processing_error = models.TextField(
-        blank=True,
-        null=True,
-        help_text="Error message if processing failed"
+        blank=True, null=True, help_text="Error message if processing failed"
     )
     records_imported = models.IntegerField(
-        default=0,
-        help_text="Number of health records successfully imported"
+        default=0, help_text="Number of health records successfully imported"
     )
 
     class Meta:

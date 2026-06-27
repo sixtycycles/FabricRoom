@@ -3,6 +3,7 @@
 Apple Health XML direct-to-database importer.
 Parses Apple Health export.xml files and imports data directly to Django models.
 """
+
 import logging
 from xml.etree import ElementTree
 from datetime import datetime
@@ -15,32 +16,32 @@ User = get_user_model()
 
 # Mapping of Apple Health record types to Django models
 RECORD_TYPE_MAPPING = {
-    'HKQuantityTypeIdentifierHeartRate': {
-        'model': HeartRate,
-        'field_mapping': {
-            'creation_date': 'creationDate',
-            'start_date': 'startDate',
-            'end_date': 'endDate',
-            'value': 'value',
-        }
+    "HKQuantityTypeIdentifierHeartRate": {
+        "model": HeartRate,
+        "field_mapping": {
+            "creation_date": "creationDate",
+            "start_date": "startDate",
+            "end_date": "endDate",
+            "value": "value",
+        },
     },
-    'HKQuantityTypeIdentifierStepCount': {
-        'model': StepData,
-        'field_mapping': {
-            'creation_date': 'creationDate',
-            'start_date': 'startDate',
-            'end_date': 'endDate',
-            'value': 'value',
-        }
+    "HKQuantityTypeIdentifierStepCount": {
+        "model": StepData,
+        "field_mapping": {
+            "creation_date": "creationDate",
+            "start_date": "startDate",
+            "end_date": "endDate",
+            "value": "value",
+        },
     },
-    'HKQuantityTypeIdentifierOxygenSaturation': {
-        'model': OxygenData,
-        'field_mapping': {
-            'creation_date': 'creationDate',
-            'start_date': 'startDate',
-            'end_date': 'endDate',
-            'value': 'value',
-        }
+    "HKQuantityTypeIdentifierOxygenSaturation": {
+        "model": OxygenData,
+        "field_mapping": {
+            "creation_date": "creationDate",
+            "start_date": "startDate",
+            "end_date": "endDate",
+            "value": "value",
+        },
     },
 }
 
@@ -118,14 +119,16 @@ class AppleHealthXMLImporter:
         root = self.parse_xml()
 
         # Process each Record element
-        for record_element in root.findall('Record'):
-            record_type = record_element.get('type')
+        for record_element in root.findall("Record"):
+            record_type = record_element.get("type")
 
             if record_type in RECORD_TYPE_MAPPING:
                 try:
                     self._process_record(record_element, record_type)
                 except Exception as e:
-                    logger.error(f"Error processing record of type {record_type}: {str(e)}")
+                    logger.error(
+                        f"Error processing record of type {record_type}: {str(e)}"
+                    )
                     # Continue with next record instead of failing entire import
                     continue
 
@@ -145,15 +148,15 @@ class AppleHealthXMLImporter:
             record_type: Value of the 'type' attribute (e.g., HKQuantityTypeIdentifierHeartRate)
         """
         config = RECORD_TYPE_MAPPING[record_type]
-        model = config['model']
-        field_mapping = config['field_mapping']
+        model = config["model"]
+        field_mapping = config["field_mapping"]
 
         # Extract attribute values from XML
         attrs = record_element.attrib
 
         # Build kwargs for model
         kwargs = {
-            'author': self.user,
+            "author": self.user,
         }
 
         # Map XML attributes to model fields
@@ -166,14 +169,16 @@ class AppleHealthXMLImporter:
             value = attrs[xml_attr]
 
             # Parse datetime fields
-            if model_field in ('creation_date', 'start_date', 'end_date'):
+            if model_field in ("creation_date", "start_date", "end_date"):
                 value = self.format_datetime(value)
             # Parse numeric fields
-            elif model_field == 'value':
+            elif model_field == "value":
                 try:
                     value = float(value)
                 except ValueError:
-                    raise ValueError(f"Invalid numeric value for {record_type}: {value}")
+                    raise ValueError(
+                        f"Invalid numeric value for {record_type}: {value}"
+                    )
 
             kwargs[model_field] = value
 
@@ -182,9 +187,10 @@ class AppleHealthXMLImporter:
 
         if created:
             self.total_records_imported += 1
-            record_type_short = record_type.replace('HKQuantityTypeIdentifier', '')
-            self.records_by_type[record_type_short] = \
+            record_type_short = record_type.replace("HKQuantityTypeIdentifier", "")
+            self.records_by_type[record_type_short] = (
                 self.records_by_type.get(record_type_short, 0) + 1
+            )
             logger.debug(f"Created {record_type_short} record")
         else:
             logger.debug(f"Skipped duplicate {record_type} record")

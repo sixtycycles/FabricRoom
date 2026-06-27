@@ -6,35 +6,49 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0022_alter_applehealthupload_options_and_more'),
+        ("healthstats", "0022_alter_applehealthupload_options_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='applehealthupload',
-            name='csv_data_dir',
+            model_name="applehealthupload",
+            name="csv_data_dir",
         ),
         migrations.RemoveField(
-            model_name='applehealthupload',
-            name='is_imported',
+            model_name="applehealthupload",
+            name="is_imported",
         ),
         migrations.RemoveField(
-            model_name='applehealthupload',
-            name='is_processed',
+            model_name="applehealthupload",
+            name="is_processed",
         ),
         migrations.AddField(
-            model_name='applehealthupload',
-            name='processing_error',
-            field=models.TextField(blank=True, help_text='Error message if processing failed', null=True),
+            model_name="applehealthupload",
+            name="processing_error",
+            field=models.TextField(
+                blank=True, help_text="Error message if processing failed", null=True
+            ),
         ),
         migrations.AddField(
-            model_name='applehealthupload',
-            name='processing_status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('processing', 'Processing'), ('complete', 'Complete'), ('error', 'Error')], default='pending', help_text='Current status of the import process', max_length=20),
+            model_name="applehealthupload",
+            name="processing_status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("processing", "Processing"),
+                    ("complete", "Complete"),
+                    ("error", "Error"),
+                ],
+                default="pending",
+                help_text="Current status of the import process",
+                max_length=20,
+            ),
         ),
         migrations.AddField(
-            model_name='applehealthupload',
-            name='records_imported',
-            field=models.IntegerField(default=0, help_text='Number of health records successfully imported'),
+            model_name="applehealthupload",
+            name="records_imported",
+            field=models.IntegerField(
+                default=0, help_text="Number of health records successfully imported"
+            ),
         ),
     ]

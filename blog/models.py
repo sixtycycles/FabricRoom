@@ -33,7 +33,6 @@ class Post(models.Model):
         author = self.author
         return author
 
-
     def __str__(self):
         return self.title
 

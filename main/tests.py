@@ -12,9 +12,7 @@ class CustomUserModelTest(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="testuser",
-            email="test@example.com",
-            password="testpass123"
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
     def test_custom_user_creation(self):
@@ -25,7 +23,7 @@ class CustomUserModelTest(TestCase):
 
     def test_custom_user_has_birthdate_field(self):
         """Test that CustomUser has birthdate field"""
-        self.assertTrue(hasattr(self.user, 'birthdate'))
+        self.assertTrue(hasattr(self.user, "birthdate"))
         self.assertIsNotNone(self.user.birthdate)
 
     def test_custom_user_birthdate_default_is_today(self):
@@ -37,20 +35,20 @@ class CustomUserModelTest(TestCase):
         """Test that birthdate can be set to a specific value"""
         test_date = date(1990, 5, 15)
         user = get_user_model().objects.create_user(
-            username="birthdate_user",
-            password="testpass123",
-            birthdate=test_date
+            username="birthdate_user", password="testpass123", birthdate=test_date
         )
         # birthdate might be stored as date or datetime
-        user_birthdate = user.birthdate.date() if hasattr(user.birthdate, 'date') else user.birthdate
+        user_birthdate = (
+            user.birthdate.date() if hasattr(user.birthdate, "date") else user.birthdate
+        )
         self.assertEqual(user_birthdate, test_date)
 
     def test_custom_user_inherits_from_abstract_user(self):
         """Test that CustomUser has all AbstractUser fields"""
-        self.assertTrue(hasattr(self.user, 'first_name'))
-        self.assertTrue(hasattr(self.user, 'last_name'))
-        self.assertTrue(hasattr(self.user, 'is_active'))
-        self.assertTrue(hasattr(self.user, 'is_staff'))
+        self.assertTrue(hasattr(self.user, "first_name"))
+        self.assertTrue(hasattr(self.user, "last_name"))
+        self.assertTrue(hasattr(self.user, "is_active"))
+        self.assertTrue(hasattr(self.user, "is_staff"))
 
 
 class ProfileModelTest(TestCase):
@@ -58,9 +56,7 @@ class ProfileModelTest(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username="profileuser",
-            email="profile@example.com",
-            password="testpass123"
+            username="profileuser", email="profile@example.com", password="testpass123"
         )
         # Profile is auto-created by signal, no need to create it again
         self.profile = self.user.profile
@@ -105,22 +101,22 @@ class CustomUserCreationFormTest(TestCase):
         """Test that form has correct fields"""
         form = CustomUserCreationForm()
         # Check that required fields are present
-        self.assertIn('username', form.fields)
-        self.assertIn('password1', form.fields)
-        self.assertIn('password2', form.fields)
-        self.assertIn('email', form.fields)
-        self.assertIn('first_name', form.fields)
-        self.assertIn('last_name', form.fields)
+        self.assertIn("username", form.fields)
+        self.assertIn("password1", form.fields)
+        self.assertIn("password2", form.fields)
+        self.assertIn("email", form.fields)
+        self.assertIn("first_name", form.fields)
+        self.assertIn("last_name", form.fields)
 
     def test_valid_form_creation(self):
         """Test form with valid data"""
         form_data = {
-            'username': 'newuser',
-            'email': 'newuser@example.com',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'password1': 'complexpass123!',
-            'password2': 'complexpass123!',
+            "username": "newuser",
+            "email": "newuser@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password1": "complexpass123!",
+            "password2": "complexpass123!",
         }
         form = CustomUserCreationForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -128,12 +124,12 @@ class CustomUserCreationFormTest(TestCase):
     def test_form_with_missing_email(self):
         """Test form submission without email"""
         form_data = {
-            'username': 'newuser',
-            'email': '',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'password1': 'complexpass123!',
-            'password2': 'complexpass123!',
+            "username": "newuser",
+            "email": "",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password1": "complexpass123!",
+            "password2": "complexpass123!",
         }
         form = CustomUserCreationForm(data=form_data)
         # Email might not be required
@@ -144,34 +140,33 @@ class CustomUserCreationFormTest(TestCase):
     def test_form_password_mismatch(self):
         """Test form with mismatched passwords"""
         form_data = {
-            'username': 'newuser',
-            'email': 'newuser@example.com',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'password1': 'complexpass123!',
-            'password2': 'differentpass123!',
+            "username": "newuser",
+            "email": "newuser@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password1": "complexpass123!",
+            "password2": "differentpass123!",
         }
         form = CustomUserCreationForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn('password2', form.errors)
+        self.assertIn("password2", form.errors)
 
     def test_form_username_already_exists(self):
         """Test form with existing username"""
         get_user_model().objects.create_user(
-            username='existinguser',
-            password='testpass123'
+            username="existinguser", password="testpass123"
         )
         form_data = {
-            'username': 'existinguser',
-            'email': 'newuser@example.com',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'password1': 'complexpass123!',
-            'password2': 'complexpass123!',
+            "username": "existinguser",
+            "email": "newuser@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "password1": "complexpass123!",
+            "password2": "complexpass123!",
         }
         form = CustomUserCreationForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn('username', form.errors)
+        self.assertIn("username", form.errors)
 
 
 class CustomUserChangeFormTest(TestCase):
@@ -179,25 +174,23 @@ class CustomUserChangeFormTest(TestCase):
 
     def setUp(self):
         self.user = get_user_model().objects.create_user(
-            username='testuser',
-            email='test@example.com',
-            password='testpass123'
+            username="testuser", email="test@example.com", password="testpass123"
         )
 
     def test_form_can_edit_user_fields(self):
         """Test that form can edit user fields"""
         form_data = {
-            'username': 'testuser',
-            'first_name': 'John',
-            'last_name': 'Doe',
-            'email': 'newemail@example.com',
+            "username": "testuser",
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "newemail@example.com",
         }
         form = CustomUserChangeForm(data=form_data, instance=self.user)
         # Form should be valid or at least not raise errors
         if form.is_valid():
             form.save()
             self.user.refresh_from_db()
-            self.assertEqual(self.user.email, 'newemail@example.com')
+            self.assertEqual(self.user.email, "newemail@example.com")
 
 
 class HomePageTest(TestCase):

@@ -1,5 +1,11 @@
 from django.contrib import admin
-from healthstats.models import AppleHealthUpload, HealthEvent, Symptom, HeartRate, BloodPressure
+from healthstats.models import (
+    AppleHealthUpload,
+    HealthEvent,
+    Symptom,
+    HeartRate,
+    BloodPressure,
+)
 
 
 @admin.register(HeartRate)
@@ -12,19 +18,18 @@ class HeartRateAdmin(admin.ModelAdmin):
 class SymptomAdmin(admin.ModelAdmin):
     pass
 
+
 @admin.register(BloodPressure)
 class BPAdmin(admin.ModelAdmin):
     list_display = (
-
         "author",
         "sample_date",
         "systolic_pressure",
         "diastolic_pressure",
     )
-    list_filter = (
-        "author",
-    )
-    
+    list_filter = ("author",)
+
+
 @admin.register(HealthEvent)
 class HealthEventAdmin(admin.ModelAdmin):
     fields = (

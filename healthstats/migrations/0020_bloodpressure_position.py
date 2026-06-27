@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('healthstats', '0019_bloodpressure'),
+        ("healthstats", "0019_bloodpressure"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bloodpressure',
-            name='position',
-            field=models.CharField(choices=[('sitting', 'Sitting'), ('laying down', 'Laying Down'), ('standing', 'Standing')], default='sitting', max_length=15),
+            model_name="bloodpressure",
+            name="position",
+            field=models.CharField(
+                choices=[
+                    ("sitting", "Sitting"),
+                    ("laying down", "Laying Down"),
+                    ("standing", "Standing"),
+                ],
+                default="sitting",
+                max_length=15,
+            ),
         ),
     ]

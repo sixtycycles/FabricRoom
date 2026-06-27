@@ -6,16 +6,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('main', '0002_alter_customuser_birthdate_and_more'),
+        ("main", "0002_alter_customuser_birthdate_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='customuser',
-            options={'ordering': ['username'], 'verbose_name': 'Custom User', 'verbose_name_plural': 'Custom Users'},
+            name="customuser",
+            options={
+                "ordering": ["username"],
+                "verbose_name": "Custom User",
+                "verbose_name_plural": "Custom Users",
+            },
         ),
         migrations.AlterModelOptions(
-            name='profile',
-            options={'ordering': ['user'], 'verbose_name': 'Profile', 'verbose_name_plural': 'Profiles'},
+            name="profile",
+            options={
+                "ordering": ["user"],
+                "verbose_name": "Profile",
+                "verbose_name_plural": "Profiles",
+            },
         ),
     ]
