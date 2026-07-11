@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from feeds.models import Feed, FeedFolder, FeedItemEvent, FeedItemRead
+from feeds.models import Feed, FeedFolder, FeedItem
 
 
 class FeedReaderTests(TestCase):
@@ -37,26 +37,24 @@ class FeedReaderTests(TestCase):
             feed_url="https://example.com/rss.xml",
             site_url="https://example.com",
         )
+        item = FeedItem.objects.create(
+            feed=feed,
+            entry_id="entry-1",
+            title="Example Article",
+            link="https://example.com/articles/entry-1",
+        )
 
         response = self.client.post(
-            reverse("feeds_mark_read"),
-            {
-                "feed_id": feed.pk,
-                "entry_key": "entry-1",
-                "event_type": "manual",
-            },
+            reverse("feeds_toggle_read", args=[item.pk]),
+            {"next": reverse("feeds_dashboard")},
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(
-            FeedItemRead.objects.filter(
-                user=self.user,
-                feed=feed,
-                entry_key="entry-1",
-            ).exists()
-        )
+        item.refresh_from_db()
+        self.assertTrue(item.is_read)
+        self.assertIsNotNone(item.read_at)
 
-    def test_clicking_article_title_logs_event_and_marks_read(self):
+    def test_user_can_mark_feed_item_as_unread(self):
         self.client.login(username="reader", password="secret123")
         folder = FeedFolder.objects.create(user=self.user, name="News")
         feed = Feed.objects.create(
@@ -66,31 +64,21 @@ class FeedReaderTests(TestCase):
             feed_url="https://example.com/rss.xml",
             site_url="https://example.com",
         )
+        item = FeedItem.objects.create(
+            feed=feed,
+            entry_id="entry-2",
+            title="Example Article",
+            link="https://example.com/articles/entry-2",
+            is_read=True,
+            read_at="2024-01-01T00:00:00Z",
+        )
 
         response = self.client.post(
-            reverse("feeds_mark_read"),
-            {
-                "feed_id": feed.pk,
-                "entry_key": "entry-2",
-                "event_type": "title_click",
-                "title": "Test Article",
-                "link": "https://example.com/articles/test-article",
-            },
+            reverse("feeds_toggle_read", args=[item.pk]),
+            {"next": reverse("feeds_read")},
         )
 
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(
-            FeedItemRead.objects.filter(
-                user=self.user,
-                feed=feed,
-                entry_key="entry-2",
-            ).exists()
-        )
-        self.assertTrue(
-            FeedItemEvent.objects.filter(
-                user=self.user,
-                feed=feed,
-                entry_key="entry-2",
-                event_type="title_click",
-            ).exists()
-        )
+        item.refresh_from_db()
+        self.assertFalse(item.is_read)
+        self.assertIsNone(item.read_at)

@@ -7,6 +7,7 @@ from feeds.views import (
     FeedCreateView,
     FeedDeleteView,
     FeedFolderDeleteView,
+    open_article,
     toggle_read,
 )
 
@@ -24,6 +25,7 @@ urlpatterns = [
         FeedFolderDeleteView.as_view(),
         name="feeds_folder_delete",
     ),
+    path("item/<int:pk>/open/", open_article, name="feeds_open_article"),
     path("new/", FeedCreateView.as_view(), name="feeds_add"),
     path("<int:pk>/delete/", FeedDeleteView.as_view(), name="feeds_delete"),
 ]
