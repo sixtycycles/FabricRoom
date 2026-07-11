@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils import timezone
 
 
 class FeedFolder(models.Model):
@@ -41,6 +42,7 @@ class Feed(models.Model):
     feed_url = models.URLField(max_length=500)
     site_url = models.URLField(max_length=500, blank=True)
     is_active = models.BooleanField(default=True)
+    last_fetched_at = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -52,3 +54,54 @@ class Feed(models.Model):
 
     def get_absolute_url(self):
         return reverse("feeds_dashboard")
+
+
+class FeedItem(models.Model):
+    """A single entry parsed from a Feed, persisted so we can track read state.
+
+    `entry_id` is a stable identifier provided by the feed itself (guid/id),
+    falling back to the entry link when neither is present. It is unique
+    per feed so refreshing the feed doesn't create duplicates.
+    """
+
+    feed = models.ForeignKey(
+        Feed,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
+    entry_id = models.CharField(max_length=1000)
+    title = models.CharField(max_length=500, blank=True)
+    link = models.URLField(max_length=1000, blank=True)
+    summary = models.TextField(blank=True)
+    author = models.CharField(max_length=255, blank=True)
+    published = models.DateTimeField(blank=True, null=True)
+    fetched_at = models.DateTimeField(default=timezone.now)
+
+    is_read = models.BooleanField(default=False)
+    read_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-published", "-fetched_at"]
+        unique_together = ("feed", "entry_id")
+        indexes = [
+            models.Index(fields=["feed", "is_read"]),
+            models.Index(fields=["feed", "-published"]),
+        ]
+
+    def __str__(self):
+        return self.title or self.link or self.entry_id
+
+    def get_absolute_url(self):
+        return reverse("feeds_dashboard")
+
+    def mark_read(self):
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save(update_fields=["is_read", "read_at"])
+
+    def mark_unread(self):
+        if self.is_read:
+            self.is_read = False
+            self.read_at = None
+            self.save(update_fields=["is_read", "read_at"])
