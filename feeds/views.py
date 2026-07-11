@@ -12,6 +12,17 @@ from feeds.forms import FeedForm, FeedFolderForm
 from feeds.models import Feed, FeedFolder, FeedItem
 
 
+@login_required
+def open_article(request, pk):
+    """Mark an article as read and redirect to its original URL."""
+    feed_ids = list(Feed.objects.filter(user=request.user).values_list("id", flat=True))
+    item = get_object_or_404(FeedItem, pk=pk, feed_id__in=feed_ids)
+    item.mark_read()
+
+    if item.link:
+        return redirect(item.link)
+    return redirect(reverse("feeds_dashboard"))
+
 def _parse_published(value):
     """Best-effort parsing of an RSS/Atom date string into a datetime."""
     if not value:

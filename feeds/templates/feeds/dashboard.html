@@ -62,7 +62,10 @@
                   <article class="border rounded p-3 h-100 shadow-sm">
                     <p class="small text-muted mb-1">{{ item.feed.title }}</p>
                     <h3 class="h6">
-                      <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title|default:item.link }}</a>
+                      <!-- <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title|default:item.link }}</a> -->
+                    <a href="{% url 'feeds_open_article' item.pk %}" target="_blank" rel="noopener noreferrer">
+  {{ item.title|default:item.link }}
+</a>
                     </h3>
                     <p class="small text-muted">
                       {{ item.published|date:"M j, Y H:i"|default:item.fetched_at|date:"M j, Y H:i" }}
