@@ -14,10 +14,9 @@
           <article class="border rounded p-3 h-100 shadow-sm bg-light">
             <p class="small text-muted mb-1">{{ article.feed.title }}</p>
             <h3 class="h6 mb-1">
-              <!-- <a href="{{ article.link }}" target="_blank" rel="noopener noreferrer">{{ article.title|default:article.link }}</a> -->
-            <a href="{% url 'feeds_open_article' item.pk %}" target="_blank" rel="noopener noreferrer">
-  {{ item.title|default:item.link }}
-</a>
+              <a href="{% url 'feeds_open_article' article.pk %}" target="_blank" rel="noopener noreferrer">
+                {{ article.title|default:article.link }}
+              </a>
             </h3>
             <p class="small text-muted mb-2">Marked read {{ article.read_at|date:"M j, Y H:i" }}</p>
             <form method="post" action="{% url 'feeds_toggle_read' article.pk %}" class="mb-0">
