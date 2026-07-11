@@ -1,6 +1,11 @@
 import os
 import logging
+from django.conf import settings
+from django.core.cache import cache
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import (
     ListView,
     DetailView,
@@ -126,6 +131,7 @@ class SymptomCreateView(LoginRequiredMixin, CreateView):
     fields = ["slug"]
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class HealthEventListView(LoginRequiredMixin, ListView):
     model = HealthEvent
     login_url = "/accounts/login/"
@@ -135,7 +141,11 @@ class HealthEventListView(LoginRequiredMixin, ListView):
     context_object_name = "all_health_events"
 
     def get_queryset(self):
-        return HealthEvent.objects.filter(author=self.request.user).order_by("-when")
+        return (
+            HealthEvent.objects.filter(author=self.request.user)
+            .prefetch_related("symptoms")
+            .order_by("-when")
+        )
 
 
 class SymptomListView(LoginRequiredMixin, ListView):
@@ -292,14 +302,16 @@ def stat_plot_view(request):
     return render(request, "stat_plot.html", context={})
 
 
+@vary_on_cookie
+@cache_page(settings.CACHE_TTL)
 def temp_stat_plot_view(request):
-    health_events = (
+    health_events = list(
         HealthEvent.objects.filter(author=request.user)
         .exclude(temperature=None)
         .order_by("when")
+        .values_list("when", "temperature")
     )
-    timestamps = [event.when for event in health_events]
-    temperatures = [event.temperature for event in health_events]
+    timestamps, temperatures = zip(*health_events) if health_events else ([], [])
 
     raw_temp_fig = go.Figure()
     raw_temp_fig.add_trace(
@@ -361,13 +373,16 @@ def temp_stat_plot_view(request):
     )
 
 
+@vary_on_cookie
+@cache_page(settings.CACHE_TTL)
 def heart_stat_plot_view(request):
-    heart_rates = HeartRate.objects.filter(author=request.user).order_by(
-        "creation_date"
+    heart_rates = list(
+        HeartRate.objects.filter(author=request.user)
+        .order_by("creation_date")
+        .values_list("creation_date", "value")
     )
-    if heart_rates.exists():
-        x_values = [sample.creation_date for sample in heart_rates]
-        y_values = [sample.value for sample in heart_rates]
+    if heart_rates:
+        x_values, y_values = zip(*heart_rates)
 
         heart_rate_fig = go.Figure()
         heart_rate_fig.add_trace(
@@ -403,11 +418,15 @@ def heart_stat_plot_view(request):
     )
 
 
+@cache_page(settings.CACHE_TTL)
 def steps_stat_plot_view(request):
-    steps_data = StepData.objects.filter(author=request.user).order_by("creation_date")
-    if steps_data.exists():
-        x_values = [sample.creation_date for sample in steps_data]
-        y_values = [sample.value for sample in steps_data]
+    steps_data = list(
+        StepData.objects.filter(author=request.user)
+        .order_by("creation_date")
+        .values_list("creation_date", "value")
+    )
+    if steps_data:
+        x_values, y_values = zip(*steps_data)
 
         step_fig = go.Figure()
         step_fig.add_trace(
@@ -443,13 +462,15 @@ def steps_stat_plot_view(request):
     )
 
 
+@cache_page(settings.CACHE_TTL)
 def oxygen_stat_plot_view(request):
-    oxygen_data = OxygenData.objects.filter(author=request.user).order_by(
-        "creation_date"
+    oxygen_data = list(
+        OxygenData.objects.filter(author=request.user)
+        .order_by("creation_date")
+        .values_list("creation_date", "value")
     )
-    if oxygen_data.exists():
-        x_values = [sample.creation_date for sample in oxygen_data]
-        y_values = [sample.value for sample in oxygen_data]
+    if oxygen_data:
+        x_values, y_values = zip(*oxygen_data)
 
         oxygen_fig = go.Figure()
         oxygen_fig.add_trace(
@@ -485,22 +506,27 @@ def oxygen_stat_plot_view(request):
     )
 
 
+@cache_page(settings.CACHE_TTL)
+@vary_on_cookie
+@cache_page(settings.CACHE_TTL)
 def oxygen_temperature_stat_plot_view(request):
-    oxygen_data = OxygenData.objects.filter(author=request.user).order_by(
-        "creation_date"
+    oxygen_data = list(
+        OxygenData.objects.filter(author=request.user)
+        .order_by("creation_date")
+        .values_list("creation_date", "value")
     )
-    temp_data = (
+    temp_data = list(
         HealthEvent.objects.filter(author=request.user)
         .exclude(temperature=None)
         .exclude(note="")
         .order_by("when")
+        .values_list("when", "temperature")
     )
 
     oxygen_temperature_fig = go.Figure()
 
-    if oxygen_data.exists():
-        oxygen_x = [sample.creation_date for sample in oxygen_data]
-        oxygen_y = [sample.value for sample in oxygen_data]
+    if oxygen_data:
+        oxygen_x, oxygen_y = zip(*oxygen_data)
         oxygen_temperature_fig.add_trace(
             go.Scatter(
                 x=oxygen_x,
@@ -513,9 +539,8 @@ def oxygen_temperature_stat_plot_view(request):
             )
         )
 
-    if temp_data.exists():
-        temp_x = [sample.when for sample in temp_data]
-        temp_y = [sample.temperature for sample in temp_data]
+    if temp_data:
+        temp_x, temp_y = zip(*temp_data)
         oxygen_temperature_fig.add_trace(
             go.Scatter(
                 x=temp_x,

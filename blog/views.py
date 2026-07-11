@@ -1,6 +1,9 @@
 from io import BytesIO
 
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
@@ -20,6 +23,7 @@ from django import forms
 import qrcode
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BlogListView(ListView):
     model = Post
     context_object_name = "all_posts_list"
@@ -37,7 +41,7 @@ class BlogListView(ListView):
         return context
 
     def get_queryset(self):
-        return Post.objects.filter(published=True).order_by("-created_date")
+        return Post.objects.filter(published=True).select_related("author").order_by("-created_date")
 
 
 class NoteListView(ListView):
@@ -46,7 +50,7 @@ class NoteListView(ListView):
     context_object_name = "all_notes_list"
 
     def get_queryset(self):
-        return Note.objects.all()
+        return Note.objects.select_related("author").all()
 
 
 class BlogDetailView(DetailView):  # new model = Post

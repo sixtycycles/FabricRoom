@@ -170,6 +170,18 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 # ============================================================================
+# CACHING
+# ============================================================================
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": env("DJANGO_CACHE_DIR", default=str(BASE_DIR / "cache")),
+    }
+}
+CACHE_TTL = env.int("CACHE_TTL", default=60)
+
+
+# ============================================================================
 # LOGGING
 # ============================================================================
 

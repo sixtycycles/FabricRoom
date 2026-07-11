@@ -1,10 +1,15 @@
 import feedparser
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
+from datetime import timedelta
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DeleteView, TemplateView
 
@@ -45,6 +50,9 @@ def _parse_published(value):
         return None
 
 
+SYNC_FEED_INTERVAL = timedelta(minutes=30)
+
+
 def sync_feed_items(feed):
     """Parse `feed` and upsert its entries into FeedItem.
 
@@ -80,6 +88,8 @@ def sync_feed_items(feed):
         )
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "feeds/dashboard.html"
     login_url = "/accounts/login/"
@@ -99,21 +109,28 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
 
         feeds = list(feeds_qs)
 
-        # Refresh each feed's entries into the database so unread state is
-        # preserved across requests.
+        # Refresh feed content only when the feed has not been fetched recently.
         for feed in feeds:
-            try:
-                sync_feed_items(feed)
-            except Exception:
-                continue
+            if (
+                feed.last_fetched_at is None
+                or feed.last_fetched_at + SYNC_FEED_INTERVAL < timezone.now()
+            ):
+                try:
+                    sync_feed_items(feed)
+                except Exception:
+                    continue
 
-        # Show up to 6 unread items per feed, most recent first.
+        latest_items = FeedItem.objects.filter(feed__in=feeds, is_read=False).select_related(
+            "feed"
+        ).order_by("-published", "-fetched_at")
+
         entries = []
-        for feed in feeds:
-            feed_items = feed.items.filter(is_read=False).order_by(
-                "-published", "-fetched_at"
-            )[:6]
-            entries.extend(feed_items)
+        feed_item_counts = {}
+        for item in latest_items:
+            count = feed_item_counts.get(item.feed_id, 0)
+            if count < 6:
+                entries.append(item)
+                feed_item_counts[item.feed_id] = count + 1
 
         context["folders"] = folders
         context["selected_folder"] = selected_folder
@@ -124,6 +141,8 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class ReadArticlesView(FeedContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "feeds/read_articles.html"
     login_url = "/accounts/login/"
