@@ -61,8 +61,12 @@
                 <div class="col-md-6">
                   <article class="border rounded p-3 h-100 shadow-sm">
                     <p class="small text-muted mb-1">{{ item.feed.title }}</p>
-                    <h3 class="h6"><a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a></h3>
-                    <p class="small text-muted">{{ item.published|date:"M j, Y H:i"|default:item.fetched_at|date:"M j, Y H:i" }}</p>
+                    <h3 class="h6">
+                      <a href="{{ item.link }}" target="_blank" rel="noopener noreferrer">{{ item.title|default:item.link }}</a>
+                    </h3>
+                    <p class="small text-muted">
+                      {{ item.published|date:"M j, Y H:i"|default:item.fetched_at|date:"M j, Y H:i" }}
+                    </p>
                     <p class="mb-2">{{ item.summary|striptags|truncatewords:30 }}</p>
                     <form method="post" action="{% url 'feeds_toggle_read' item.pk %}" class="mb-0">
                       {% csrf_token %}
@@ -74,7 +78,7 @@
               {% endfor %}
             </div>
           {% else %}
-            <p class="mb-0">Add a feed to see article previews here.</p>
+            <p class="mb-0">No unread items right now. Check back later or visit your read articles page.</p>
           {% endif %}
         </div>
       </div>
