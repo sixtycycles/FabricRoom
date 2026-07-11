@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from feeds.models import Feed, FeedFolder, FeedItem
+from feeds.views import ReadArticlesView
 
 
 class FeedReaderTests(TestCase):
@@ -82,3 +83,10 @@ class FeedReaderTests(TestCase):
         item.refresh_from_db()
         self.assertFalse(item.is_read)
         self.assertIsNone(item.read_at)
+
+    def test_read_articles_view_includes_current_user_in_context(self):
+        self.client.login(username="reader", password="secret123")
+        response = self.client.get(reverse("feeds_read"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["user"], self.user)

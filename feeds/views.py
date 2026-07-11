@@ -12,6 +12,13 @@ from feeds.forms import FeedForm, FeedFolderForm
 from feeds.models import Feed, FeedFolder, FeedItem
 
 
+class FeedContextMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        return context
+
+
 @login_required
 def open_article(request, pk):
     """Mark an article as read and redirect to its original URL."""
@@ -73,7 +80,7 @@ def sync_feed_items(feed):
         )
 
 
-class FeedDashboardView(LoginRequiredMixin, TemplateView):
+class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "feeds/dashboard.html"
     login_url = "/accounts/login/"
 
@@ -117,7 +124,7 @@ class FeedDashboardView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ReadArticlesView(LoginRequiredMixin, TemplateView):
+class ReadArticlesView(FeedContextMixin, LoginRequiredMixin, TemplateView):
     template_name = "feeds/read_articles.html"
     login_url = "/accounts/login/"
 
@@ -149,7 +156,7 @@ def toggle_read(request, pk):
     return redirect(next_url)
 
 
-class FeedFolderCreateView(LoginRequiredMixin, CreateView):
+class FeedFolderCreateView(FeedContextMixin, LoginRequiredMixin, CreateView):
     model = FeedFolder
     form_class = FeedFolderForm
     success_url = reverse_lazy("feeds_dashboard")
@@ -160,7 +167,7 @@ class FeedFolderCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class FeedFolderDeleteView(LoginRequiredMixin, DeleteView):
+class FeedFolderDeleteView(FeedContextMixin, LoginRequiredMixin, DeleteView):
     model = FeedFolder
     success_url = reverse_lazy("feeds_dashboard")
     login_url = "/accounts/login/"
@@ -169,7 +176,7 @@ class FeedFolderDeleteView(LoginRequiredMixin, DeleteView):
         return FeedFolder.objects.filter(user=self.request.user)
 
 
-class FeedCreateView(LoginRequiredMixin, CreateView):
+class FeedCreateView(FeedContextMixin, LoginRequiredMixin, CreateView):
     model = Feed
     form_class = FeedForm
     success_url = reverse_lazy("feeds_dashboard")
@@ -185,7 +192,7 @@ class FeedCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class FeedDeleteView(LoginRequiredMixin, DeleteView):
+class FeedDeleteView(FeedContextMixin, LoginRequiredMixin, DeleteView):
     model = Feed
     success_url = reverse_lazy("feeds_dashboard")
     login_url = "/accounts/login/"
