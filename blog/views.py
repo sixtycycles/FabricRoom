@@ -44,6 +44,7 @@ class BlogListView(ListView):
         return Post.objects.filter(published=True).select_related("author").order_by("-created_date")
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class NoteListView(ListView):
     model = Note
     template_name = "note_list.html"
@@ -53,12 +54,14 @@ class NoteListView(ListView):
         return Note.objects.select_related("author").all()
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BlogDetailView(DetailView):  # new model = Post
     model = Post
     template_name = "post_detail.html"
     context_object_name = "post"
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class NoteDetailView(DetailView):  # new model = Post
     model = Note
     template_name = "note_detail.html"

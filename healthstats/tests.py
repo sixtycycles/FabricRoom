@@ -100,6 +100,13 @@ class HealthEventModelTest(TestCase):
         expected_url = reverse("stat_detail", args=[str(event.id)])
         self.assertEqual(event.get_absolute_url(), expected_url)
 
+    def test_health_event_detail_view_is_cached(self):
+        event = HealthEvent.objects.create(author=self.user, temperature=98.6)
+        self.client.login(username="testuser", password="testpass123")
+        response = self.client.get(reverse("stat_detail", args=[str(event.id)]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("max-age", response.get("Cache-Control", ""))
+
     def test_health_event_foreign_key_cascade_delete(self):
         """Test that deleting user deletes their events"""
         event = HealthEvent.objects.create(author=self.user, temperature=98.6)

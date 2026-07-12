@@ -81,6 +81,7 @@ class BPCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BPListView(LoginRequiredMixin, ListView):
     model = BloodPressure
     login_url = "/accounts/login/"
@@ -93,6 +94,7 @@ class BPListView(LoginRequiredMixin, ListView):
         return BloodPressure.objects.all()
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BPDetailView(LoginRequiredMixin, DetailView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
@@ -148,6 +150,7 @@ class HealthEventListView(LoginRequiredMixin, ListView):
         )
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class SymptomListView(LoginRequiredMixin, ListView):
     model = Symptom
     login_url = "/accounts/login/"
@@ -160,6 +163,7 @@ class SymptomListView(LoginRequiredMixin, ListView):
         return Symptom.objects.all()
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class HealthEventDetailView(LoginRequiredMixin, DetailView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
@@ -173,6 +177,7 @@ class HealthEventDetailView(LoginRequiredMixin, DetailView):
         )
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class SymptomDetailView(LoginRequiredMixin, DetailView):
     model = Symptom
     login_url = "/accounts/login/"
@@ -234,6 +239,7 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("health_event_home")
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class AppleHealthDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = AppleHealthUpload
     login_url = "/accounts/login"
@@ -270,6 +276,7 @@ class AppleHealthDeleteView(LoginRequiredMixin, DeleteView):
     context_object_name = "obj"
 
 
+@method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class AppleHealthListView(LoginRequiredMixin, ListView):
     model = AppleHealthUpload
     login_url = "/accounts/login/"

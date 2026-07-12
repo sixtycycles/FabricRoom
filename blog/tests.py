@@ -52,6 +52,11 @@ class BlogTest(TestCase):
         self.assertContains(response, "test title")
         self.assertTemplateUsed(response, "post_detail.html")
 
+    def test_post_detail_view_is_cached(self):
+        response = self.client.get(f"/blog/post/{self.post.id}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("max-age", response.get("Cache-Control", ""))
+
     def test_post_qr_code_view(self):
         response = self.client.get(reverse("post_qr_code", args=[self.post.id]))
         self.assertEqual(response.status_code, 200)
