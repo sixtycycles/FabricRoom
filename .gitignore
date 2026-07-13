@@ -22,3 +22,4 @@ debug.log
 .idea
 dsd_logs/
 .DS_Store
+cache/
