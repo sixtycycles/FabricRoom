@@ -275,6 +275,33 @@ class RichTextEditorTest(TestCase):
         self.assertTrue(inline_image.image)
         self.assertIn("test_image", inline_image.image.name)
 
+    def test_inline_image_upload_is_resized_and_saved_efficiently(self):
+        """Test that uploaded inline images are downsampled before storage."""
+        post = Post.objects.create(
+            author=self.user,
+            title="Optimized Image Post",
+            body="<p>Post with optimized image</p>",
+            published=True,
+        )
+
+        image = Image.new("RGB", (3000, 2000), color="blue")
+        image_bytes = BytesIO()
+        image.save(image_bytes, format="JPEG", quality=100)
+        image_bytes.seek(0)
+        image_file = SimpleUploadedFile(
+            "large_image.jpg",
+            image_bytes.getvalue(),
+            content_type="image/jpeg",
+        )
+
+        inline_image = InlineImage.objects.create(post=post, image=image_file)
+
+        with inline_image.image.open("rb") as saved_image_file:
+            saved_image = Image.open(saved_image_file)
+            self.assertLessEqual(saved_image.width, 1600)
+            self.assertLessEqual(saved_image.height, 1600)
+            self.assertEqual(saved_image.format, "JPEG")
+
     def test_inline_image_cascade_delete(self):
         """Test that deleting a post deletes its associated inline images"""
         post = Post.objects.create(

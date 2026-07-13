@@ -1,9 +1,13 @@
+from io import BytesIO
+
+from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.conf import settings
+from PIL import Image, ImageOps
 
 
 class Post(models.Model):
@@ -94,6 +98,9 @@ class InlineImage(models.Model):
     session_key = models.CharField(max_length=40, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    MAX_DIMENSION = 1600
+    JPEG_QUALITY = 85
+
     class Meta:
         verbose_name = "Inline Image"
         verbose_name_plural = "Inline Images"
@@ -103,3 +110,32 @@ class InlineImage(models.Model):
         if self.post:
             return f"Image for {self.post.title}"
         return f"Pending image ({self.session_key})"
+
+    def save(self, *args, **kwargs):
+        if self.image and not self._is_resized_image():
+            self.image = self._optimize_image(self.image)
+        super().save(*args, **kwargs)
+
+    def _is_resized_image(self):
+        return getattr(self.image, "name", "").startswith("inline-images/") and self.pk is not None
+
+    def _optimize_image(self, uploaded_image):
+        image = Image.open(uploaded_image)
+        image = ImageOps.exif_transpose(image)
+
+        if image.mode in {"RGBA", "LA", "P"}:
+            image = image.convert("RGBA")
+        else:
+            image = image.convert("RGB")
+
+        image.thumbnail((self.MAX_DIMENSION, self.MAX_DIMENSION), Image.Resampling.LANCZOS)
+
+        output = BytesIO()
+        image.save(output, format="JPEG", quality=self.JPEG_QUALITY, optimize=True)
+        output.seek(0)
+
+        return ContentFile(output.getvalue(), name=self._image_filename(uploaded_image.name))
+
+    def _image_filename(self, original_name):
+        base_name, _ = original_name.rsplit(".", 1)
+        return f"{base_name}.jpg"
