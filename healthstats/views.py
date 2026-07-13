@@ -27,22 +27,80 @@ from healthstats.forms import AppleHealthUploadForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from plotly.offline import plot
-import plotly.graph_objects as go
-from datetime import datetime
 
 
-def _render_plotly_figure(fig):
-    return plot(
-        fig,
-        output_type="div",
-        include_plotlyjs="cdn",
-        config={
-            "responsive": True,
-            "displayModeBar": False,
-            "scrollZoom": True,
-        },
+def _build_svg_chart(title, series, y_label="", unit=""):
+    width, height = 640, 260
+    padding_left, padding_right = 40, 20
+    padding_top, padding_bottom = 24, 36
+    chart_width = width - padding_left - padding_right
+    chart_height = height - padding_top - padding_bottom
+
+    if not series:
+        return (
+            f'<div class="card p-3 mt-3">'
+            f'<h5 class="mb-3">{title}</h5>'
+            f'<svg viewBox="0 0 {width} {height}" width="100%" height="260" role="img" aria-label="{title}">'
+            f'<rect x="0" y="0" width="{width}" height="{height}" fill="white" rx="8" />'
+            f'<line x1="{padding_left}" y1="{padding_top}" x2="{padding_left}" y2="{height - padding_bottom}" stroke="#111827" stroke-width="1" />'
+            f'<line x1="{padding_left}" y1="{height - padding_bottom}" x2="{width - padding_right}" y2="{height - padding_bottom}" stroke="#111827" stroke-width="1" />'
+            f'<text x="{width / 2}" y="{height / 2}" text-anchor="middle" font-size="14" fill="#6b7280">No data available yet</text>'
+            f'</svg></div>'
+        )
+
+    values = [value for _, value in series]
+    min_value = min(values)
+    max_value = max(values)
+    if max_value == min_value:
+        max_value = min_value + 1
+
+    def scale_x(index):
+        if len(series) == 1:
+            return padding_left + chart_width / 2
+        return padding_left + (index / (len(series) - 1)) * chart_width
+
+    def scale_y(value):
+        ratio = (value - min_value) / (max_value - min_value)
+        return padding_top + chart_height - (ratio * chart_height)
+
+    points = []
+    for index, (_, value) in enumerate(series):
+        x = scale_x(index)
+        y = scale_y(value)
+        points.append(f"{x:.1f},{y:.1f}")
+
+    grid_lines = []
+    for step in range(4):
+        ratio = step / 3
+        y = padding_top + chart_height * ratio
+        grid_lines.append(
+            f'<line x1="{padding_left}" y1="{y:.1f}" x2="{width - padding_right}" y2="{y:.1f}" stroke="#e5e7eb" stroke-width="1" />'
+        )
+
+    circles = []
+    for index, (_, value) in enumerate(series):
+        x = scale_x(index)
+        y = scale_y(value)
+        circles.append(
+            f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="#2563eb" />'
+        )
+
+    y_axis_label = f"{y_label} {unit}".strip()
+    return (
+        f'<div class="card p-3 mt-3">'
+        f'<h5 class="mb-3">{title}</h5>'
+        f'<svg viewBox="0 0 {width} {height}" width="100%" height="260" role="img" aria-label="{title}">'
+        f'<rect x="0" y="0" width="{width}" height="{height}" fill="white" rx="8" />'
+        f'<line x1="{padding_left}" y1="{padding_top}" x2="{padding_left}" y2="{height - padding_bottom}" stroke="#111827" stroke-width="1" />'
+        f'<line x1="{padding_left}" y1="{height - padding_bottom}" x2="{width - padding_right}" y2="{height - padding_bottom}" stroke="#111827" stroke-width="1" />'
+        f'{"".join(grid_lines)}'
+        f'<polyline points="{" ".join(points)}" fill="none" stroke="#2563eb" stroke-width="2.5" />'
+        f'{"".join(circles)}'
+        f'<text x="{padding_left - 10}" y="{padding_top - 8}" text-anchor="end" font-size="12" fill="#374151">{max_value:.1f}</text>'
+        f'<text x="{padding_left - 10}" y="{height - padding_bottom + 14}" text-anchor="end" font-size="12" fill="#374151">{min_value:.1f}</text>'
+        f'<text x="{width / 2}" y="{height - 6}" text-anchor="middle" font-size="12" fill="#374151">Date</text>'
+        f'<text x="12" y="{height / 2}" text-anchor="middle" font-size="12" fill="#374151" transform="rotate(-90 12 {height / 2})">{y_axis_label}</text>'
+        f'</svg></div>'
     )
 
 
@@ -320,55 +378,24 @@ def temp_stat_plot_view(request):
     )
     timestamps, temperatures = zip(*health_events) if health_events else ([], [])
 
-    raw_temp_fig = go.Figure()
-    raw_temp_fig.add_trace(
-        go.Scatter(
-            x=timestamps,
-            y=temperatures,
-            mode="markers",
-            name="Temperature",
-            marker=dict(size=7, color="#2ca02c", opacity=0.75),
-            hovertemplate="%{x}<br>%{y:.1f}°F<extra></extra>",
-        )
-    )
-    raw_temp_fig.update_layout(
-        template="plotly_white",
-        title="Temperature",
-        xaxis_title="Date",
-        yaxis_title="°F",
-        height=420,
-        margin=dict(l=10, r=10, t=50, b=10),
-        hovermode="x unified",
-    )
-    raw_temp_data = _render_plotly_figure(raw_temp_fig)
+    raw_temp_data = _build_svg_chart("Temperature", list(zip(timestamps, temperatures)), y_label="°F")
 
     if len(temperatures) >= 7:
-        df = health_events.to_timeseries(index="when")
-        seven_day_average = df.temperature.rolling(7).mean().dropna()
-        seven_day_fig = go.Figure()
-        seven_day_fig.add_trace(
-            go.Scatter(
-                x=seven_day_average.index,
-                y=seven_day_average,
-                mode="lines+markers",
-                name="7-day rolling average",
-                line=dict(color="#1f77b4", width=2),
-                marker=dict(size=5, color="#1f77b4"),
-                hovertemplate="%{x}<br>%{y:.1f}°F<extra></extra>",
-            )
+        rolling_series = []
+        for index in range(6, len(temperatures)):
+            window = temperatures[index - 6 : index + 1]
+            rolling_series.append((timestamps[index], sum(window) / len(window)))
+        seven_day_rolling_average = _build_svg_chart(
+            "7-day rolling average",
+            rolling_series,
+            y_label="°F",
         )
-        seven_day_fig.update_layout(
-            template="plotly_white",
-            title="7-day rolling average",
-            xaxis_title="Date",
-            yaxis_title="°F",
-            height=420,
-            margin=dict(l=10, r=10, t=50, b=10),
-            hovermode="x unified",
-        )
-        seven_day_rolling_average = _render_plotly_figure(seven_day_fig)
     else:
-        seven_day_rolling_average = "<p class='text-muted'>Not enough temperature data for a rolling average.</p>"
+        seven_day_rolling_average = _build_svg_chart(
+            "7-day rolling average",
+            [],
+            y_label="°F",
+        )
 
     return render(
         request,
@@ -390,31 +417,14 @@ def heart_stat_plot_view(request):
     )
     if heart_rates:
         x_values, y_values = zip(*heart_rates)
-
-        heart_rate_fig = go.Figure()
-        heart_rate_fig.add_trace(
-            go.Scatter(
-                x=x_values,
-                y=y_values,
-                mode="lines+markers",
-                name="Heart Rate",
-                line=dict(color="#e74c3c", width=2),
-                marker=dict(size=6, color="#e74c3c", opacity=0.8),
-                hovertemplate="%{x}<br>%{y:.0f} bpm<extra></extra>",
-            )
+        heart_rate = _build_svg_chart(
+            "Heart Rate",
+            list(zip(x_values, y_values)),
+            y_label="BPM",
+            unit="bpm",
         )
-        heart_rate_fig.update_layout(
-            template="plotly_white",
-            title="Heart Rate",
-            xaxis_title="Date",
-            yaxis_title="BPM",
-            height=420,
-            margin=dict(l=10, r=10, t=50, b=10),
-            hovermode="x unified",
-        )
-        heart_rate = _render_plotly_figure(heart_rate_fig)
     else:
-        heart_rate = "<p class='text-muted'>No heart rate data available yet.</p>"
+        heart_rate = _build_svg_chart("Heart Rate", [], y_label="BPM", unit="bpm")
 
     return render(
         request,
@@ -434,31 +444,13 @@ def steps_stat_plot_view(request):
     )
     if steps_data:
         x_values, y_values = zip(*steps_data)
-
-        step_fig = go.Figure()
-        step_fig.add_trace(
-            go.Scatter(
-                x=x_values,
-                y=y_values,
-                mode="lines+markers",
-                name="Steps",
-                line=dict(color="#4c72b0", width=2),
-                marker=dict(size=6, color="#4c72b0", opacity=0.8),
-                hovertemplate="%{x}<br>%{y:.0f} steps<extra></extra>",
-            )
+        step_data = _build_svg_chart(
+            "Steps",
+            list(zip(x_values, y_values)),
+            y_label="Steps",
         )
-        step_fig.update_layout(
-            template="plotly_white",
-            title="Steps",
-            xaxis_title="Date",
-            yaxis_title="Steps",
-            height=420,
-            margin=dict(l=10, r=10, t=50, b=10),
-            hovermode="x unified",
-        )
-        step_data = _render_plotly_figure(step_fig)
     else:
-        step_data = "<p class='text-muted'>No step data available yet.</p>"
+        step_data = _build_svg_chart("Steps", [], y_label="Steps")
 
     return render(
         request,
@@ -478,31 +470,13 @@ def oxygen_stat_plot_view(request):
     )
     if oxygen_data:
         x_values, y_values = zip(*oxygen_data)
-
-        oxygen_fig = go.Figure()
-        oxygen_fig.add_trace(
-            go.Scatter(
-                x=x_values,
-                y=y_values,
-                mode="lines+markers",
-                name="Oxygen Saturation",
-                line=dict(color="#9c5b00", width=2),
-                marker=dict(size=6, color="#9c5b00", opacity=0.8),
-                hovertemplate="%{x}<br>%{y:.1f}%<extra></extra>",
-            )
+        oxygen_data_plot = _build_svg_chart(
+            "Oxygen Saturation",
+            list(zip(x_values, y_values)),
+            y_label="%",
         )
-        oxygen_fig.update_layout(
-            template="plotly_white",
-            title="Oxygen Saturation",
-            xaxis_title="Date",
-            yaxis_title="%",
-            height=420,
-            margin=dict(l=10, r=10, t=50, b=10),
-            hovermode="x unified",
-        )
-        oxygen_data_plot = _render_plotly_figure(oxygen_fig)
     else:
-        oxygen_data_plot = "<p class='text-muted'>No oxygen data available yet.</p>"
+        oxygen_data_plot = _build_svg_chart("Oxygen Saturation", [], y_label="%")
 
     return render(
         request,
@@ -530,50 +504,23 @@ def oxygen_temperature_stat_plot_view(request):
         .values_list("when", "temperature")
     )
 
-    oxygen_temperature_fig = go.Figure()
-
+    combined_series = []
     if oxygen_data:
         oxygen_x, oxygen_y = zip(*oxygen_data)
-        oxygen_temperature_fig.add_trace(
-            go.Scatter(
-                x=oxygen_x,
-                y=oxygen_y,
-                mode="lines+markers",
-                name="Oxygen",
-                line=dict(color="#d62728", width=2),
-                marker=dict(size=6, color="#d62728", opacity=0.8),
-                hovertemplate="%{x}<br>%{y:.1f}%<extra></extra>",
-            )
-        )
+        combined_series.extend(list(zip(oxygen_x, oxygen_y)))
 
     if temp_data:
         temp_x, temp_y = zip(*temp_data)
-        oxygen_temperature_fig.add_trace(
-            go.Scatter(
-                x=temp_x,
-                y=temp_y,
-                mode="markers",
-                name="Temperature",
-                marker=dict(size=7, color="#2f2f2f", opacity=0.8),
-                hovertemplate="%{x}<br>%{y:.1f}°F<extra></extra>",
-            )
-        )
+        combined_series.extend(list(zip(temp_x, temp_y)))
 
-    if oxygen_temperature_fig.data:
-        oxygen_temperature_fig.update_layout(
-            template="plotly_white",
-            title="Oxygen + Temperature",
-            xaxis_title="Date",
-            yaxis_title="Value",
-            height=420,
-            margin=dict(l=10, r=10, t=50, b=10),
-            hovermode="x unified",
+    if combined_series:
+        oxygen_temperature_plot = _build_svg_chart(
+            "Oxygen + Temperature",
+            combined_series,
+            y_label="Value",
         )
-        oxygen_temperature_plot = _render_plotly_figure(oxygen_temperature_fig)
     else:
-        oxygen_temperature_plot = (
-            "<p class='text-muted'>No chart data available yet.</p>"
-        )
+        oxygen_temperature_plot = _build_svg_chart("Oxygen + Temperature", [], y_label="Value")
 
     return render(
         request,

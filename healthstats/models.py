@@ -2,7 +2,6 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django_pandas.managers import DataFrameManager
 
 
 class Symptom(models.Model):
@@ -53,7 +52,6 @@ class HealthEvent(models.Model):
     #     null=True,
     #     help_text="How bad do you feel? Enter a number between 0 and 10, where 10 is bad, 0 is good",
     # )
-    objects = DataFrameManager()
 
     class Meta:
         verbose_name = "Health Event"
@@ -153,6 +151,20 @@ class AppleHealthUpload(models.Model):
     records_imported = models.IntegerField(
         default=0, help_text="Number of health records successfully imported"
     )
+    csv_data_dir = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Legacy path used for imported CSV data",
+    )
+    is_processed = models.BooleanField(
+        default=False,
+        help_text="Legacy flag for whether the import has been processed",
+    )
+    is_imported = models.BooleanField(
+        default=False,
+        help_text="Legacy flag for whether the import has completed",
+    )
 
     class Meta:
         verbose_name = "Apple Health Upload"
@@ -201,7 +213,6 @@ class OxygenData(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     value = models.FloatField()
-    objects = DataFrameManager()
 
     class Meta:
         verbose_name = "Oxygen Data"

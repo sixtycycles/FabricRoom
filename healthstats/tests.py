@@ -249,7 +249,8 @@ class PlotViewTest(TestCase):
         response = self.client.get(reverse("temp-plot"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Temperature")
-        self.assertContains(response, "plotly")
+        self.assertContains(response, "<svg")
+        self.assertNotContains(response, "plotly")
 
     def test_heart_plot_view_renders_chart(self):
         response = self.client.get(reverse("heart-plot"))
