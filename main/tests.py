@@ -226,3 +226,24 @@ class HomePageTest(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("home"))
         self.assertContains(response, 'href="/health/"')
+
+    def test_recent_feed_items_only_shows_unread_for_user(self):
+        from feeds.models import Feed, FeedItem
+        self.client.force_login(self.user)
+        
+        # User's feed
+        feed = Feed.objects.create(user=self.user, title="My Feed", feed_url="https://example.com/my.xml")
+        unread_item = FeedItem.objects.create(feed=feed, entry_id="1", title="Unread Item", is_read=False)
+        read_item = FeedItem.objects.create(feed=feed, entry_id="2", title="Read Item", is_read=True)
+        
+        # Another user's feed
+        other_user = get_user_model().objects.create_user(username="other", email="other@email.com", password="password")
+        other_feed = Feed.objects.create(user=other_user, title="Other Feed", feed_url="https://example.com/other.xml")
+        other_unread_item = FeedItem.objects.create(feed=other_feed, entry_id="3", title="Other Unread Item", is_read=False)
+        
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        recent_items = list(response.context["recent_feed_items"])
+        self.assertIn(unread_item, recent_items)
+        self.assertNotIn(read_item, recent_items)
+        self.assertNotIn(other_unread_item, recent_items)

@@ -22,9 +22,9 @@ class LandingPageView(TemplateView):
         context = super(LandingPageView, self).get_context_data(**kwargs)
         context["user"] = self.request.user
         context["random_quote"] = Quote.objects.order_by("?").first()
-        context["recent_feed_items"] = FeedItem.objects.select_related("feed").order_by(
-            "-published", "-fetched_at"
-        )[:5]
+        context["recent_feed_items"] = FeedItem.objects.filter(
+            feed__user=self.request.user, is_read=False
+        ).select_related("feed").order_by("-published", "-fetched_at")[:5]
         return context
 
 
