@@ -48,12 +48,25 @@
           <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
             <h2 class="h4 mb-0">Feed reader</h2>
             <div class="d-flex flex-wrap gap-2">
-              <a class="btn btn-sm {% if not selected_folder %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{% url 'feeds_dashboard' %}">All</a>
+              <a class="btn btn-sm {% if not selected_folder and not selected_feed %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{% url 'feeds_dashboard' %}">All</a>
               {% for folder in folders %}
-                <a class="btn btn-sm {% if selected_folder and selected_folder.pk == folder.pk %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{% url 'feeds_dashboard' %}?folder={{ folder.pk }}">{{ folder.name }}</a>
+                <a class="btn btn-sm {% if selected_folder and selected_folder.pk == folder.pk %}btn-primary{% else %}btn-outline-secondary{% endif %}" href="{% url 'feeds_dashboard' %}?folder={{ folder.pk }}{% if selected_feed %}&feed={{ selected_feed.pk }}{% endif %}">{{ folder.name }}</a>
               {% endfor %}
               <a class="btn btn-sm btn-outline-primary" href="{% url 'feeds_read' %}">Read articles</a>
             </div>
+          </div>
+          {% if feeds %}
+            <div class="mb-3">
+              <label for="feed-filter" class="form-label small text-muted">Filter by source</label>
+              <select id="feed-filter" class="form-select form-select-sm" onchange="window.location.href=this.value">
+                <option value="{% url 'feeds_dashboard' %}{% if selected_folder %}?folder={{ selected_folder.pk }}{% endif %}" {% if not selected_feed %}selected{% endif %}>All sources</option>
+                {% for feed in feeds %}
+                  <option value="{% url 'feeds_dashboard' %}?{% if selected_folder %}folder={{ selected_folder.pk }}&{% else %}{% endif %}feed={{ feed.pk }}" {% if selected_feed and selected_feed.pk == feed.pk %}selected{% endif %}>{{ feed.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endif %}
+          {% if entries %}
           </div>
           {% if entries %}
             <div class="row g-3" style="max-height: 75vh; overflow-y: auto;">

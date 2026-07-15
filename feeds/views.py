@@ -99,13 +99,20 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
         user = self.request.user
         folders = FeedFolder.objects.filter(user=user)
         selected_folder_id = self.request.GET.get("folder")
+        selected_feed_id = self.request.GET.get("feed")
         selected_folder = None
+        selected_feed = None
 
         feeds_qs = Feed.objects.filter(user=user, is_active=True)
         if selected_folder_id:
             selected_folder = folders.filter(pk=selected_folder_id).first()
             if selected_folder is not None:
                 feeds_qs = feeds_qs.filter(folder=selected_folder)
+
+        if selected_feed_id:
+            selected_feed = feeds_qs.filter(pk=selected_feed_id).first()
+            if selected_feed is not None:
+                feeds_qs = feeds_qs.filter(pk=selected_feed_id)
 
         feeds = list(feeds_qs)
 
@@ -124,6 +131,9 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
             "feed"
         ).order_by("-published", "-fetched_at")
 
+        unread_feed_ids = list({item.feed_id for item in latest_items})
+        available_feeds = [feed for feed in feeds if feed.pk in unread_feed_ids]
+
         entries = []
         feed_item_counts = {}
         for item in latest_items:
@@ -134,7 +144,8 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
 
         context["folders"] = folders
         context["selected_folder"] = selected_folder
-        context["feeds"] = feeds
+        context["selected_feed"] = selected_feed
+        context["feeds"] = available_feeds
         context["folder_form"] = FeedFolderForm()
         context["feed_form"] = FeedForm(user=user)
         context["entries"] = entries
