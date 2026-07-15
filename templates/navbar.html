@@ -45,8 +45,8 @@
             {{user.first_name}}
           </a>
           <ul class="dropdown-menu" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="/health">Health</a></li>
-            <li><a class="dropdown-item" href="/health/apple-health/">Apple Health Data</a></li>
+            <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
+            <li><a class="dropdown-item" href="{% url 'apple-health-list' %}">Apple Health Data</a></li>
             <li><hr class="dropdown-divider"></li>
             {% if user.is_staff %}
                 <li><a class="dropdown-item" href="/admin/">Admin</a></li>

@@ -221,3 +221,8 @@ class HomePageTest(TestCase):
         # Either returns 403 (forbidden) or redirects to login
         # The page requires login but may redirect instead of rejecting
         self.assertIn(response.status_code, [200, 403, 302])
+
+    def test_authenticated_navbar_uses_health_home_url(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, 'href="/health/"')
