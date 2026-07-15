@@ -127,9 +127,18 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
                 except Exception:
                     continue
 
-        latest_items = FeedItem.objects.filter(feed__in=feeds, is_read=False).select_related(
-            "feed"
-        ).order_by("-published", "-fetched_at")
+        sort_order = self.request.GET.get("sort", "date")
+        if sort_order not in ("date", "source"):
+            sort_order = "date"
+
+        if sort_order == "source":
+            latest_items = FeedItem.objects.filter(feed__in=feeds, is_read=False).select_related(
+                "feed"
+            ).order_by("feed__title", "-published", "-fetched_at")
+        else:
+            latest_items = FeedItem.objects.filter(feed__in=feeds, is_read=False).select_related(
+                "feed"
+            ).order_by("-published", "-fetched_at")
 
         unread_feed_ids = list({item.feed_id for item in latest_items})
         available_feeds = [feed for feed in feeds if feed.pk in unread_feed_ids]
@@ -149,6 +158,7 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
         context["folder_form"] = FeedFolderForm()
         context["feed_form"] = FeedForm(user=user)
         context["entries"] = entries
+        context["sort"] = sort_order
         return context
 
 

@@ -90,3 +90,63 @@ class FeedReaderTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context["user"], self.user)
+
+    def test_dashboard_sorting_by_date(self):
+        self.client.login(username="reader", password="secret123")
+        feed_a = Feed.objects.create(
+            user=self.user,
+            title="A Feed",
+            feed_url="https://example.com/a.xml",
+        )
+        feed_b = Feed.objects.create(
+            user=self.user,
+            title="B Feed",
+            feed_url="https://example.com/b.xml",
+        )
+        item1 = FeedItem.objects.create(
+            feed=feed_a,
+            entry_id="1",
+            title="First Item",
+            published="2026-07-01T00:00:00Z",
+        )
+        item2 = FeedItem.objects.create(
+            feed=feed_b,
+            entry_id="2",
+            title="Second Item",
+            published="2026-07-02T00:00:00Z",
+        )
+
+        # Default or date sorting: newest first (item2 then item1)
+        response = self.client.get(reverse("feeds_dashboard") + "?sort=date")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context["entries"]), [item2, item1])
+
+    def test_dashboard_sorting_by_source(self):
+        self.client.login(username="reader", password="secret123")
+        feed_b = Feed.objects.create(
+            user=self.user,
+            title="B Feed",
+            feed_url="https://example.com/b.xml",
+        )
+        feed_a = Feed.objects.create(
+            user=self.user,
+            title="A Feed",
+            feed_url="https://example.com/a.xml",
+        )
+        item1 = FeedItem.objects.create(
+            feed=feed_b,
+            entry_id="1",
+            title="First Item",
+            published="2026-07-01T00:00:00Z",
+        )
+        item2 = FeedItem.objects.create(
+            feed=feed_a,
+            entry_id="2",
+            title="Second Item",
+            published="2026-07-02T00:00:00Z",
+        )
+
+        # Sorted by source name alphabetically (A Feed item2, B Feed item1)
+        response = self.client.get(reverse("feeds_dashboard") + "?sort=source")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context["entries"]), [item2, item1])
