@@ -25,13 +25,20 @@
   </div>
 
   <div class="card-body">
-    <ul>
-      <li>
-        <a class="btn btn-primary" href="{% url 'bp_new'%}">New Blood Pressure </a>
-      </li>
-      <li> <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a></li>
-      <li> <a class="btn btn-primary" href="{% url 'symptom_new' %}"> New Symptom </a></li>
-    </ul>
+    <div class="row g-2">
+      <div class="col-12 col-md-3">
+        <a class="btn btn-primary w-100" href="{% url 'bp_new'%}">New Blood Pressure</a>
+      </div>
+      <div class="col-12 col-md-3">
+        <a class="btn btn-primary w-100" href="{% url 'stat_new' %}">New Temperature</a>
+      </div>
+      <div class="col-12 col-md-3">
+        <a class="btn btn-primary w-100" href="{% url 'symptom_new' %}">New Symptom</a>
+      </div>
+      <div class="col-12 col-md-3">
+        <a class="btn btn-primary w-100" href="{% url 'post_new' %}">New Blog Entry</a>
+      </div>
+    </div>
 
     <h5 class="mt-4">Recent feed items</h5>
     {% if recent_feed_items %}
