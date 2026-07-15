@@ -26,6 +26,22 @@
       <li> <a class="btn btn-primary" href="{% url 'stat_new' %}"> New Tempterature</a></li>
       <li> <a class="btn btn-primary" href="{% url 'symptom_new' %}"> New Symptom </a></li>
     </ul>
+
+    <h5 class="mt-4">Recent feed items</h5>
+    {% if recent_feed_items %}
+    <ul class="list-unstyled mt-2">
+      {% for item in recent_feed_items %}
+      <li class="mb-2">
+        <a href="{{ item.link|default:'#' }}" target="_blank" rel="noopener noreferrer">
+          {{ item.title|default:item.feed.title }}
+        </a>
+        <div class="text-muted small">{{ item.feed.title }}</div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted small mb-0">No recent feed items yet.</p>
+    {% endif %}
   </div>
   <div class="card-footer">
   </div>

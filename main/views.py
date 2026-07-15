@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
 from blog.models import Quote
+from feeds.models import FeedItem
 
 
 class LandingPageView(TemplateView):
@@ -21,6 +22,9 @@ class LandingPageView(TemplateView):
         context = super(LandingPageView, self).get_context_data(**kwargs)
         context["user"] = self.request.user
         context["random_quote"] = Quote.objects.order_by("?").first()
+        context["recent_feed_items"] = FeedItem.objects.select_related("feed").order_by(
+            "-published", "-fetched_at"
+        )[:5]
         return context
 
 
