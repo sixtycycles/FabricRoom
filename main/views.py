@@ -6,6 +6,8 @@ from main.forms import CustomUserChangeForm, CustomUserCreationForm
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 
+from blog.models import Quote
+
 
 class LandingPageView(TemplateView):
     template_name = "home.html"
@@ -18,9 +20,7 @@ class LandingPageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(LandingPageView, self).get_context_data(**kwargs)
         context["user"] = self.request.user
-        # context['notes'] = Note.objects.all()
-        # context['posts'] = Post.objects.filter(published=True)
-        # context['tags'] = Tag.objects.all()
+        context["random_quote"] = Quote.objects.order_by("?").first()
         return context
 
 

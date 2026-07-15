@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if random_quote %}
+<div class="card mb-3 mt-3">
+  <div class="card-body">
+    <blockquote style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; margin: 0;">
+      “{{ random_quote.text }}”
+      <footer class="mt-2"><em>— {{ random_quote.author }}</em></footer>
+    </blockquote>
+  </div>
+</div>
+{% endif %}
+
 {% if user.is_authenticated %}
 <div class="card mb-3 mt-3">
   <div class="card-header">
