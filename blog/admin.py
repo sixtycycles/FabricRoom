@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Post, Note, Tag, InlineImage
+from .models import Post, Note, Tag, InlineImage, Quote
 
 
 @admin.register(Post)
@@ -25,6 +25,13 @@ class NoteAdmin(admin.ModelAdmin):
         "title",
         "link",
     ]
+    list_filter = ["author"]
+
+
+@admin.register(Quote)
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ["author", "text", "created_at"]
+    search_fields = ["author", "text"]
     list_filter = ["author"]
 
 

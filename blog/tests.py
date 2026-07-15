@@ -1,11 +1,16 @@
-from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from unittest import skip
-from blog.models import Post, Note, Tag, InlineImage
+import os
+import tempfile
 from io import BytesIO
+from unittest import skip
+
+from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
+from django.test import TestCase, Client
+from django.urls import reverse
 from PIL import Image
+
+from blog.models import Post, Note, Tag, InlineImage, Quote
 
 # NOTE: These tests cover blog models and views including Posts, Tags, and Notes.
 # All required database schema has been applied via migrations.
@@ -212,6 +217,24 @@ class PostPermissionAndDeleteTest(TestCase):
 
         self.assertEqual(response.status_code, 403)
         self.assertTrue(Post.objects.filter(pk=self.post.pk).exists())
+
+
+class QuoteImportCommandTests(TestCase):
+    def test_imports_quotes_from_csv(self):
+        with tempfile.NamedTemporaryFile(
+            "w", suffix=".csv", delete=False, encoding="utf-8"
+        ) as handle:
+            handle.write('Quote,Author/Character\n"Be brave",Alice\n"Keep going",Bob\n')
+            csv_path = handle.name
+
+        try:
+            call_command("import_quotes", csv_path)
+        finally:
+            os.remove(csv_path)
+
+        self.assertEqual(Quote.objects.count(), 2)
+        self.assertTrue(Quote.objects.filter(text="Be brave", author="Alice").exists())
+        self.assertTrue(Quote.objects.filter(text="Keep going", author="Bob").exists())
 
 
 class RichTextEditorTest(TestCase):

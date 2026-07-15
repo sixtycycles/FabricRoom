@@ -86,6 +86,23 @@ class Note(models.Model):
         return reverse("note_detail", args=[str(self.id)])
 
 
+class Quote(models.Model):
+    text = models.TextField()
+    author = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Quote"
+        verbose_name_plural = "Quotes"
+        ordering = ["author", "text"]
+
+    def __str__(self):
+        if self.author:
+            return f"{self.text} — {self.author}"
+        return self.text
+
+
 class InlineImage(models.Model):
     post = models.ForeignKey(
         Post,
