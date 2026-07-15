@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
@@ -57,3 +57,11 @@ def custom_error_404(request, exception):
 
 def custom_error_500(request):
     return render(request, "500.html", {})
+
+
+def delete_quote(request, pk):
+    quote = get_object_or_404(Quote, pk=pk)
+    if request.method == "POST":
+        quote.delete()
+        return redirect("home")
+    return redirect("home")

@@ -4,10 +4,16 @@
 {% if random_quote %}
 <div class="card mb-3 mt-3">
   <div class="card-body">
-    <blockquote style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; margin: 0;">
-      “{{ random_quote.text }}”
-      <footer class="mt-2"><em>— {{ random_quote.author }}</em></footer>
-    </blockquote>
+    <div class="d-flex justify-content-between align-items-start gap-3">
+      <blockquote style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; margin: 0;">
+        “{{ random_quote.text }}”
+        <footer class="mt-2"><em>— {{ random_quote.author }}</em></footer>
+      </blockquote>
+      <form method="post" action="{% url 'delete_quote' random_quote.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+      </form>
+    </div>
   </div>
 </div>
 {% endif %}
