@@ -18,6 +18,8 @@ from blog.models import Post, Note, Tag, InlineImage, Quote
 
 class BlogTest(TestCase):
     def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
         self.user = get_user_model().objects.create_user(
             username="testuser", email="test@email.com", password="secret"
         )
@@ -52,7 +54,7 @@ class BlogTest(TestCase):
         )
 
     def test_post_detail_view(self):
-        response = self.client.get(f"/blog/post/{self.post.id}/")
+        response = self.client.get(reverse("post_detail", args=[self.post.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "test title")
         self.assertTemplateUsed(response, "post_detail.html")
