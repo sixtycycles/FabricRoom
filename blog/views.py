@@ -230,6 +230,10 @@ class UploadPostImageView(LoginRequiredMixin, View):
         # Create InlineImage record
         if is_new_post:
             # For new posts, create with session_key instead of post
+            # Ensure session exists so we have a session_key
+            if not request.session.session_key:
+                request.session.create()
+            
             inline_image = InlineImage.objects.create(
                 image=image_file, session_key=request.session.session_key
             )
