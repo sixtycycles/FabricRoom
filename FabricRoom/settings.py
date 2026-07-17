@@ -184,7 +184,7 @@ CACHES = {
         "LOCATION": env("DJANGO_CACHE_DIR", default=str(BASE_DIR / "cache")),
     }
 }
-CACHE_TTL = env.int("CACHE_TTL", default=60)
+CACHE_TTL = env.int("CACHE_TTL", default=5)
 
 
 # ============================================================================
