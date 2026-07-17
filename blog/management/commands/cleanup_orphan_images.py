@@ -1,16 +1,15 @@
 """Management command: cleanup_orphan_images
 
-Finds and deletes two kinds of orphaned InlineImage records:
+Finds and deletes two kinds of orphaned InlineImage records, both by default:
 
 1. **Pending orphans** – images uploaded during a new-post session that was
-   never submitted (``post`` is NULL), older than ``--hours``.
+   never submitted (``post`` is NULL).  A ``--grace-hours`` threshold (default
+   1 h) prevents deleting images that were *just* uploaded and are still part
+   of an in-progress new-post form.
 
 2. **Content orphans** – images that *are* linked to a post but whose URL no
    longer appears anywhere in that post's body (e.g. the user removed the
    image from the editor but the record was not cleaned up server-side).
-   These are only included when ``--include-content-orphans`` is passed,
-   because checking every linked image against its post body is more
-   expensive and should only run periodically.
 
 The ``post_delete`` signal on InlineImage automatically removes the file from
 disk for every record deleted here.
@@ -19,14 +18,14 @@ Usage:
     # Dry-run: see what would be removed without deleting anything
     python manage.py cleanup_orphan_images --dry-run
 
-    # Delete pending orphans older than 24 h (default)
+    # Delete both kinds of orphan (default grace period = 1 h for pending)
     python manage.py cleanup_orphan_images
 
-    # Also delete images that were removed from their post's body
-    python manage.py cleanup_orphan_images --include-content-orphans
+    # Use a longer grace period for pending images (e.g. during slow sessions)
+    python manage.py cleanup_orphan_images --grace-hours 4
 
-    # Adjust the age threshold
-    python manage.py cleanup_orphan_images --hours 2
+    # Skip the content-orphan check (faster; only removes post-less images)
+    python manage.py cleanup_orphan_images --skip-content-check
 """
 
 from django.core.management.base import BaseCommand
@@ -44,18 +43,22 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--hours",
+            "--grace-hours",
             type=int,
-            default=24,
-            help="Delete pending images (no post) older than this many hours (default: 24).",
+            default=1,
+            help=(
+                "Grace period (hours) before a pending image (no post) is "
+                "considered an orphan.  Prevents deleting images that were "
+                "just uploaded as part of an in-progress new-post form. "
+                "Default: 1."
+            ),
         )
         parser.add_argument(
-            "--include-content-orphans",
+            "--skip-content-check",
             action="store_true",
             help=(
-                "Also delete images that are linked to a post but whose URL "
-                "no longer appears in the post body (i.e. the editor delete "
-                "button was used but the server record was not cleaned up)."
+                "Skip the content-orphan check (images linked to a post but "
+                "absent from its body).  Useful for quick runs."
             ),
         )
         parser.add_argument(
@@ -65,50 +68,53 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        hours = options["hours"]
+        grace_hours = options["grace_hours"]
+        skip_content_check = options["skip_content_check"]
         dry_run = options["dry_run"]
-        include_content_orphans = options["include_content_orphans"]
 
         to_delete = []
 
-        # ── 1. Pending orphans (uploaded for a new post that was never saved) ──
-        cutoff = timezone.now() - timedelta(hours=hours)
+        # ── 1. Pending orphans (no post, outside the grace window) ───────────
+        cutoff = timezone.now() - timedelta(hours=grace_hours)
         pending_orphans = list(
             InlineImage.objects.filter(post__isnull=True, created_at__lt=cutoff)
         )
-        if pending_orphans:
-            self.stdout.write(
-                f"Found {len(pending_orphans)} pending orphan(s) older than {hours} hour(s)."
-            )
+        self.stdout.write(
+            f"Pending orphans (no post, older than {grace_hours}h): "
+            f"{len(pending_orphans)} found."
+        )
         to_delete.extend(pending_orphans)
 
-        # ── 2. Content orphans (image linked to post but not in body) ──────────
-        if include_content_orphans:
-            linked_images = InlineImage.objects.filter(post__isnull=False).select_related("post")
+        # ── 2. Content orphans (linked to post, URL absent from body) ────────
+        if not skip_content_check:
+            linked_images = InlineImage.objects.filter(
+                post__isnull=False
+            ).select_related("post")
             content_orphans = [
                 img for img in linked_images
                 if img.image and img.image.url not in img.post.body
             ]
-            if content_orphans:
-                self.stdout.write(
-                    f"Found {len(content_orphans)} content orphan(s) "
-                    "(linked to a post but URL absent from body)."
-                )
+            self.stdout.write(
+                f"Content orphans (linked to post, absent from body): "
+                f"{len(content_orphans)} found."
+            )
             to_delete.extend(content_orphans)
 
         if not to_delete:
-            self.stdout.write("No orphaned images to clean up.")
+            self.stdout.write(self.style.SUCCESS("Nothing to clean up."))
             return
 
         if dry_run:
             self.stdout.write(
-                self.style.WARNING(f"[dry-run] Would delete {len(to_delete)} image(s):")
+                self.style.WARNING(
+                    f"\n[dry-run] Would delete {len(to_delete)} image(s):"
+                )
             )
             for img in to_delete:
                 self.stdout.write(
                     f"  • {img.image.name}  "
                     f"(post: {img.post_id or 'none'}, "
-                    f"session: {img.session_key}, "
+                    f"session: {img.session_key or '-'}, "
                     f"created: {img.created_at})"
                 )
             return
@@ -116,9 +122,9 @@ class Command(BaseCommand):
         deleted = 0
         for img in to_delete:
             self.stdout.write(f"  Deleting {img.image.name} …")
-            img.delete()  # triggers post_delete signal → file removed from disk
+            img.delete()  # post_delete signal removes file from disk
             deleted += 1
 
         self.stdout.write(
-            self.style.SUCCESS(f"Cleaned up {deleted} orphaned inline image(s).")
+            self.style.SUCCESS(f"\nCleaned up {deleted} orphaned inline image(s).")
         )
