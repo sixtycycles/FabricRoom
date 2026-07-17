@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           // Insert image into editor
           editor.focus();
-          const imgHtml = `<img src="${data.image_url}" alt="Image" class="editor-image img-fluid" draggable="true">`;
+          const imgHtml = `<img src="${data.image_url}" alt="Image" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
           document.execCommand('insertHTML', false, imgHtml);
           saveContent();
 
@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         if (data.success) {
           editor.focus();
-          const imgHtml = `<img src="${data.image_url}" alt="Image" class="editor-image img-fluid" draggable="true">`;
+          const imgHtml = `<img src="${data.image_url}" alt="Image" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
           document.execCommand('insertHTML', false, imgHtml);
           saveContent();
           setupImageEditing();
@@ -507,6 +507,16 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteBtn.style.cssText = 'padding: 4px 8px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background: #fff;';
     deleteBtn.addEventListener('click', function(e) {
       e.preventDefault();
+
+      const imageId = imgElement.dataset.imageId;
+      if (imageId) {
+        // Tell the server to delete the record and file immediately.
+        fetch(`/blog/post/image/${imageId}/delete/`, {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        }).catch(err => console.error('Error deleting image from server:', err));
+      }
+
       imgElement.remove();
       removeImageToolbar();
       saveContent();

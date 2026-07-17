@@ -17,6 +17,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from blog.models import Post, Note, InlineImage
+from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django import forms
@@ -251,3 +252,35 @@ class UploadPostImageView(LoginRequiredMixin, View):
                 "image_id": inline_image.id,
             }
         )
+
+
+@method_decorator(require_http_methods(["POST"]), name="dispatch")
+class DeletePostImageView(LoginRequiredMixin, View):
+    """Delete a single InlineImage record and its file from disk.
+
+    Authorisation rules:
+    - If the image is linked to a post, the requesting user must be the post author.
+    - If the image is still pending (no post), the requesting user's session key
+      must match the session key stored on the image.
+    """
+
+    login_url = "/accounts/login/"
+
+    def post(self, request, image_id, *args, **kwargs):
+        try:
+            image = InlineImage.objects.select_related("post").get(pk=image_id)
+        except InlineImage.DoesNotExist:
+            return JsonResponse({"error": "Image not found"}, status=404)
+
+        # Authorisation check
+        if image.post is not None:
+            if image.post.author != request.user:
+                return JsonResponse({"error": "Unauthorized"}, status=403)
+        else:
+            # Pending image — must belong to this session
+            if image.session_key != request.session.session_key:
+                return JsonResponse({"error": "Unauthorized"}, status=403)
+
+        # Deleting the record fires the post_delete signal which removes the file.
+        image.delete()
+        return JsonResponse({"success": True})

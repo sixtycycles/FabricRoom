@@ -11,6 +11,7 @@ from blog.views import (
     NoteUpdateView,
     NoteDeleteView,
     UploadPostImageView,
+    DeletePostImageView,
     PostQRCodeView,
 )
 
@@ -30,6 +31,11 @@ urlpatterns = [
         "post/<int:pk>/upload-image/",
         UploadPostImageView.as_view(),
         name="upload_post_image",
+    ),
+    path(
+        "post/image/<int:image_id>/delete/",
+        DeletePostImageView.as_view(),
+        name="delete_post_image",
     ),
     path("note/", NoteListView.as_view(), name="note_list"),
     path("note/new/", NoteCreateView.as_view(), name="note_new"),
