@@ -1,8 +1,6 @@
 *.pyc
 */__pycache__
 .sass-cache/
-/secrets
-.vscode/settings.json
 venv/*
 *.sqlite3
 # Ignore most static files, but track the rich-text-editor and SCSS customizations
@@ -11,15 +9,11 @@ static/*
 !static/js/rich-text-editor.js
 static/bootstrap-*/
 media/
-/srv/code/media
 .env
-/srv/code/venv
 staticfiles/
-marisa_history.csv
-stat_data.txt
-.vscode
+.vscode/
+.github/
 debug.log
-.idea
-dsd_logs/
+.idea/
 .DS_Store
 cache/

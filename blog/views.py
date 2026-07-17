@@ -212,8 +212,9 @@ class UploadPostImageView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         post_id = kwargs.get("pk")
 
-        # For new posts, post_id will be 'new'
-        is_new_post = post_id == "new"
+        # For new posts, the URL has no `pk` kwarg (it's the /post/new/upload-image/ path),
+        # so post_id will be None rather than the string "new".
+        is_new_post = post_id is None
 
         # If not a new post, verify authorization
         if not is_new_post:
