@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from main.forms import CustomUserCreationForm, CustomUserChangeForm
 from main.models import CustomUser
 from main.models import Profile
+from main.models import PrivacyPolicy
 
 # from blog.models import Note, Tag
 
@@ -88,3 +89,9 @@ class CustomUserAdmin(UserAdmin):
 
 # admin.site.unregister(User)
 # admin.site.register(User, ProfileAdmin)
+
+
+@admin.register(PrivacyPolicy)
+class PrivacyPolicyAdmin(admin.ModelAdmin):
+    list_display = ('id',)
+    fields = ('content',)
