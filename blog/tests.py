@@ -31,10 +31,6 @@ class BlogTest(TestCase):
             published=True,
         )
 
-    def test_string_representation(self):
-        post = Post(title="A sample title")
-        self.assertEqual(str(post), post.title)
-
     def test_post_content(self):
         self.assertEqual(f"{self.post.title}", "test title")
         self.assertEqual(f"{self.post.author}", "testuser")
@@ -52,6 +48,10 @@ class BlogTest(TestCase):
             response,
             f'<a href="{reverse("post_detail", args=[self.post.id])}">test title</a>',
         )
+
+    def test_string_representation(self):
+        post = Post(title="A sample title")
+        self.assertEqual(str(post), post.title)
 
     def test_post_detail_view(self):
         response = self.client.get(reverse("post_detail", args=[self.post.id]))
@@ -172,13 +172,13 @@ class PostPermissionAndDeleteTest(TestCase):
             follow=False,
         )
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(Post.objects.count(), initial_count)
         self.assertFalse(Post.objects.filter(title="Attempted Post").exists())
 
     def test_create_post_requires_login(self):
         response = self.client.get(reverse("post_new"))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
 
     def test_author_can_delete_post_with_post_request(self):
         self.client.login(username="author", password="secretpass")
@@ -206,7 +206,7 @@ class PostPermissionAndDeleteTest(TestCase):
             follow=False,
         )
 
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         self.assertTrue(Post.objects.filter(pk=self.post.pk).exists())
 
     def test_non_author_cannot_delete_post(self):

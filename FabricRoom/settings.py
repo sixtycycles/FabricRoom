@@ -172,7 +172,10 @@ if DEBUG:
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "/var/www/media"
+if "test" in sys.argv:
+    MEDIA_ROOT = BASE_DIR / "media"
+else:
+    MEDIA_ROOT = "/var/www/media"
 
 
 # ============================================================================
