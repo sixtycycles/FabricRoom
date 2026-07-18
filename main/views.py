@@ -47,6 +47,16 @@ class PrivateHome(LoginRequiredMixin, TemplateView):
         return context
 
 
+class PrivacyPolicyView(TemplateView):
+    template_name = "privacy_policy.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        privacy_policy = PrivacyPolicy.objects.first()
+        context['privacy_policy'] = privacy_policy
+        return context
+
+
 # Custom http error code pages
 def custom_error_403(request, exception):
     return render(request, "403.html", {})
