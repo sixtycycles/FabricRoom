@@ -2,41 +2,90 @@
 {% load tz %}
 
 {% block content %}
+<style>
+  /* Ensure Django as_p form fields stay within card bounds */
+  #collapse-add-folder form input,
+  #collapse-add-folder form textarea,
+  #collapse-add-folder form select,
+  #collapse-add-feed form input,
+  #collapse-add-feed form textarea,
+  #collapse-add-feed form select {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  /* Prevent p tags wrapping form inputs from causing overflow */
+  #collapse-add-folder form p,
+  #collapse-add-feed form p {
+    overflow: hidden;
+  }
+</style>
 <div class="container py-4">
   <div class="row g-4">
-    <div class="col-lg-4">
+    {# Sidebar: renders after the feed list on mobile (order-lg-first keeps it left on large screens) #}
+    <div class="col-12 col-lg-4 order-last order-lg-first">
+
+      {# Add Folder: collapsed by default on mobile, expanded on large screens via JS below #}
       <div class="card shadow-sm mb-3">
         <div class="card-body">
-          <button class="btn btn-link p-0 text-start text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-add-folder" aria-expanded="true" aria-controls="collapse-add-folder">
+          <button class="btn btn-link p-0 text-start text-decoration-none w-100 d-flex justify-content-between align-items-center"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse-add-folder"
+                  aria-expanded="false"
+                  aria-controls="collapse-add-folder"
+                  id="btn-add-folder">
             <h3 class="h5 mb-0">Add folder</h3>
+            <span class="fs-5 lh-1" aria-hidden="true">&#43;</span>
           </button>
-          <div class="collapse show mt-3" id="collapse-add-folder">
-            <form method="post" action="{% url 'feeds_folder_create' %}">
+          <div class="collapse mt-3" id="collapse-add-folder">
+            <form method="post" action="{% url 'feeds_folder_create' %}" class="w-100">
               {% csrf_token %}
-              {{ folder_form.as_p }}
+              <div class="mb-3">
+                {{ folder_form.as_p }}
+              </div>
               <button class="btn btn-primary" type="submit">Save folder</button>
             </form>
           </div>
         </div>
       </div>
+
+      {# Add Feed: collapsed by default on mobile, expanded on large screens via JS below #}
       <div class="card shadow-sm mb-3">
         <div class="card-body">
-          <button class="btn btn-link p-0 text-start text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-add-feed" aria-expanded="true" aria-controls="collapse-add-feed">
+          <button class="btn btn-link p-0 text-start text-decoration-none w-100 d-flex justify-content-between align-items-center"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse-add-feed"
+                  aria-expanded="false"
+                  aria-controls="collapse-add-feed"
+                  id="btn-add-feed">
             <h3 class="h5 mb-0">Add feed</h3>
+            <span class="fs-5 lh-1" aria-hidden="true">&#43;</span>
           </button>
-          <div class="collapse show mt-3" id="collapse-add-feed">
-            <form method="post" action="{% url 'feeds_add' %}">
+          <div class="collapse mt-3" id="collapse-add-feed">
+            <form method="post" action="{% url 'feeds_add' %}" class="w-100">
               {% csrf_token %}
-              {{ feed_form.as_p }}
+              <div class="mb-3">
+                {{ feed_form.as_p }}
+              </div>
               <button class="btn btn-primary" type="submit">Add feed</button>
             </form>
           </div>
         </div>
       </div>
+
+      {# Folders: always visible #}
       <div class="card shadow-sm">
         <div class="card-body">
-          <button class="btn btn-link p-0 text-start text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-folders" aria-expanded="true" aria-controls="collapse-folders">
+          <button class="btn btn-link p-0 text-start text-decoration-none w-100 d-flex justify-content-between align-items-center"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse-folders"
+                  aria-expanded="true"
+                  aria-controls="collapse-folders">
             <h3 class="h5 mb-0">Folders</h3>
+            <span class="fs-5 lh-1" aria-hidden="true">&#9660;</span>
           </button>
           <div class="collapse show mt-3" id="collapse-folders">
             {% if folders %}
@@ -54,8 +103,10 @@
           </div>
         </div>
       </div>
+
     </div>
-    <div class="col-lg-8">
+    {# /sidebar #}
+    <div class="col-12 col-lg-8 order-first order-lg-last">
       <div class="card shadow-sm">
         <div class="card-body">
           <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
@@ -70,7 +121,7 @@
           </div>
           {% if feeds %}
             <div class="row g-2 mb-3">
-              <div class="col-md-8">
+              <div class="col-12 col-md-8">
                 <label for="feed-filter" class="form-label small text-muted">Filter by source</label>
                 <select id="feed-filter" class="form-select form-select-sm" onchange="window.location.href=this.value">
                   <option value="{% url 'feeds_dashboard' %}{% if selected_folder %}?folder={{ selected_folder.pk }}{% if sort and sort != 'date' %}&sort={{ sort }}{% endif %}{% else %}{% if sort and sort != 'date' %}?sort={{ sort }}{% endif %}{% endif %}" {% if not selected_feed %}selected{% endif %}>All sources</option>
@@ -79,7 +130,7 @@
                   {% endfor %}
                 </select>
               </div>
-              <div class="col-md-4">
+              <div class="col-12 col-md-4">
                 <label for="feed-sort" class="form-label small text-muted">Sort by</label>
                 <select id="feed-sort" class="form-select form-select-sm" onchange="window.location.href=this.value">
                   <option value="{% url 'feeds_dashboard' %}?{% if selected_folder %}folder={{ selected_folder.pk }}&{% endif %}{% if selected_feed %}feed={{ selected_feed.pk }}&{% endif %}sort=date" {% if sort == 'date' or not sort %}selected{% endif %}>Chronological</option>
@@ -91,7 +142,7 @@
           {% if entries %}
             <div class="row g-3" style="max-height: 75vh; overflow-y: auto;">
               {% for item in entries %}
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                   <article class="border rounded p-3 h-100 shadow-sm d-flex flex-column">
                     <p class="small text-muted mb-1">{{ item.feed.title }}</p>
                     <h3 class="h6">
@@ -118,4 +169,24 @@
     </div>
   </div>
 </div>
+
+{# On large screens, auto-expand the Add Folder and Add Feed panels #}
+<script>
+  (function () {
+    function syncPanels() {
+      var isLarge = window.matchMedia('(min-width: 992px)').matches;
+      ['collapse-add-folder', 'collapse-add-feed'].forEach(function (id) {
+        var el = document.getElementById(id);
+        var btn = el && el.previousElementSibling;
+        if (!el) return;
+        var bsCollapse = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
+        if (isLarge) {
+          bsCollapse.show();
+          if (btn) btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    }
+    document.addEventListener('DOMContentLoaded', syncPanels);
+  })();
+</script>
 {% endblock %}
