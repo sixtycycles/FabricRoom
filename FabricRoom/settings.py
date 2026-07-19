@@ -100,19 +100,8 @@ DATABASES = {
     }
 }
 
-# Use SQLite for tests (faster and no database creation permissions needed)
-# Also skip migrations here so duplicate migration files do not break the
-# test database setup while leaving production history unchanged.
 if "test" in sys.argv:
-    DATABASES["default"] = {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-    }
-    MIGRATION_MODULES = {
-        "blog": None,
-        "healthstats": None,
-        "main": None,
-    }
+    
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
