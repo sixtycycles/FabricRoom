@@ -10,37 +10,37 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="post",
-            name="tags",
-            field=models.ManyToManyField(blank=True, to="blog.tag"),
-        ),
-        migrations.AddField(
-            model_name="post",
-            name="updated_date",
-            field=models.DateTimeField(auto_now=True),
-        ),
-        migrations.AddField(
-            model_name="tag",
-            name="created_date",
-            field=models.DateTimeField(default=django.utils.timezone.now),
-        ),
-        migrations.AddField(
-            model_name="tag",
-            name="tag_description",
-            field=models.TextField(blank=True),
-        ),
-        migrations.AddField(
-            model_name="tag",
-            name="tag_name",
-            field=models.CharField(
-                default=django.utils.timezone.now, max_length=200, unique=True
-            ),
-            preserve_default=False,
-        ),
-        migrations.AddField(
-            model_name="tag",
-            name="updated_date",
-            field=models.DateTimeField(auto_now=True),
-        ),
+        # migrations.AddField(
+        #     model_name="post",
+        #     name="tags",
+        #     field=models.ManyToManyField(blank=True, to="blog.tag"),
+        # ),
+        # migrations.AddField(
+        #     model_name="post",
+        #     name="updated_date",
+        #     field=models.DateTimeField(auto_now=True),
+        # ),
+        # migrations.AddField(
+        #     model_name="tag",
+        #     name="created_date",
+        #     field=models.DateTimeField(default=django.utils.timezone.now),
+        # ),
+        # migrations.AddField(
+        #     model_name="tag",
+        #     name="tag_description",
+        #     field=models.TextField(blank=True),
+        # ),
+        # migrations.AddField(
+        #     model_name="tag",
+        #     name="tag_name",
+        #     field=models.CharField(
+        #         default=django.utils.timezone.now, max_length=200, unique=True
+        #     ),
+        #     preserve_default=False,
+        # ),
+        # migrations.AddField(
+        #     model_name="tag",
+        #     name="updated_date",
+        #     field=models.DateTimeField(auto_now=True),
+        # ),
     ]
