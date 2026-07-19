@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "blog",
     "healthstats",
     "feeds",
+    "systemd_admin",
     # Third-party apps
     "widget_tweaks",
 ]
@@ -220,15 +221,3 @@ LOGGING = {
 # ============================================================================
 # THIRD-PARTY APP CONFIGURATION
 # ============================================================================
-
-
-# ==========================================================================
-# DIGITALOCEAN DEPLOYMENT OVERRIDES
-# ============================================================================
-
-import os
-
-if os.environ.get("ON_DIGITALOCEAN"):
-    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-    STATIC_URL = "/static/"
-    DEBUG = os.environ.get("DEBUG") == "TRUE"

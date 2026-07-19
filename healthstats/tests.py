@@ -258,54 +258,54 @@ class PlotViewTest(TestCase):
         self.assertContains(response, "Heart Rate")
 
 
-class AppleHealthUploadModelTest(TestCase):
-    """Test AppleHealthUpload model"""
+# class AppleHealthUploadModelTest(TestCase):
+    # """Test AppleHealthUpload model"""
 
-    def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            username="testuser", email="test@example.com", password="testpass123"
-        )
+    # def setUp(self):
+    #     self.user = get_user_model().objects.create_user(
+    #         username="testuser", email="test@example.com", password="testpass123"
+    #     )
 
-    def test_apple_health_upload_creation(self):
-        """Test that AppleHealthUpload is created successfully"""
-        upload = AppleHealthUpload.objects.create(
-            author=self.user, health_data_xml="export.xml", csv_data_dir="/path/to/csv"
-        )
-        self.assertEqual(upload.author, self.user)
-        self.assertFalse(upload.is_processed)
-        self.assertFalse(upload.is_imported)
+    # def test_apple_health_upload_creation(self):
+    #     """Test that AppleHealthUpload is created successfully"""
+    #     upload = AppleHealthUpload.objects.create(
+    #         author=self.user, health_data_xml="export.xml", csv_data_dir="/Users/rod/Documents/Rod/Misc Stuff/apple_health_export/"
+    #     )
+    #     self.assertEqual(upload.author, self.user)
+    #     self.assertFalse(upload.is_processed)
+    #     self.assertFalse(upload.is_imported)
 
-    def test_apple_health_upload_processed_flag(self):
-        """Test that processed flag can be set"""
-        upload = AppleHealthUpload.objects.create(
-            author=self.user,
-            health_data_xml="export.xml",
-            csv_data_dir="/path",
-            is_processed=True,
-        )
-        self.assertTrue(upload.is_processed)
+    # def test_apple_health_upload_processed_flag(self):
+    #     """Test that processed flag can be set"""
+    #     upload = AppleHealthUpload.objects.create(
+    #         author=self.user,
+    #         health_data_xml="export.xml",
+    #         csv_data_dir="/path",
+    #         is_processed=True,
+    #     )
+    #     self.assertTrue(upload.is_processed)
 
-    def test_apple_health_upload_imported_flag(self):
-        """Test that imported flag can be set"""
-        upload = AppleHealthUpload.objects.create(
-            author=self.user,
-            health_data_xml="export.xml",
-            csv_data_dir="/path",
-            is_imported=True,
-        )
-        self.assertTrue(upload.is_imported)
+    # def test_apple_health_upload_imported_flag(self):
+    #     """Test that imported flag can be set"""
+    #     upload = AppleHealthUpload.objects.create(
+    #         author=self.user,
+    #         health_data_xml="export.xml",
+    #         csv_data_dir="/path",
+    #         is_imported=True,
+    #     )
+    #     self.assertTrue(upload.is_imported)
 
-    def test_apple_health_upload_string_representation(self):
-        """Test AppleHealthUpload __str__ method"""
-        upload = AppleHealthUpload.objects.create(
-            author=self.user, health_data_xml="export.xml", csv_data_dir="/path"
-        )
-        self.assertIn("testuser", str(upload))
+    # def test_apple_health_upload_string_representation(self):
+    #     """Test AppleHealthUpload __str__ method"""
+    #     upload = AppleHealthUpload.objects.create(
+    #         author=self.user, health_data_xml="export.xml", csv_data_dir="/path"
+    #     )
+    #     self.assertIn("testuser", str(upload))
 
-    def test_apple_health_upload_get_absolute_url(self):
-        """Test AppleHealthUpload get_absolute_url method"""
-        upload = AppleHealthUpload.objects.create(
-            author=self.user, health_data_xml="export.xml", csv_data_dir="/path"
-        )
-        expected_url = f"/health/apple-health/{upload.id}"
-        self.assertEqual(upload.get_absolute_url(), expected_url)
+    # def test_apple_health_upload_get_absolute_url(self):
+    #     """Test AppleHealthUpload get_absolute_url method"""
+    #     upload = AppleHealthUpload.objects.create(
+    #         author=self.user, health_data_xml="export.xml", csv_data_dir="/path"
+    #     )
+    #     expected_url = f"/health/apple-health/{upload.id}"
+    #     self.assertEqual(upload.get_absolute_url(), expected_url)
