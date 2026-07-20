@@ -4,7 +4,13 @@
 {% for note in all_notes_list %}
 <div class="card mb-3">
   <div class="card-header">
-    <h2 class="h5">{{ note.title }}</h2>
+    <h2 class="h5">
+      {% if note.link %}
+        <a href="{{ note.link }}" target="_blank">{{ note.title }}</a>
+      {% else %}
+        {{ note.title }}
+      {% endif %}
+    </h2>
   </div>
 
   <div class="card-body">
