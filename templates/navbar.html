@@ -25,6 +25,7 @@
               <li><a class="dropdown-item" href="{% url 'stat_plot' %}">Plots</a></li>
               <li><a class="dropdown-item" href="{% url 'stat_list' %}">List of Temperatures</a></li>
               <li><a class="dropdown-item" href="{% url 'symptoms' %}">List of Symptoms</a></li>
+              <li><a class="dropdown-item" href="{% url 'apple-health-list' %}">Apple Health Data</a></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
@@ -34,6 +35,11 @@
             <ul class="dropdown-menu" aria-labelledby="blogDropdown">
               <li><a class="dropdown-item" href="{% url 'blog' %}">See Blog Posts</a></li>
               <li><a class="dropdown-item" href="{% url 'post_new' %}">Create New Blog Post</a></li>
+              <li class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'note_list' %}">My Notes</a></li>
+              {% for note in all_notes_list %}
+                <li><a class="dropdown-item" href="{{ note.get_absolute_url }}">{{ note.title }}</a></li>
+              {% endfor %}
             </ul>
           </li>
 
@@ -46,7 +52,6 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
-            <li><a class="dropdown-item" href="{% url 'apple-health-list' %}">Apple Health Data</a></li>
             <li><hr class="dropdown-divider"></li>
             {% if user.is_staff %}
                 <li><a class="dropdown-item" href="/admin/">Admin</a></li>
