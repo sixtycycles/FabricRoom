@@ -1,7 +1,18 @@
 
 // FabricRoom Custom Styles
 // Version: 1.0.0
-// Include any default variable overrides here (though functions won't be available)
+
+// Custom Color Palette - Vintage Green Theme
+// Primary: A deep, muted sage green for a vintage feel
+// Success: A softer, natural leaf green
+// Light: A very light cream/beige instead of stark white for that "aged paper" look
+$primary: #4a6741; 
+$success: #7da673;
+$light: #fdfaf1; 
+$dark: #2c3e2d;
+$body-bg: $light;
+$body-color: #333333;
+
 @import "bootstrap";
 
 
