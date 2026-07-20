@@ -1,4 +1,10 @@
 <footer class="container ">
   <hr>
   <p> &copy; rod ! - {% now "Y" %} | <a href="{% url 'privacy_policy' %}">privacy policy</a> </p>
+  {% if perms.systemd_admin.can_view_systemd_access %}
+  <hr>
+<p>Systemd Host Administrator
+Monitor and manage host services, timers, and sockets.
+Open Systemd Panel</p>
+{% endif %}
 </footer>
