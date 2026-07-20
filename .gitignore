@@ -8,6 +8,8 @@ static/*
 !static/js/
 !static/js/rich-text-editor.js
 static/bootstrap-*/
+!/Users/rod/PycharmProjects/FabricRoom/static/bootstrap-5.3.8/css/fabricroom.css
+!/Users/rod/PycharmProjects/FabricRoom/static/bootstrap-5.3.8/css/fabricroom.css.map
 media/
 .env
 staticfiles/
