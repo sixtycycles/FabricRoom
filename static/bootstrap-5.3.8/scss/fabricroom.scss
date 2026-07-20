@@ -1,4 +1,3 @@
-
 // FabricRoom Custom Styles
 // Version: 1.0.0
 
@@ -15,6 +14,18 @@ $body-color: #333333;
 
 @import "bootstrap";
 
+// Navbar Customization
+.navbar {
+  background-color: $primary;
+  
+  .navbar-brand {
+    color: $primary !important;
+    
+    &:hover, &:focus {
+      color: $primary !important;
+    }
+  }
+}
 
 // $text-muted: #2a5547;
 
