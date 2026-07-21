@@ -257,7 +257,12 @@ class UploadPostImageView(LoginRequiredMixin, View):
             return JsonResponse({"error": "No image provided"}, status=400)
 
         if not alt_text:
-            return JsonResponse({"error": "Alt text is required"}, status=400)
+            return JsonResponse(
+                {
+                    "error": "Alt text is required. If you do not see the alt text dialog, refresh the page and try again."
+                },
+                status=400,
+            )
 
         image_file = request.FILES["image"]
 

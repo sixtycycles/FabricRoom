@@ -398,7 +398,7 @@ class RichTextEditorTest(TestCase):
 
         self.assertEqual(response.status_code, 400)
         data = response.json()
-        self.assertEqual(data["error"], "Alt text is required")
+        self.assertIn("Alt text is required", data["error"])
 
 
 class PostEditAuthTest(TestCase):
