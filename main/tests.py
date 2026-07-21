@@ -247,3 +247,45 @@ class HomePageTest(TestCase):
         self.assertIn(unread_item, recent_items)
         self.assertNotIn(read_item, recent_items)
         self.assertNotIn(other_unread_item, recent_items)
+
+    def test_rod_dashboard_shows_quote_and_action_buttons(self):
+        from blog.models import Quote
+        rod = get_user_model().objects.create_user(
+            username="rod", email="rod@example.com", password="password"
+        )
+        quote = Quote.objects.create(text="Inspiring words", author="Author Name")
+        self.client.force_login(rod)
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["random_quote"], quote)
+        self.assertContains(response, "Inspiring words")
+        self.assertContains(response, 'href="/blog/post/new/"')
+        self.assertContains(response, 'href="/blog/note/new/"')
+        self.assertContains(response, 'href="/feeds/new/"')
+        self.assertContains(response, 'href="/blog/gratitude/new/"')
+
+    def test_marisa_dashboard_shows_gratitude_and_hides_buttons(self):
+        from blog.models import Gratitude, Quote
+        marisa = get_user_model().objects.create_user(
+            username="marisa", email="marisa@example.com", password="password"
+        )
+        rod = get_user_model().objects.create_user(
+            username="rod_author", email="rod_author@example.com", password="password"
+        )
+        Quote.objects.create(text="Should not show quote to Marisa", author="Author")
+        gratitude = Gratitude.objects.create(
+            author=rod, gratitude_text="Thankful for Marisa!"
+        )
+        gratitude.target.add(marisa)
+
+        self.client.force_login(marisa)
+        response = self.client.get(reverse("home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("random_quote", response.context)
+        self.assertEqual(response.context["random_gratitude"], gratitude)
+        self.assertContains(response, "Thankful for Marisa!")
+        self.assertNotContains(response, "Should not show quote to Marisa")
+        self.assertNotContains(response, 'href="/blog/post/new/"')
+        self.assertNotContains(response, 'href="/blog/note/new/"')
+        self.assertNotContains(response, 'href="/feeds/add/"')
+        self.assertNotContains(response, 'href="/blog/gratitude/new/"')

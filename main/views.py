@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from .models import PrivacyPolicy
 
-from blog.models import Quote
+from blog.models import Quote, Gratitude
 from feeds.models import FeedItem
 
 
@@ -21,10 +21,18 @@ class LandingPageView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(LandingPageView, self).get_context_data(**kwargs)
-        context["user"] = self.request.user
-        context["random_quote"] = Quote.objects.order_by("?").first()
+        user = self.request.user
+        context["user"] = user
+
+        if user.username == "rod":
+            context["random_quote"] = Quote.objects.order_by("?").first()
+        elif user.username == "marisa":
+            context["random_gratitude"] = (
+                Gratitude.objects.filter(target=user).order_by("?").first()
+            )
+
         context["recent_feed_items"] = FeedItem.objects.filter(
-            feed__user=self.request.user, is_read=False
+            feed__user=user, is_read=False
         ).select_related("feed").order_by("-published", "-fetched_at")[:5]
         return context
 
