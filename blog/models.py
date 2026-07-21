@@ -157,3 +157,33 @@ class InlineImage(models.Model):
     def _image_filename(self, original_name):
         base_name, _ = original_name.rsplit(".", 1)
         return f"{base_name}.jpg"
+
+
+class Gratitude(models.Model):
+    author = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="gratitudes_created",
+        verbose_name="Author",
+    )
+    target = models.ManyToManyField(
+        get_user_model(),
+        related_name="gratitudes_received",
+        blank=True,
+        verbose_name="Target Users",
+    )
+    gratitude_text = models.TextField(verbose_name="Gratitude Text")
+    created_date = models.DateTimeField(default=timezone.now)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Gratitude"
+        verbose_name_plural = "Gratitudes"
+        ordering = ["-created_date"]
+
+    def __str__(self):
+        return f"Gratitude by {self.author} on {self.created_date.strftime('%Y-%m-%d')}"
+
+    def get_absolute_url(self):
+        return reverse("gratitude_detail", args=[str(self.id)])
+

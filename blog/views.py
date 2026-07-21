@@ -19,7 +19,8 @@ from django.http import (
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from blog.models import Post, Note, InlineImage
+from django.db import models
+from blog.models import Post, Note, InlineImage, Gratitude
 from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
@@ -364,6 +365,75 @@ class UpdatePostImageAltTextView(LoginRequiredMixin, View):
             }
         )
         return response
+
+class GratitudeForm(forms.ModelForm):
+    class Meta:
+        model = Gratitude
+        fields = ["gratitude_text", "target"]
+        widgets = {
+            "gratitude_text": forms.Textarea(attrs={"rows": 4, "class": "form-control"}),
+            "target": forms.SelectMultiple(attrs={"class": "form-control"}),
+        }
+
+
+class GratitudeListView(ListView):
+    model = Gratitude
+    template_name = "gratitude_list.html"
+    context_object_name = "gratitude_list"
+    paginate_by = 10
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return (
+                Gratitude.objects.filter(
+                    models.Q(author=self.request.user) | models.Q(target=self.request.user)
+                )
+                .distinct()
+                .select_related("author")
+                .prefetch_related("target")
+            )
+        return Gratitude.objects.none()
+
+
+class GratitudeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Gratitude
+    template_name = "gratitude_detail.html"
+    context_object_name = "gratitude"
+
+    def test_func(self):
+        gratitude = self.get_object()
+        user = self.request.user
+        return user == gratitude.author or user in gratitude.target.all()
+
+
+class GratitudeCreateView(LoginRequiredMixin, CreateView):
+    model = Gratitude
+    form_class = GratitudeForm
+    template_name = "gratitude_form.html"
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+
+
+class GratitudeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Gratitude
+    form_class = GratitudeForm
+    template_name = "gratitude_form.html"
+
+    def test_func(self):
+        gratitude = self.get_object()
+        return self.request.user == gratitude.author
+
+
+class GratitudeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Gratitude
+    template_name = "gratitude_confirm_delete.html"
+    success_url = reverse_lazy("gratitude_list")
+
+    def test_func(self):
+        gratitude = self.get_object()
+        return self.request.user == gratitude.author
 
 
 @method_decorator(require_http_methods(["POST"]), name="dispatch")

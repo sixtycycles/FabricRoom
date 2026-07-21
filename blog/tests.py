@@ -10,7 +10,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from PIL import Image
 
-from blog.models import Post, Note, Tag, InlineImage, Quote
+from blog.models import Post, Note, Tag, InlineImage, Quote, Gratitude
 
 # NOTE: These tests cover blog models and views including Posts, Tags, and Notes.
 # All required database schema has been applied via migrations.
@@ -200,6 +200,58 @@ class RichTextEditorTest(TestCase):
         self.assertEqual(post.body, html_content)
         self.assertIn("<ul>", post.body)
         self.assertIn("<li>", post.body)
+
+
+class GratitudeCRUDTest(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.user1 = User.objects.create_user(username="user1", password="password123")
+        self.user2 = User.objects.create_user(username="user2", password="password123")
+        self.gratitude = Gratitude.objects.create(
+            author=self.user1,
+            gratitude_text="Thankful for team support!",
+        )
+        self.gratitude.target.add(self.user2)
+
+    def test_gratitude_creation_and_str(self):
+        self.assertEqual(self.gratitude.author, self.user1)
+        self.assertIn(self.user2, self.gratitude.target.all())
+        self.assertIn("user1", str(self.gratitude))
+
+    def test_gratitude_list_view_access(self):
+        self.client.login(username="user1", password="password123")
+        response = self.client.get(reverse("gratitude_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Thankful for team support!")
+
+    def test_gratitude_create_view(self):
+        self.client.login(username="user1", password="password123")
+        response = self.client.post(
+            reverse("gratitude_create"),
+            {"gratitude_text": "New gratitude message", "target": [self.user2.id]},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Gratitude.objects.filter(gratitude_text="New gratitude message").exists())
+
+    def test_gratitude_update_view_by_author(self):
+        self.client.login(username="user1", password="password123")
+        response = self.client.post(
+            reverse("gratitude_update", args=[self.gratitude.id]),
+            {"gratitude_text": "Updated gratitude message", "target": [self.user2.id]},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.gratitude.refresh_from_db()
+        self.assertEqual(self.gratitude.gratitude_text, "Updated gratitude message")
+
+    def test_gratitude_delete_view_by_author(self):
+        self.client.login(username="user1", password="password123")
+        response = self.client.post(reverse("gratitude_delete", args=[self.gratitude.id]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Gratitude.objects.filter(id=self.gratitude.id).exists())
+
+
+    # End of GratitudeCRUDTest
+
 
     def test_inline_image_model(self):
         """Test that InlineImage model properly stores images for posts"""

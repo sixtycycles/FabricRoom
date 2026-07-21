@@ -15,6 +15,11 @@ from blog.views import (
     InlineImagePanelView,
     UpdatePostImageAltTextView,
     PostQRCodeView,
+    GratitudeListView,
+    GratitudeDetailView,
+    GratitudeCreateView,
+    GratitudeUpdateView,
+    GratitudeDeleteView,
 )
 
 urlpatterns = [
@@ -59,4 +64,9 @@ urlpatterns = [
     path("note/<int:pk>/", NoteDetailView.as_view(), name="note_detail"),
     path("note/<int:pk>/delete/", NoteDeleteView.as_view(), name="note_delete"),
     path("note/<int:pk>/update/", NoteUpdateView.as_view(), name="note_update"),
+    path("gratitude/", GratitudeListView.as_view(), name="gratitude_list"),
+    path("gratitude/new/", GratitudeCreateView.as_view(), name="gratitude_create"),
+    path("gratitude/<int:pk>/", GratitudeDetailView.as_view(), name="gratitude_detail"),
+    path("gratitude/<int:pk>/update/", GratitudeUpdateView.as_view(), name="gratitude_update"),
+    path("gratitude/<int:pk>/delete/", GratitudeDeleteView.as_view(), name="gratitude_delete"),
 ]

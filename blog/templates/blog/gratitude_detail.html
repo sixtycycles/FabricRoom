@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Gratitude Detail</h2>
+  <div class="card mb-3">
+    <div class="card-body">
+      <p class="card-text">{{ gratitude.gratitude_text }}</p>
+      <p class="text-muted"><strong>Author:</strong> {{ gratitude.author.username }}</p>
+      <p class="text-muted">
+        <strong>Targets:</strong> 
+        {% for target_user in gratitude.target.all %}
+          <span class="badge bg-secondary">{{ target_user.username }}</span>
+        {% empty %}
+          None
+        {% endfor %}
+      </p>
+      <small class="text-muted">Created: {{ gratitude.created_date }}</small>
+    </div>
+  </div>
+  {% if request.user == gratitude.author %}
+    <a href="{% url 'gratitude_update' gratitude.pk %}" class="btn btn-warning">Edit</a>
+    <a href="{% url 'gratitude_delete' gratitude.pk %}" class="btn btn-danger">Delete</a>
+  {% endif %}
+  <a href="{% url 'gratitude_list' %}" class="btn btn-secondary">Back to List</a>
+</div>
+{% endblock %}

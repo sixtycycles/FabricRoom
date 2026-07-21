@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Post, Note, Tag, InlineImage, Quote
+from .models import Post, Note, Tag, InlineImage, Quote, Gratitude
 
 
 @admin.register(Post)
@@ -55,3 +55,16 @@ class InlineImageAdmin(admin.ModelAdmin):
         return "No image"
 
     image_preview.short_description = "Preview"
+
+
+@admin.register(Gratitude)
+class GratitudeAdmin(admin.ModelAdmin):
+    list_display = ["author", "gratitude_text_short", "created_date"]
+    list_filter = ["created_date", "author"]
+    search_fields = ["gratitude_text", "author__username"]
+    filter_horizontal = ["target"]
+
+    def gratitude_text_short(self, obj):
+        return obj.gratitude_text[:50] + ("..." if len(obj.gratitude_text) > 50 else "")
+    gratitude_text_short.short_description = "Gratitude Text"
+
