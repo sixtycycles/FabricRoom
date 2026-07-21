@@ -72,6 +72,7 @@
     <div
       id="inline-images-panel"
       hx-get="{% url 'post_inline_images' post.id %}"
+      data-inline-images-url="{% url 'post_inline_images' post.id %}"
       hx-trigger="load, inlineImagesChanged from:body"
       hx-target="this"
       hx-swap="innerHTML"

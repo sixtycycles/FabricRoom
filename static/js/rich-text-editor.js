@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
           // Setup image editing on newly added image
           setupImageEditing();
-          notifyInlineImagesChanged();
+          refreshInlineImagesPanel();
         } else {
           alert('Error uploading image: ' + (data.error || 'Unknown error'));
         }
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
           method: 'POST',
           headers: { 'X-CSRFToken': getCookie('csrftoken') },
         })
-          .then(() => notifyInlineImagesChanged())
+          .then(() => refreshInlineImagesPanel())
           .catch(err => console.error('Error deleting image from server:', err));
       }
 
@@ -538,6 +538,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function notifyInlineImagesChanged() {
     document.body.dispatchEvent(new Event('inlineImagesChanged'));
+  }
+
+  function refreshInlineImagesPanel() {
+    const panel = document.getElementById('inline-images-panel');
+    if (!panel) {
+      return;
+    }
+
+    const panelUrl = panel.dataset.inlineImagesUrl || panel.getAttribute('hx-get');
+    if (!panelUrl) {
+      notifyInlineImagesChanged();
+      return;
+    }
+
+    if (window.htmx && typeof window.htmx.ajax === 'function') {
+      window.htmx.ajax('GET', panelUrl, {
+        target: '#inline-images-panel',
+        swap: 'innerHTML'
+      });
+      return;
+    }
+
+    fetch(panelUrl, { method: 'GET', credentials: 'same-origin' })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Panel refresh failed with ${response.status}`);
+        }
+        return response.text();
+      })
+      .then(html => {
+        panel.innerHTML = html;
+        if (window.htmx && typeof window.htmx.process === 'function') {
+          window.htmx.process(panel);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to refresh inline image panel:', error);
+      });
   }
 
   document.body.addEventListener('inlineImageAltUpdated', function(event) {
