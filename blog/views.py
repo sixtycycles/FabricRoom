@@ -1,12 +1,11 @@
 from io import BytesIO
-import html
 import json
-import re
 
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.views.generic.edit import DeleteView
@@ -14,20 +13,18 @@ from django.http import (
     JsonResponse,
     HttpResponse,
     HttpResponseForbidden,
-    HttpResponseRedirect,
 )
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from django.db import models
 from blog.models import Post, Note, InlineImage, Gratitude
 from django.views.decorators.http import require_POST
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django import forms
+from blog.forms import BlogCreateForm, GratitudeForm
 import qrcode
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BlogListView(ListView):
     model = Post
@@ -37,8 +34,8 @@ class BlogListView(ListView):
 
     def get_template_names(self):
         if self.request.user.is_authenticated:
-            return ["post_list_logged_in.html"]
-        return ["post_list.html"]
+            return ["blog/post_list_logged_in.html"]
+        return ["blog/post_list.html"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,7 +49,7 @@ class BlogListView(ListView):
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class NoteListView(ListView):
     model = Note
-    template_name = "note_list.html"
+    template_name = "blog/note_list.html"
     context_object_name = "all_notes_list"
 
     def get_queryset(self):
@@ -62,14 +59,14 @@ class NoteListView(ListView):
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BlogDetailView(DetailView):  # new model = Post
     model = Post
-    template_name = "post_detail.html"
+    template_name = "blog/post_detail.html"
     context_object_name = "post"
 
 
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class NoteDetailView(DetailView):  # new model = Post
     model = Note
-    template_name = "note_detail.html"
+    template_name = "blog/note_detail.html"
     context_object_name = "note"
 
 
@@ -95,18 +92,12 @@ class PostQRCodeView(View):
         return HttpResponse(buffer.getvalue(), content_type="image/png")
 
 
-class BlogCreateForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = ["title", "body"]
-
-
 class BlogCreateView(LoginRequiredMixin, CreateView):
     model = Post
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "post_new.html"
+    template_name = "blog/post_new.html"
     form_class = BlogCreateForm
 
     def get_initial(self):
@@ -133,7 +124,7 @@ class NoteCreateView(LoginRequiredMixin, CreateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "note_new.html"
+    template_name = "blog/note_new.html"
     fields = ["title", "link", "tags"]
 
     def form_valid(self, form):
@@ -145,7 +136,7 @@ class BlogUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
-    template_name = "post_update.html"
+    template_name = "blog/post_update.html"
     form_class = BlogCreateForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -174,7 +165,7 @@ class NoteUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "note_update.html"
+    template_name = "blog/note_update.html"
     fields = ["title", "link", "tags"]
 
     def test_func(self):
@@ -187,7 +178,7 @@ class BlogDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "post_delete.html"
+    template_name = "blog/post_delete.html"
     success_url = reverse_lazy("blog")
 
     def test_func(self):
@@ -200,7 +191,7 @@ class NoteDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "note_delete.html"
+    template_name = "blog/note_delete.html"
     success_url = reverse_lazy("note_list")
 
     def test_func(self):
@@ -366,19 +357,9 @@ class UpdatePostImageAltTextView(LoginRequiredMixin, View):
         )
         return response
 
-class GratitudeForm(forms.ModelForm):
-    class Meta:
-        model = Gratitude
-        fields = ["gratitude_text", "target"]
-        widgets = {
-            "gratitude_text": forms.Textarea(attrs={"rows": 4, "class": "form-control"}),
-            "target": forms.SelectMultiple(attrs={"class": "form-control"}),
-        }
-
-
 class GratitudeListView(ListView):
     model = Gratitude
-    template_name = "gratitude_list.html"
+    template_name = "blog/gratitude_list.html"
     context_object_name = "gratitude_list"
     paginate_by = 10
 
@@ -397,7 +378,7 @@ class GratitudeListView(ListView):
 
 class GratitudeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Gratitude
-    template_name = "gratitude_detail.html"
+    template_name = "blog/gratitude_detail.html"
     context_object_name = "gratitude"
 
     def test_func(self):
@@ -409,7 +390,7 @@ class GratitudeDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 class GratitudeCreateView(LoginRequiredMixin, CreateView):
     model = Gratitude
     form_class = GratitudeForm
-    template_name = "gratitude_form.html"
+    template_name = "blog/gratitude_form.html"
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -419,7 +400,7 @@ class GratitudeCreateView(LoginRequiredMixin, CreateView):
 class GratitudeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Gratitude
     form_class = GratitudeForm
-    template_name = "gratitude_form.html"
+    template_name = "blog/gratitude_form.html"
 
     def test_func(self):
         gratitude = self.get_object()
@@ -428,7 +409,7 @@ class GratitudeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class GratitudeDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Gratitude
-    template_name = "gratitude_confirm_delete.html"
+    template_name = "blog/gratitude_confirm_delete.html"
     success_url = reverse_lazy("gratitude_list")
 
     def test_func(self):

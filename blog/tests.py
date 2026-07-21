@@ -40,7 +40,7 @@ class BlogTest(TestCase):
         response = self.client.get(reverse("blog"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "test title")
-        self.assertTemplateUsed(response, "post_list.html")
+        self.assertTemplateUsed(response, "blog/post_list.html")
 
     def test_post_title_links_to_detail_view(self):
         response = self.client.get(reverse("blog"))
@@ -57,7 +57,7 @@ class BlogTest(TestCase):
         response = self.client.get(reverse("post_detail", args=[self.post.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "test title")
-        self.assertTemplateUsed(response, "post_detail.html")
+        self.assertTemplateUsed(response, "blog/post_detail.html")
 
     def test_post_detail_view_is_cached(self):
         response = self.client.get(f"/blog/post/{self.post.id}/")
@@ -100,12 +100,17 @@ class PostPermissionAndDeleteTest(TestCase):
         )
 
     def test_anonymous_user_cannot_create_post(self):
-        """Removed due to failure"""
-        pass
+        response = self.client.get(reverse("post_new"), follow=False)
+        self.assertEqual(response.status_code, 302)
 
     def test_create_post_requires_login(self):
-        """Removed due to failure"""
-        pass
+        response = self.client.post(
+            reverse("post_new"),
+            {"title": "Unauthorized", "body": "<p>Nope</p>"},
+            follow=False,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Post.objects.filter(title="Unauthorized").exists())
 
     def test_author_can_delete_post_with_post_request(self):
         self.client.login(username="author", password="secretpass")
@@ -124,16 +129,25 @@ class PostPermissionAndDeleteTest(TestCase):
         response = self.client.get(reverse("post_delete", args=[self.post.id]))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "post_delete.html")
+        self.assertTemplateUsed(response, "blog/post_delete.html")
         self.assertContains(response, self.post.title)
 
     def test_anonymous_user_cannot_delete_post(self):
-        """Removed due to failure"""
-        pass
+        response = self.client.post(
+            reverse("post_delete", args=[self.post.id]),
+            follow=False,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Post.objects.filter(pk=self.post.pk).exists())
 
     def test_non_author_cannot_delete_post(self):
-        """Removed due to failure"""
-        pass
+        self.client.login(username="otheruser", ******)
+        response = self.client.post(
+            reverse("post_delete", args=[self.post.id]),
+            follow=False,
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Post.objects.filter(pk=self.post.pk).exists())
 
 
 class QuoteImportCommandTests(TestCase):
@@ -154,7 +168,7 @@ class QuoteImportCommandTests(TestCase):
         self.assertTrue(Quote.objects.filter(text="Keep going", author="Bob").exists())
 
 
-class RichTextEditorTest(TestCase):
+class RichTextEditorImageFlowTest(TestCase):
     """Tests for the custom rich text editor functionality"""
 
     def setUp(self):
@@ -488,8 +502,23 @@ class RichTextEditorTest(TestCase):
         self.assertContains(response, "Pending screenshot alt text")
 
     def test_first_new_post_upload_appears_in_inline_image_panel(self):
-        """Removed failing test"""
-        pass
+        self.client.login(username="editoruser", ******)
+        image_file = self.create_test_image()
+
+        upload_response = self.client.post(
+            reverse("upload_post_image_new"),
+            {
+                "image": image_file,
+                "alt_text": "Uploaded before save",
+            },
+            format="multipart",
+        )
+        self.assertEqual(upload_response.status_code, 200)
+        self.assertTrue(upload_response.json()["success"])
+
+        panel_response = self.client.get(reverse("post_inline_images_new"))
+        self.assertEqual(panel_response.status_code, 200)
+        self.assertContains(panel_response, "Uploaded before save")
 
     def test_update_inline_image_alt_text_endpoint(self):
         """Users can update inline image alt text through HTMX endpoint."""
@@ -570,7 +599,7 @@ class PostEditAuthTest(TestCase):
         self.client.login(username="author", password="authorpass")
         response = self.client.get(reverse("post_edit", args=[self.post.id]))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "post_update.html")
+        self.assertTemplateUsed(response, "blog/post_update.html")
         self.assertContains(response, "Updating")
 
     def test_author_can_edit_post(self):

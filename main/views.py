@@ -1,10 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, DetailView, TemplateView
+from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.forms import UserCreationForm
-from main.forms import CustomUserChangeForm, CustomUserCreationForm
-from django.urls import reverse_lazy
-from django.views.generic import CreateView
 from .models import PrivacyPolicy
 
 from blog.models import Quote, Gratitude
@@ -12,7 +8,7 @@ from feeds.models import FeedItem
 
 
 class LandingPageView(TemplateView):
-    template_name = "home.html"
+    template_name = "main/home.html"
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -38,7 +34,7 @@ class LandingPageView(TemplateView):
 
 
 class AboutPageView(TemplateView):
-    template_name = "about.html"
+    template_name = "main/about.html"
 
 
 class PrivateHome(LoginRequiredMixin, TemplateView):
@@ -47,7 +43,7 @@ class PrivateHome(LoginRequiredMixin, TemplateView):
     redirect_field_name = "redirect_to"
     raise_exception = True
 
-    template_name = "private_home.html"
+    template_name = "main/private_home.html"
 
     def get_context_data(self, **kwargs):
         context = super(PrivateHome, self).get_context_data(**kwargs)
@@ -67,15 +63,15 @@ class PrivacyPolicyView(TemplateView):
 
 # Custom http error code pages
 def custom_error_403(request, exception):
-    return render(request, "403.html", {})
+    return render(request, "main/403.html", {})
 
 
 def custom_error_404(request, exception):
-    return render(request, "404.html", {})
+    return render(request, "main/404.html", {})
 
 
 def custom_error_500(request):
-    return render(request, "500.html", {})
+    return render(request, "main/500.html", {})
 
 
 def delete_quote(request, pk):

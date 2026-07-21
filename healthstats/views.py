@@ -1,8 +1,6 @@
-import os
-import logging
 from django.conf import settings
-from django.core.cache import cache
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
@@ -13,7 +11,7 @@ from django.views.generic import (
     UpdateView,
     TemplateView,
 )
-from django.views.generic.edit import DeleteView, ProcessFormView
+from django.views.generic.edit import DeleteView
 from healthstats.models import (
     AppleHealthUpload,
     BloodPressure,
@@ -109,7 +107,7 @@ class HealthEventHomeView(LoginRequiredMixin, TemplateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "home.html"
+    template_name = "healthstats/stat_home.html"
     context_object_name = "all_health_events"
 
 
@@ -118,7 +116,7 @@ class HealthEventCreateView(LoginRequiredMixin, CreateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "stat_new.html"
+    template_name = "healthstats/stat_new.html"
     fields = ["temperature", "symptoms", "note"]
 
     def form_valid(self, form):
@@ -131,7 +129,7 @@ class BPCreateView(LoginRequiredMixin, CreateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "bp_new.html"
+    template_name = "healthstats/bp_new.html"
     fields = ["systolic_pressure", "diastolic_pressure", "position"]
 
     def form_valid(self, form):
@@ -139,25 +137,27 @@ class BPCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BPListView(LoginRequiredMixin, ListView):
     model = BloodPressure
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "bp_list.html"
+    template_name = "healthstats/bp_list.html"
     context_object_name = "all_bps"
 
     def get_queryset(self):
-        return BloodPressure.objects.all()
+        return BloodPressure.objects.filter(author=self.request.user)
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class BPDetailView(LoginRequiredMixin, DetailView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "bp_detail.html"
+    template_name = "healthstats/bp_detail.html"
     context_object_name = "bp"
 
     def get_queryset(self):
@@ -169,8 +169,11 @@ class BPUpdateView(LoginRequiredMixin, UpdateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "bp_update.html"
+    template_name = "healthstats/bp_update.html"
     fields = ["systolic_pressure", "diastolic_pressure"]
+
+    def get_queryset(self):
+        return BloodPressure.objects.filter(author=self.request.user)
 
 
 class BPDeleteView(LoginRequiredMixin, DeleteView):
@@ -178,8 +181,11 @@ class BPDeleteView(LoginRequiredMixin, DeleteView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "bp_delete.html"
+    template_name = "healthstats/bp_delete.html"
     success_url = reverse_lazy("bp_list")
+
+    def get_queryset(self):
+        return BloodPressure.objects.filter(author=self.request.user)
 
 
 class SymptomCreateView(LoginRequiredMixin, CreateView):
@@ -187,17 +193,18 @@ class SymptomCreateView(LoginRequiredMixin, CreateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "symptom_new.html"
+    template_name = "healthstats/symptom_new.html"
     fields = ["slug"]
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class HealthEventListView(LoginRequiredMixin, ListView):
     model = HealthEvent
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "stat_list.html"
+    template_name = "healthstats/stat_list.html"
     context_object_name = "all_health_events"
 
     def get_queryset(self):
@@ -208,25 +215,27 @@ class HealthEventListView(LoginRequiredMixin, ListView):
         )
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class SymptomListView(LoginRequiredMixin, ListView):
     model = Symptom
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "symptom_list.html"
+    template_name = "healthstats/symptom_list.html"
     context_object_name = "all_symptoms"
 
     def get_queryset(self):
         return Symptom.objects.all()
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class HealthEventDetailView(LoginRequiredMixin, DetailView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "stat_detail.html"
+    template_name = "healthstats/stat_detail.html"
     context_object_name = "stat"
 
     def get_queryset(self):
@@ -235,13 +244,14 @@ class HealthEventDetailView(LoginRequiredMixin, DetailView):
         )
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class SymptomDetailView(LoginRequiredMixin, DetailView):
     model = Symptom
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "symptom_detail.html"
+    template_name = "healthstats/symptom_detail.html"
     context_object_name = "symptom"
     # related_events = symptom.symptom_set.all()
     # def get_queryset(self):
@@ -253,7 +263,7 @@ class HealthEventUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "stat_update.html"
+    template_name = "healthstats/stat_update.html"
     readonly_fields = ["author", "when"]
     fields = [
         "temperature",
@@ -271,7 +281,7 @@ class SymptomUpdateView(LoginRequiredMixin, UpdateView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "symptom_update.html"
+    template_name = "healthstats/symptom_update.html"
     fields = ["slug"]
 
 
@@ -280,7 +290,7 @@ class HealthEventDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView)
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "stat_delete.html"
+    template_name = "healthstats/stat_delete.html"
     success_url = reverse_lazy("stat_list")
 
     def test_func(self):
@@ -293,22 +303,26 @@ class SymptomDeleteView(LoginRequiredMixin, DeleteView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "symptom_delete.html"
+    template_name = "healthstats/symptom_delete.html"
     success_url = reverse_lazy("health_event_home")
 
 
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class AppleHealthDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = AppleHealthUpload
-    login_url = "/accounts/login"
+    login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "apple_health_detail.html"
+    template_name = "healthstats/apple_health_detail.html"
     context_object_name = "object"
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+
+    def get_queryset(self):
+        return AppleHealthUpload.objects.filter(author=self.request.user)
 
 
 class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -316,12 +330,15 @@ class AppleHealthUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "apple_health_update.html"
+    template_name = "healthstats/apple_health_update.html"
     fields = ["author", "health_data_xml"]
 
     def test_func(self):
         obj = self.get_object()
         return obj.author == self.request.user
+
+    def get_queryset(self):
+        return AppleHealthUpload.objects.filter(author=self.request.user)
 
 
 class AppleHealthDeleteView(LoginRequiredMixin, DeleteView):
@@ -329,44 +346,53 @@ class AppleHealthDeleteView(LoginRequiredMixin, DeleteView):
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "apple_health_delete.html"
+    template_name = "healthstats/apple_health_delete.html"
     success_url = reverse_lazy("apple-health-list")
     context_object_name = "obj"
 
+    def get_queryset(self):
+        return AppleHealthUpload.objects.filter(author=self.request.user)
 
+
+@method_decorator(vary_on_cookie, name="dispatch")
 @method_decorator(cache_page(settings.CACHE_TTL), name="dispatch")
 class AppleHealthListView(LoginRequiredMixin, ListView):
     model = AppleHealthUpload
     login_url = "/accounts/login/"
     redirect_field_name = "redirect_to"
     raise_exception = True
-    template_name = "apple_health_list.html"
+    template_name = "healthstats/apple_health_list.html"
     context_object_name = "all_uploads"
 
     def get_queryset(self):
         return AppleHealthUpload.objects.filter(author=self.request.user)
 
 
+@login_required
 def upload_file(request):
     if request.method == "POST":
         form = AppleHealthUploadForm(request.POST, request.FILES)
         if form.is_valid():
+            form.instance.author = request.user
             form.save()
             return HttpResponseRedirect("upload/success")
     else:
         form = AppleHealthUploadForm()
-    return render(request, "upload.html", {"form": form})
+    return render(request, "healthstats/upload.html", {"form": form})
 
 
+@login_required
 def upload_file_success(request):
 
-    return render(request, "upload_success.html")
+    return render(request, "healthstats/upload_success.html")
 
 
+@login_required
 def stat_plot_view(request):
-    return render(request, "stat_plot.html", context={})
+    return render(request, "healthstats/stat_plot.html", context={})
 
 
+@login_required
 @vary_on_cookie
 @cache_page(settings.CACHE_TTL)
 def temp_stat_plot_view(request):
@@ -399,7 +425,7 @@ def temp_stat_plot_view(request):
 
     return render(
         request,
-        "stat_plot_temp.html",
+        "healthstats/stat_plot_temp.html",
         context={
             "seven_day_rolling_average": seven_day_rolling_average,
             "raw_temp_data": raw_temp_data,
@@ -407,6 +433,7 @@ def temp_stat_plot_view(request):
     )
 
 
+@login_required
 @vary_on_cookie
 @cache_page(settings.CACHE_TTL)
 def heart_stat_plot_view(request):
@@ -428,13 +455,15 @@ def heart_stat_plot_view(request):
 
     return render(
         request,
-        "stat_plot_heart.html",
+        "healthstats/stat_plot_heart.html",
         context={
             "heart_rate": heart_rate,
         },
     )
 
 
+@login_required
+@vary_on_cookie
 @cache_page(settings.CACHE_TTL)
 def steps_stat_plot_view(request):
     steps_data = list(
@@ -454,13 +483,15 @@ def steps_stat_plot_view(request):
 
     return render(
         request,
-        "stat_plot_steps.html",
+        "healthstats/stat_plot_steps.html",
         context={
             "step_data": step_data,
         },
     )
 
 
+@login_required
+@vary_on_cookie
 @cache_page(settings.CACHE_TTL)
 def oxygen_stat_plot_view(request):
     oxygen_data = list(
@@ -480,14 +511,14 @@ def oxygen_stat_plot_view(request):
 
     return render(
         request,
-        "stat_plot_oxygen.html",
+        "healthstats/stat_plot_oxygen.html",
         context={
             "oxygen_data": oxygen_data_plot,
         },
     )
 
 
-@cache_page(settings.CACHE_TTL)
+@login_required
 @vary_on_cookie
 @cache_page(settings.CACHE_TTL)
 def oxygen_temperature_stat_plot_view(request):
@@ -524,7 +555,7 @@ def oxygen_temperature_stat_plot_view(request):
 
     return render(
         request,
-        "stat_plot_oxygen.html",
+        "healthstats/stat_plot_oxygen.html",
         context={
             "oxygen_data": oxygen_temperature_plot,
         },

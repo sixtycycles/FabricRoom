@@ -1,3 +1,4 @@
+import logging
 import feedparser
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -15,6 +16,8 @@ from django.views.generic import CreateView, DeleteView, TemplateView
 
 from feeds.forms import FeedForm, FeedFolderForm
 from feeds.models import Feed, FeedFolder, FeedItem
+
+logger = logging.getLogger(__name__)
 
 
 class FeedContextMixin:
@@ -125,6 +128,7 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
                 try:
                     sync_feed_items(feed)
                 except Exception:
+                    logger.exception("Feed sync failed", extra={"feed_id": feed.id, "feed_url": feed.feed_url})
                     continue
 
         sort_order = self.request.GET.get("sort", "date")
