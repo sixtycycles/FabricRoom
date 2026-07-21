@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const pendingImageUploads = [];
   let pendingImageFile = null;
+  let pendingButtonAltText = null;
 
   console.log('Editor:', editor);
   console.log('Body input:', bodyInput);
@@ -177,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageBtn) {
     imageBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      imageFileInput.click();  // Opens native file picker on all devices
+      startImageButtonUploadFlow();
     });
   }
 
@@ -185,6 +186,14 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageFileInput) {
     imageFileInput.addEventListener('change', function() {
       if (this.files && this.files[0]) {
+        if (pendingButtonAltText) {
+          const buttonAltText = pendingButtonAltText;
+          pendingButtonAltText = null;
+          Array.from(this.files).forEach(file => handleImageUpload(file, buttonAltText));
+          imageFileInput.value = '';
+          return;
+        }
+
         Array.from(this.files).forEach(file => enqueueImageUpload(file));
         imageFileInput.value = '';
       }
@@ -214,6 +223,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (imageAltCancelBtn) {
     imageAltCancelBtn.addEventListener('click', function() {
+      if (imageAltModal && imageAltModal.dataset.uploadFlow === 'button') {
+        delete imageAltModal.dataset.uploadFlow;
+        closeAltTextModal();
+        return;
+      }
+
       closeAltTextModal();
       processNextPendingImage();
     });
@@ -225,6 +240,14 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!altText) {
         alert('Alt text is required to upload an image.');
         imageAltInput.focus();
+        return;
+      }
+
+      if (imageAltModal && imageAltModal.dataset.uploadFlow === 'button') {
+        pendingButtonAltText = altText;
+        delete imageAltModal.dataset.uploadFlow;
+        closeAltTextModal();
+        triggerImageFilePicker();
         return;
       }
 
@@ -445,6 +468,46 @@ document.addEventListener('DOMContentLoaded', function() {
     enqueueImageUpload(file);
   }
 
+  function startImageButtonUploadFlow() {
+    const modalOpened = openAltTextModal(null, 'Image of ');
+
+    if (!modalOpened) {
+      const altText = promptForAltTextFallback(null);
+      if (!altText) {
+        return;
+      }
+
+      pendingButtonAltText = altText;
+      triggerImageFilePicker();
+      return;
+    }
+
+    if (imageAltModal) {
+      imageAltModal.dataset.uploadFlow = 'button';
+    }
+  }
+
+  function triggerImageFilePicker() {
+    if (!imageFileInput) {
+      pendingButtonAltText = null;
+      alert('Image picker is unavailable. Refresh and try again.');
+      return;
+    }
+
+    // If the native picker is canceled, clear any pending alt text state.
+    const clearPendingAltTextOnFocus = function() {
+      window.removeEventListener('focus', clearPendingAltTextOnFocus);
+      window.setTimeout(function() {
+        if (pendingButtonAltText && (!imageFileInput.files || imageFileInput.files.length === 0)) {
+          pendingButtonAltText = null;
+        }
+      }, 300);
+    };
+
+    window.addEventListener('focus', clearPendingAltTextOnFocus);
+    imageFileInput.click();
+  }
+
   function enqueueImageUpload(file) {
     pendingImageUploads.push(file);
     if (!pendingImageFile) {
@@ -472,14 +535,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function openAltTextModal(file) {
+  function openAltTextModal(file, suggestedAltText) {
     if (!imageAltModal || !imageAltInput) {
       console.error('Missing alt text modal elements. Falling back to browser prompt.');
       return false;
     }
 
     const fileName = (file && file.name) ? file.name.replace(/\.[^.]+$/, '') : '';
-    imageAltInput.value = fileName ? `Image of ${fileName}` : '';
+    if (suggestedAltText !== undefined) {
+      imageAltInput.value = suggestedAltText;
+    } else {
+      imageAltInput.value = fileName ? `Image of ${fileName}` : '';
+    }
     imageAltModal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     imageAltInput.focus();
