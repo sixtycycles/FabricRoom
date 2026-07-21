@@ -1,4 +1,6 @@
 from io import BytesIO
+import html
+import re
 
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
@@ -92,9 +94,35 @@ class PostQRCodeView(View):
 
 
 class BlogCreateForm(forms.ModelForm):
+    IMG_TAG_PATTERN = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+    IMG_ALT_PATTERN = re.compile(
+        r"\balt\s*=\s*(\"([^\"]*)\"|'([^']*)'|([^\s>]+))", re.IGNORECASE
+    )
+
     class Meta:
         model = Post
         fields = ["title", "body"]
+
+    def clean_body(self):
+        body = self.cleaned_data.get("body", "")
+
+        for img_tag in self.IMG_TAG_PATTERN.findall(body):
+            alt_match = self.IMG_ALT_PATTERN.search(img_tag)
+            if not alt_match:
+                raise forms.ValidationError(
+                    "Every image in the post must include alt text."
+                )
+
+            raw_alt_value = next(
+                (group for group in alt_match.groups()[1:] if group is not None),
+                "",
+            )
+            if not html.unescape(raw_alt_value).strip():
+                raise forms.ValidationError(
+                    "Image alt text cannot be empty."
+                )
+
+        return body
 
 
 class BlogCreateView(LoginRequiredMixin, CreateView):
@@ -212,6 +240,7 @@ class UploadPostImageView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         post_id = kwargs.get("pk")
+        alt_text = request.POST.get("alt_text", "").strip()
 
         # For new posts, the URL has no `pk` kwarg (it's the /post/new/upload-image/ path),
         # so post_id will be None rather than the string "new".
@@ -227,6 +256,9 @@ class UploadPostImageView(LoginRequiredMixin, View):
         if "image" not in request.FILES:
             return JsonResponse({"error": "No image provided"}, status=400)
 
+        if not alt_text:
+            return JsonResponse({"error": "Alt text is required"}, status=400)
+
         image_file = request.FILES["image"]
 
         # Create InlineImage record
@@ -237,12 +269,18 @@ class UploadPostImageView(LoginRequiredMixin, View):
                 request.session.create()
             
             inline_image = InlineImage.objects.create(
-                image=image_file, session_key=request.session.session_key
+                image=image_file,
+                alt_text=alt_text,
+                session_key=request.session.session_key,
             )
         else:
             # For existing posts, create with post reference
             post = Post.objects.get(pk=post_id)
-            inline_image = InlineImage.objects.create(post=post, image=image_file)
+            inline_image = InlineImage.objects.create(
+                post=post,
+                image=image_file,
+                alt_text=alt_text,
+            )
 
         # Return image URL for the editor to insert
         return JsonResponse(
@@ -250,6 +288,7 @@ class UploadPostImageView(LoginRequiredMixin, View):
                 "success": True,
                 "image_url": inline_image.image.url,
                 "image_id": inline_image.id,
+                "alt_text": inline_image.alt_text,
             }
         )
 

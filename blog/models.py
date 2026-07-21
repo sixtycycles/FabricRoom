@@ -112,6 +112,7 @@ class InlineImage(models.Model):
         blank=True,
     )
     image = models.ImageField(upload_to="inline-images/%Y/%m/%d/")
+    alt_text = models.CharField(max_length=255, default="Blog image")
     session_key = models.CharField(max_length=40, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load blog_html_extras %}
 {% block content %}
 
 {% if post %}
@@ -7,7 +8,7 @@
     <h2>{{ post.title }}</h2>
   </div>
   <div class="card-body rounded-0 border-0">
-    <p>{{ post.body |safe}}</p>
+    <div>{{ post.body|ensure_img_alt }}</div>
   </div>
   <div class="card-footer">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">

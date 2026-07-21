@@ -210,10 +210,15 @@ class RichTextEditorTest(TestCase):
             published=True,
         )
         image_file = self.create_test_image()
-        inline_image = InlineImage.objects.create(post=post, image=image_file)
+        inline_image = InlineImage.objects.create(
+            post=post,
+            image=image_file,
+            alt_text="Close-up of red square test image",
+        )
         self.assertEqual(inline_image.post, post)
         self.assertTrue(inline_image.image)
         self.assertIn("test_image", inline_image.image.name)
+        self.assertEqual(inline_image.alt_text, "Close-up of red square test image")
 
     def test_inline_image_upload_is_resized_and_saved_efficiently(self):
         """Test that uploaded inline images are downsampled before storage."""
@@ -278,7 +283,10 @@ class RichTextEditorTest(TestCase):
         image_file = self.create_test_image()
         response = self.client.post(
             reverse("upload_post_image", args=[post.id]),
-            {"image": image_file},
+            {
+                "image": image_file,
+                "alt_text": "Diagram showing upload test",
+            },
             format="multipart",
         )
 
@@ -287,9 +295,15 @@ class RichTextEditorTest(TestCase):
         self.assertTrue(data["success"])
         self.assertIn("image_url", data)
         self.assertIn("image_id", data)
+        self.assertEqual(data["alt_text"], "Diagram showing upload test")
 
         # Verify image was created in database
-        self.assertTrue(InlineImage.objects.filter(post=post).exists())
+        self.assertTrue(
+            InlineImage.objects.filter(
+                post=post,
+                alt_text="Diagram showing upload test",
+            ).exists()
+        )
 
     def test_upload_image_requires_authentication(self):
         """Test that image upload requires user to be logged in"""
@@ -329,7 +343,10 @@ class RichTextEditorTest(TestCase):
         image_file = self.create_test_image()
         response = self.client.post(
             reverse("upload_post_image", args=[post.id]),
-            {"image": image_file},
+            {
+                "image": image_file,
+                "alt_text": "Unauthorized upload attempt image",
+            },
             format="multipart",
         )
 
@@ -357,6 +374,31 @@ class RichTextEditorTest(TestCase):
         self.assertEqual(response.status_code, 400)
         data = response.json()
         self.assertEqual(data["error"], "No image provided")
+
+    def test_upload_image_requires_alt_text(self):
+        """Test that upload endpoint rejects empty alt text"""
+        self.client.login(username="editoruser", password="testpass")
+
+        post = Post.objects.create(
+            author=self.user,
+            title="Post for Upload",
+            body="<p>Content</p>",
+            published=True,
+        )
+
+        image_file = self.create_test_image()
+        response = self.client.post(
+            reverse("upload_post_image", args=[post.id]),
+            {
+                "image": image_file,
+                "alt_text": "   ",
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertEqual(data["error"], "Alt text is required")
 
 
 class PostEditAuthTest(TestCase):

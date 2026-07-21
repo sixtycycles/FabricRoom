@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load blog_html_extras %}
 {% block content %}
 
 {% for post in all_posts_list %}
@@ -10,7 +11,7 @@
   <div class="card-body">
 
    {%autoescape off%}  
-    <p>{{ post.body  }}</p> 
+    <div>{{ post.body|ensure_img_alt }}</div>
     {% endautoescape %}
   </div>
   <div class="card-footer">

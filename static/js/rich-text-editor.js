@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const imageFileInput = document.getElementById('image-file-input');
   const imageCancelBtn = document.getElementById('image-cancel');
   const imageUploadBtn = document.getElementById('image-upload-btn');
+  const imageAltModal = document.getElementById('image-alt-modal');
+  const imageAltInput = document.getElementById('image-alt-input');
+  const imageAltCancelBtn = document.getElementById('image-alt-cancel');
+  const imageAltConfirmBtn = document.getElementById('image-alt-confirm');
+
+  const pendingImageUploads = [];
+  let pendingImageFile = null;
 
   console.log('Editor:', editor);
   console.log('Body input:', bodyInput);
@@ -178,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageFileInput) {
     imageFileInput.addEventListener('change', function() {
       if (this.files && this.files[0]) {
-        handleImageUpload();
+        Array.from(this.files).forEach(file => enqueueImageUpload(file));
+        imageFileInput.value = '';
       }
     });
   }
@@ -195,7 +203,50 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageUploadBtn) {
     imageUploadBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      handleImageUpload();
+      if (!imageFileInput.files || !imageFileInput.files[0]) {
+        alert('Please select an image file');
+        return;
+      }
+      Array.from(imageFileInput.files).forEach(file => enqueueImageUpload(file));
+      imageFileInput.value = '';
+    });
+  }
+
+  if (imageAltCancelBtn) {
+    imageAltCancelBtn.addEventListener('click', function() {
+      closeAltTextModal();
+      processNextPendingImage();
+    });
+  }
+
+  if (imageAltConfirmBtn) {
+    imageAltConfirmBtn.addEventListener('click', function() {
+      const altText = (imageAltInput.value || '').trim();
+      if (!altText) {
+        alert('Alt text is required to upload an image.');
+        imageAltInput.focus();
+        return;
+      }
+
+      const fileToUpload = pendingImageFile;
+      closeAltTextModal();
+
+      if (fileToUpload) {
+        handleImageUpload(fileToUpload, altText);
+      }
+
+      processNextPendingImage();
+    });
+  }
+
+  if (imageAltInput) {
+    imageAltInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (imageAltConfirmBtn) {
+          imageAltConfirmBtn.click();
+        }
+      }
     });
   }
 
@@ -244,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Handle image file upload
-  function handleImageUpload() {
+  function handleImageUpload(file, altText) {
     const postId = getPostId();
     let uploadUrl;
 
@@ -256,13 +307,19 @@ document.addEventListener('DOMContentLoaded', function() {
       uploadUrl = `/blog/post/new/upload-image/`;
     }
 
-    if (!imageFileInput.files || !imageFileInput.files[0]) {
+    if (!file) {
       alert('Please select an image file');
       return;
     }
 
+    if (!altText || !altText.trim()) {
+      alert('Alt text is required to upload an image.');
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('image', imageFileInput.files[0]);
+    formData.append('image', file);
+    formData.append('alt_text', altText.trim());
 
     // Make request to upload endpoint
     fetch(uploadUrl, {
@@ -277,13 +334,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           // Insert image into editor
           editor.focus();
-          const imgHtml = `<img src="${data.image_url}" alt="Image" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
+          const imgHtml = `<img src="${data.image_url}" alt="${escapeHtmlAttribute(data.alt_text || altText)}" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
           document.execCommand('insertHTML', false, imgHtml);
           saveContent();
 
           // Close upload form and clear input
           imageUploadForm.style.display = 'none';
-          imageFileInput.value = '';
 
           // Setup image editing on newly added image
           setupImageEditing();
@@ -386,41 +442,55 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Upload a file
   function uploadImageFile(file) {
-    const postId = getPostId();
-    let uploadUrl;
+    enqueueImageUpload(file);
+  }
 
-    if (postId) {
-      uploadUrl = `/blog/post/${postId}/upload-image/`;
-    } else {
-      uploadUrl = `/blog/post/new/upload-image/`;
+  function enqueueImageUpload(file) {
+    pendingImageUploads.push(file);
+    if (!pendingImageFile) {
+      processNextPendingImage();
+    }
+  }
+
+  function processNextPendingImage() {
+    if (pendingImageFile || pendingImageUploads.length === 0) {
+      return;
     }
 
-    const formData = new FormData();
-    formData.append('image', file);
+    pendingImageFile = pendingImageUploads.shift();
+    openAltTextModal(pendingImageFile);
+  }
 
-    fetch(uploadUrl, {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'X-CSRFToken': getCookie('csrftoken'),
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          editor.focus();
-          const imgHtml = `<img src="${data.image_url}" alt="Image" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
-          document.execCommand('insertHTML', false, imgHtml);
-          saveContent();
-          setupImageEditing();
-        } else {
-          alert('Error uploading image: ' + (data.error || 'Unknown error'));
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Error uploading image');
-      });
+  function openAltTextModal(file) {
+    if (!imageAltModal || !imageAltInput) {
+      alert('Alt text prompt is unavailable.');
+      pendingImageFile = null;
+      return;
+    }
+
+    const fileName = (file && file.name) ? file.name.replace(/\.[^.]+$/, '') : '';
+    imageAltInput.value = fileName ? `Image of ${fileName}` : '';
+    imageAltModal.style.display = 'flex';
+    imageAltInput.focus();
+    imageAltInput.select();
+  }
+
+  function closeAltTextModal() {
+    if (imageAltModal) {
+      imageAltModal.style.display = 'none';
+    }
+    if (imageAltInput) {
+      imageAltInput.value = '';
+    }
+    pendingImageFile = null;
+  }
+
+  function escapeHtmlAttribute(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
   // Setup image editing (click to select, delete, drag to move)
