@@ -23,9 +23,26 @@
     {% with field=form.title %}
     <div class="form-group">
       {{ field.label_tag }}
-      {% render_field field class="form-control" %}
+      {% if form.is_bound and field.errors %}
+      {% with error_id=field.auto_id|add:"_error" %}
+      {% render_field field class="form-control is-invalid" aria-describedby=error_id %}
+      {% for error in field.errors %}
+      <div class="alert alert-warning mt-2" id="{{ error_id }}" role="alert">{{ error }}</div>
+      {% endfor %}
+      {% endwith %}
+      {% else %}
       {% if field.help_text %}
-      <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+      {% with help_id=field.auto_id|add:"_help" %}
+      {% render_field field class="form-control" aria-describedby=help_id %}
+      {% endwith %}
+      {% else %}
+      {% render_field field class="form-control" %}
+      {% endif %}
+      {% endif %}
+      {% if field.help_text %}
+      {% with help_id=field.auto_id|add:"_help" %}
+      <small class="form-text text-muted" id="{{ help_id }}">{{ field.help_text|safe }}</small>
+      {% endwith %}
       {% endif %}
     </div>
     {% endwith %}
@@ -38,12 +55,18 @@
       {% include 'blog/partials/rich_editor_toolbar.html' %}
 
       <!-- Editor area (contenteditable) -->
-      <div id="post-editor" class="form-control" style="min-height: 400px; overflow-y: auto; white-space: normal; word-wrap: break-word;"
+      <div id="post-editor" class="form-control{% if form.is_bound and form.body.errors %} is-invalid{% endif %}" style="min-height: 400px; overflow-y: auto; white-space: normal; word-wrap: break-word;"
            contenteditable="true" role="textbox" aria-label="Post content editor"></div>
 
       <!-- Hidden input to store HTML content (populated by JavaScript on form submit) -->
       <!-- Render the form field to get initial value, but hide it -->
       {% render_field form.body style="display: none;" id="id_body" %}
+
+      {% if form.is_bound and form.body.errors %}
+      {% for error in form.body.errors %}
+      <div class="alert alert-warning mt-2" role="alert">{{ error }}</div>
+      {% endfor %}
+      {% endif %}
     </div>
 
     <input class="btn btn-success" type="submit" value="Save">
