@@ -94,34 +94,9 @@ class PostQRCodeView(View):
 
 
 class BlogCreateForm(forms.ModelForm):
-    IMG_TAG_PATTERN = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
-    IMG_ALT_PATTERN = re.compile(
-        r"\balt\s*=\s*(\"[^\"]*\"|'[^']*'|[^\s>]+)", re.IGNORECASE
-    )
-
     class Meta:
         model = Post
-        fields = ["title", "inline_image_alt_text", "body"]
-
-    def clean_body(self):
-        body = self.cleaned_data.get("body", "")
-        default_alt_text = (
-            self.cleaned_data.get("inline_image_alt_text", "") or "Blog image"
-        ).strip()
-        escaped_alt_text = html.escape(default_alt_text, quote=True)
-
-        def apply_default_alt_text(match):
-            img_tag = match.group(0)
-            if self.IMG_ALT_PATTERN.search(img_tag):
-                return self.IMG_ALT_PATTERN.sub(
-                    f'alt="{escaped_alt_text}"', img_tag, count=1
-                )
-
-            if img_tag.endswith("/>"):
-                return f'{img_tag[:-2]} alt="{escaped_alt_text}" />'
-            return f'{img_tag[:-1]} alt="{escaped_alt_text}">'
-
-        return self.IMG_TAG_PATTERN.sub(apply_default_alt_text, body)
+        fields = ["title", "body"]
 
 
 class BlogCreateView(LoginRequiredMixin, CreateView):

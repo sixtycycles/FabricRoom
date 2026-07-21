@@ -14,12 +14,6 @@ class Post(models.Model):
 
     title = models.CharField(max_length=200)
     body = models.TextField()
-    inline_image_alt_text = models.CharField(
-        max_length=255,
-        default="Blog image",
-        blank=True,
-        help_text="Default alt text assigned to every image in this post.",
-    )
     author = models.ForeignKey(
         get_user_model(),
         on_delete=models.CASCADE,
