@@ -210,13 +210,10 @@ class HomePageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
-        response = self.client.get(reverse("home"), follow=True)
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
         self.assertEqual(response.status_code, 200)
-
-        self.assertTrue(
-            self.assertTemplateUsed(response, "home.html") 
-            or self.assertTemplateUsed(response, "post_list.html")
-        )
+        self.assertTemplateUsed(response, "home.html")
 
     def test_private_view_requires_login(self):
         """Test that /health/ requires authentication"""

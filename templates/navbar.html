@@ -29,6 +29,15 @@
             </ul>
           </li>
           <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="gratitudeDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+              Gratitudes
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="gratitudeDropdown">
+              <li><a class="dropdown-item" href="{% url 'gratitude_list' %}">All Gratitudes</a></li>
+              <li><a class="dropdown-item" href="{% url 'gratitude_create' %}">New Gratitude</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
               Blog
             </a>
