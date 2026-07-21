@@ -458,21 +458,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     pendingImageFile = pendingImageUploads.shift();
-    openAltTextModal(pendingImageFile);
+    const modalOpened = openAltTextModal(pendingImageFile);
+    if (!modalOpened) {
+      const fileToUpload = pendingImageFile;
+      const altText = promptForAltTextFallback(fileToUpload);
+      pendingImageFile = null;
+
+      if (fileToUpload && altText) {
+        handleImageUpload(fileToUpload, altText);
+      }
+
+      processNextPendingImage();
+    }
   }
 
   function openAltTextModal(file) {
     if (!imageAltModal || !imageAltInput) {
-      alert('Alt text prompt is unavailable.');
-      pendingImageFile = null;
-      return;
+      console.error('Missing alt text modal elements. Falling back to browser prompt.');
+      return false;
     }
 
     const fileName = (file && file.name) ? file.name.replace(/\.[^.]+$/, '') : '';
     imageAltInput.value = fileName ? `Image of ${fileName}` : '';
     imageAltModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
     imageAltInput.focus();
     imageAltInput.select();
+    return true;
   }
 
   function closeAltTextModal() {
@@ -482,7 +494,31 @@ document.addEventListener('DOMContentLoaded', function() {
     if (imageAltInput) {
       imageAltInput.value = '';
     }
+    document.body.style.overflow = '';
     pendingImageFile = null;
+  }
+
+  function promptForAltTextFallback(file) {
+    const fileName = (file && file.name) ? file.name.replace(/\.[^.]+$/, '') : 'uploaded image';
+    const suggestedAltText = `Image of ${fileName}`;
+
+    while (true) {
+      const enteredValue = window.prompt(
+        'Describe this image for screen readers (required):',
+        suggestedAltText
+      );
+
+      if (enteredValue === null) {
+        return null;
+      }
+
+      const altText = enteredValue.trim();
+      if (altText) {
+        return altText;
+      }
+
+      alert('Alt text is required to upload an image.');
+    }
   }
 
   function escapeHtmlAttribute(value) {

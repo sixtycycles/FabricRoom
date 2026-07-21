@@ -259,7 +259,8 @@ class UploadPostImageView(LoginRequiredMixin, View):
         if not alt_text:
             return JsonResponse(
                 {
-                    "error": "Alt text is required. If you do not see the alt text dialog, refresh the page and try again."
+                    "error": "Alt text is required. If the prompt did not appear, refresh the page (hard refresh) and try again.",
+                    "error_code": "missing_alt_text",
                 },
                 status=400,
             )
