@@ -186,15 +186,8 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageFileInput) {
     imageFileInput.addEventListener('change', function() {
       if (this.files && this.files[0]) {
-        if (pendingButtonAltText) {
-          const buttonAltText = pendingButtonAltText;
-          pendingButtonAltText = null;
-          Array.from(this.files).forEach(file => handleImageUpload(file, buttonAltText));
-          imageFileInput.value = '';
-          return;
-        }
-
-        Array.from(this.files).forEach(file => enqueueImageUpload(file));
+        const postAltText = getPostAltText();
+        Array.from(this.files).forEach(file => handleImageUpload(file, postAltText));
         imageFileInput.value = '';
       }
     });
@@ -216,7 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Please select an image file');
         return;
       }
-      Array.from(imageFileInput.files).forEach(file => enqueueImageUpload(file));
+      const postAltText = getPostAltText();
+      Array.from(imageFileInput.files).forEach(file => handleImageUpload(file, postAltText));
       imageFileInput.value = '';
     });
   }
@@ -317,6 +311,16 @@ document.addEventListener('DOMContentLoaded', function() {
     return null;
   }
 
+  function getPostAltText() {
+    const postAltTextInput = document.getElementById('id_inline_image_alt_text');
+    if (!postAltTextInput) {
+      return 'Blog image';
+    }
+
+    const value = (postAltTextInput.value || '').trim();
+    return value || 'Blog image';
+  }
+
   // Handle image file upload
   function handleImageUpload(file, altText) {
     const postId = getPostId();
@@ -335,14 +339,13 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    if (!altText || !altText.trim()) {
-      alert('Alt text is required to upload an image.');
-      return;
-    }
+    const resolvedAltText = (altText || '').trim() || getPostAltText();
+    const postAltText = getPostAltText();
 
     const formData = new FormData();
     formData.append('image', file);
-    formData.append('alt_text', altText.trim());
+    formData.append('alt_text', resolvedAltText);
+    formData.append('post_alt_text', postAltText);
 
     // Make request to upload endpoint
     fetch(uploadUrl, {
@@ -357,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           // Insert image into editor
           editor.focus();
-          const imgHtml = `<img src="${data.image_url}" alt="${escapeHtmlAttribute(data.alt_text || altText)}" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
+          const imgHtml = `<img src="${data.image_url}" alt="${escapeHtmlAttribute(data.alt_text || resolvedAltText)}" class="editor-image img-fluid" draggable="true" data-image-id="${data.image_id}">`;
           document.execCommand('insertHTML', false, imgHtml);
           saveContent();
 
@@ -465,26 +468,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Upload a file
   function uploadImageFile(file) {
-    enqueueImageUpload(file);
+    handleImageUpload(file, getPostAltText());
   }
 
   function startImageButtonUploadFlow() {
-    const modalOpened = openAltTextModal(null, 'Image of ');
-
-    if (!modalOpened) {
-      const altText = promptForAltTextFallback(null);
-      if (!altText) {
-        return;
-      }
-
-      pendingButtonAltText = altText;
-      triggerImageFilePicker();
-      return;
-    }
-
-    if (imageAltModal) {
-      imageAltModal.dataset.uploadFlow = 'button';
-    }
+    pendingButtonAltText = null;
+    triggerImageFilePicker();
   }
 
   function triggerImageFilePicker() {

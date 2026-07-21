@@ -375,8 +375,8 @@ class RichTextEditorTest(TestCase):
         data = response.json()
         self.assertEqual(data["error"], "No image provided")
 
-    def test_upload_image_requires_alt_text(self):
-        """Test that upload endpoint rejects empty alt text"""
+    def test_upload_image_uses_default_alt_text(self):
+        """Test that upload endpoint falls back to default post alt text"""
         self.client.login(username="editoruser", password="testpass")
 
         post = Post.objects.create(
@@ -396,9 +396,10 @@ class RichTextEditorTest(TestCase):
             format="multipart",
         )
 
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertIn("Alt text is required", data["error"])
+        self.assertTrue(data["success"])
+        self.assertEqual(data["alt_text"], "Blog image")
 
 
 class PostEditAuthTest(TestCase):

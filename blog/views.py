@@ -96,33 +96,32 @@ class PostQRCodeView(View):
 class BlogCreateForm(forms.ModelForm):
     IMG_TAG_PATTERN = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
     IMG_ALT_PATTERN = re.compile(
-        r"\balt\s*=\s*(\"([^\"]*)\"|'([^']*)'|([^\s>]+))", re.IGNORECASE
+        r"\balt\s*=\s*(\"[^\"]*\"|'[^']*'|[^\s>]+)", re.IGNORECASE
     )
 
     class Meta:
         model = Post
-        fields = ["title", "body"]
+        fields = ["title", "inline_image_alt_text", "body"]
 
     def clean_body(self):
         body = self.cleaned_data.get("body", "")
+        default_alt_text = (
+            self.cleaned_data.get("inline_image_alt_text", "") or "Blog image"
+        ).strip()
+        escaped_alt_text = html.escape(default_alt_text, quote=True)
 
-        for img_tag in self.IMG_TAG_PATTERN.findall(body):
-            alt_match = self.IMG_ALT_PATTERN.search(img_tag)
-            if not alt_match:
-                raise forms.ValidationError(
-                    "Every image in the post must include alt text."
+        def apply_default_alt_text(match):
+            img_tag = match.group(0)
+            if self.IMG_ALT_PATTERN.search(img_tag):
+                return self.IMG_ALT_PATTERN.sub(
+                    f'alt="{escaped_alt_text}"', img_tag, count=1
                 )
 
-            raw_alt_value = next(
-                (group for group in alt_match.groups()[1:] if group is not None),
-                "",
-            )
-            if not html.unescape(raw_alt_value).strip():
-                raise forms.ValidationError(
-                    "Image alt text cannot be empty."
-                )
+            if img_tag.endswith("/>"):
+                return f'{img_tag[:-2]} alt="{escaped_alt_text}" />'
+            return f'{img_tag[:-1]} alt="{escaped_alt_text}">'
 
-        return body
+        return self.IMG_TAG_PATTERN.sub(apply_default_alt_text, body)
 
 
 class BlogCreateView(LoginRequiredMixin, CreateView):
@@ -241,12 +240,14 @@ class UploadPostImageView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         post_id = kwargs.get("pk")
         alt_text = request.POST.get("alt_text", "").strip()
+        post_alt_text = request.POST.get("post_alt_text", "").strip()
 
         # For new posts, the URL has no `pk` kwarg (it's the /post/new/upload-image/ path),
         # so post_id will be None rather than the string "new".
         is_new_post = post_id is None
 
         # If not a new post, verify authorization
+        post = None
         if not is_new_post:
             post = Post.objects.get(pk=post_id)
             if post.author != request.user:
@@ -257,13 +258,12 @@ class UploadPostImageView(LoginRequiredMixin, View):
             return JsonResponse({"error": "No image provided"}, status=400)
 
         if not alt_text:
-            return JsonResponse(
-                {
-                    "error": "Alt text is required. If the prompt did not appear, refresh the page (hard refresh) and try again.",
-                    "error_code": "missing_alt_text",
-                },
-                status=400,
-            )
+            if post_alt_text:
+                alt_text = post_alt_text
+            elif post is not None and post.inline_image_alt_text:
+                alt_text = post.inline_image_alt_text
+            else:
+                alt_text = "Blog image"
 
         image_file = request.FILES["image"]
 
@@ -281,7 +281,6 @@ class UploadPostImageView(LoginRequiredMixin, View):
             )
         else:
             # For existing posts, create with post reference
-            post = Post.objects.get(pk=post_id)
             inline_image = InlineImage.objects.create(
                 post=post,
                 image=image_file,
