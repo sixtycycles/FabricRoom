@@ -12,6 +12,7 @@
           <a class="nav-link" href="/">Home</a>
         </li>
         {% if user.is_authenticated %}
+        {% if user.username != "marisa" %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'feeds_dashboard' %}">Feeds</a>
           </li>
@@ -28,32 +29,36 @@
               <li><a class="dropdown-item" href="{% url 'apple-health-list' %}">Apple Health Data</a></li>
             </ul>
           </li>
+          {% endif %}
+          {% if user.username != "marisa" %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="gratitudeDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
               Gratitudes
             </a>
             <ul class="dropdown-menu" aria-labelledby="gratitudeDropdown">
               <li><a class="dropdown-item" href="{% url 'gratitude_list' %}">All Gratitudes</a></li>
-              {% if user.username != "marisa" %}
+              
               <li><a class="dropdown-item" href="{% url 'gratitude_create' %}">New Gratitude</a></li>
-              {% endif %}
+              
             </ul>
-          </li>
+          </li>{% endif %}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
               Blog
             </a>
+              {% if user.username != "marisa" %}
+
             <ul class="dropdown-menu" aria-labelledby="blogDropdown">
               <li><a class="dropdown-item" href="{% url 'blog' %}">See Blog Posts</a></li>
-              {% if user.username != "marisa" %}
               <li><a class="dropdown-item" href="{% url 'post_new' %}">Create New Blog Post</a></li>
-              {% endif %}
+
               <li class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'note_list' %}">My Notes</a></li>
               {% for note in all_notes_list %}
                 <li><a class="dropdown-item" href="{{ note.get_absolute_url }}">{{ note.title }}</a></li>
               {% endfor %}
             </ul>
+                          {% endif %}
           </li>
 
         {% endif%}

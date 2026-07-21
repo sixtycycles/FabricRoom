@@ -59,7 +59,7 @@
       </div>
       {% endif %}
     </div>
-
+{% if user.username != "marisa" %}
     <h5 class="mt-4">Recent feed items</h5>
     {% if recent_feed_items %}
     <ul class="list-unstyled mt-2">
@@ -75,6 +75,8 @@
     {% else %}
     <p class="text-muted small mb-0">No recent feed items yet.</p>
     {% endif %}
+    {% endif %}
+
   </div>
   <div class="card-footer">
   </div>
