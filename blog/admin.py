@@ -45,7 +45,7 @@ class InlineImageAdmin(admin.ModelAdmin):
     ]
     list_filter = ["created_at", "post"]
     readonly_fields = ["created_at", "image_preview"]
-    fields = ["post", "image", "alt_text"]
+    fields = ["post", "image_preview", "image", "alt_text", "created_at"]
 
     def image_preview(self, obj):
         if obj.image:
@@ -67,4 +67,3 @@ class GratitudeAdmin(admin.ModelAdmin):
     def gratitude_text_short(self, obj):
         return obj.gratitude_text[:50] + ("..." if len(obj.gratitude_text) > 50 else "")
     gratitude_text_short.short_description = "Gratitude Text"
-
