@@ -61,20 +61,3 @@
   <small class="text-muted d-block mt-1">Max file size: 10MB. Formats: JPG, PNG, GIF, WebP</small>
 </div>
 
-<div id="image-alt-modal" style="display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); z-index: 3000; align-items: center; justify-content: center;">
-  <div role="dialog" aria-modal="true" aria-labelledby="image-alt-modal-title" style="width: min(560px, calc(100% - 2rem)); background: #fff; border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);">
-    <div style="padding: 0.9rem 1rem; border-bottom: 1px solid #e5e5e5;">
-      <h5 id="image-alt-modal-title" style="margin: 0; font-size: 1.1rem;">Add image alt text</h5>
-    </div>
-    <div style="padding: 1rem;">
-      <label for="image-alt-input" class="form-label">Describe the image for screen readers</label>
-      <input id="image-alt-input" type="text" class="form-control" maxlength="255" required>
-      <small class="text-muted d-block mt-2">Alt text is required before the image can be uploaded.</small>
-    </div>
-    <div style="padding: 0.9rem 1rem; border-top: 1px solid #e5e5e5; display: flex; justify-content: flex-end; gap: 0.5rem;">
-      <button type="button" class="btn btn-outline-secondary btn-sm" id="image-alt-cancel">Cancel</button>
-      <button type="button" class="btn btn-primary btn-sm" id="image-alt-confirm">Upload image</button>
-    </div>
-  </div>
-</div>
-

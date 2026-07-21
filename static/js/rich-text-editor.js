@@ -5,8 +5,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Rich text editor initializing...');
-
   const editor = document.getElementById('post-editor');
   const bodyInput = document.getElementById('id_body');
   const postForm = document.getElementById('blog-post-form');
@@ -24,29 +22,14 @@ document.addEventListener('DOMContentLoaded', function() {
   const imageFileInput = document.getElementById('image-file-input');
   const imageCancelBtn = document.getElementById('image-cancel');
   const imageUploadBtn = document.getElementById('image-upload-btn');
-  const imageAltModal = document.getElementById('image-alt-modal');
-  const imageAltInput = document.getElementById('image-alt-input');
-  const imageAltCancelBtn = document.getElementById('image-alt-cancel');
-  const imageAltConfirmBtn = document.getElementById('image-alt-confirm');
-
-  const pendingImageUploads = [];
-  let pendingImageFile = null;
-  let pendingButtonAltText = null;
-
-  console.log('Editor:', editor);
-  console.log('Body input:', bodyInput);
-  console.log('Form:', postForm);
 
   if (!editor || !bodyInput || !postForm) {
     console.error('Missing required elements');
     return;
   }
 
-  console.log('All elements found, setting up form handler');
-
   // Initialize editor with existing content
   if (bodyInput.value) {
-    console.log('Initializing editor with existing content');
     editor.innerHTML = bodyInput.value;
   }
 
@@ -58,23 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Simple form submit handler
   postForm.addEventListener('submit', function(e) {
-    console.log('FORM SUBMIT EVENT FIRED!!!');
     bodyInput.value = editor.innerHTML;
-    console.log('Body value set to:', bodyInput.value.substring(0, 50));
-    console.log('Title value:', postForm.querySelector('input[name="title"]').value);
     // Let form submit normally
   });
 
   // Also add click handler to submit button directly
   const submitBtn = postForm.querySelector('input[type="submit"]');
   if (submitBtn) {
-    console.log('Submit button found, adding click handler');
     submitBtn.addEventListener('click', function(e) {
-      console.log('!!! SUBMIT BUTTON CLICKED !!!');
       bodyInput.value = editor.innerHTML;
     });
-  } else {
-    console.error('Submit button NOT found');
   }
 
   // Make editor editable
@@ -178,7 +154,9 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageBtn) {
     imageBtn.addEventListener('click', function(e) {
       e.preventDefault();
-      startImageButtonUploadFlow();
+      if (imageFileInput) {
+        imageFileInput.click();
+      }
     });
   }
 
@@ -212,58 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const postAltText = getPostAltText();
       Array.from(imageFileInput.files).forEach(file => handleImageUpload(file, postAltText));
       imageFileInput.value = '';
-    });
-  }
-
-  if (imageAltCancelBtn) {
-    imageAltCancelBtn.addEventListener('click', function() {
-      if (imageAltModal && imageAltModal.dataset.uploadFlow === 'button') {
-        delete imageAltModal.dataset.uploadFlow;
-        closeAltTextModal();
-        return;
-      }
-
-      closeAltTextModal();
-      processNextPendingImage();
-    });
-  }
-
-  if (imageAltConfirmBtn) {
-    imageAltConfirmBtn.addEventListener('click', function() {
-      const altText = (imageAltInput.value || '').trim();
-      if (!altText) {
-        alert('Alt text is required to upload an image.');
-        imageAltInput.focus();
-        return;
-      }
-
-      if (imageAltModal && imageAltModal.dataset.uploadFlow === 'button') {
-        pendingButtonAltText = altText;
-        delete imageAltModal.dataset.uploadFlow;
-        closeAltTextModal();
-        triggerImageFilePicker();
-        return;
-      }
-
-      const fileToUpload = pendingImageFile;
-      closeAltTextModal();
-
-      if (fileToUpload) {
-        handleImageUpload(fileToUpload, altText);
-      }
-
-      processNextPendingImage();
-    });
-  }
-
-  if (imageAltInput) {
-    imageAltInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        if (imageAltConfirmBtn) {
-          imageAltConfirmBtn.click();
-        }
-      }
     });
   }
 
@@ -469,112 +395,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Upload a file
   function uploadImageFile(file) {
     handleImageUpload(file, getPostAltText());
-  }
-
-  function startImageButtonUploadFlow() {
-    pendingButtonAltText = null;
-    triggerImageFilePicker();
-  }
-
-  function triggerImageFilePicker() {
-    if (!imageFileInput) {
-      pendingButtonAltText = null;
-      alert('Image picker is unavailable. Refresh and try again.');
-      return;
-    }
-
-    // If the native picker is canceled, clear any pending alt text state.
-    const clearPendingAltTextOnFocus = function() {
-      window.removeEventListener('focus', clearPendingAltTextOnFocus);
-      window.setTimeout(function() {
-        if (pendingButtonAltText && (!imageFileInput.files || imageFileInput.files.length === 0)) {
-          pendingButtonAltText = null;
-        }
-      }, 300);
-    };
-
-    window.addEventListener('focus', clearPendingAltTextOnFocus);
-    imageFileInput.click();
-  }
-
-  function enqueueImageUpload(file) {
-    pendingImageUploads.push(file);
-    if (!pendingImageFile) {
-      processNextPendingImage();
-    }
-  }
-
-  function processNextPendingImage() {
-    if (pendingImageFile || pendingImageUploads.length === 0) {
-      return;
-    }
-
-    pendingImageFile = pendingImageUploads.shift();
-    const modalOpened = openAltTextModal(pendingImageFile);
-    if (!modalOpened) {
-      const fileToUpload = pendingImageFile;
-      const altText = promptForAltTextFallback(fileToUpload);
-      pendingImageFile = null;
-
-      if (fileToUpload && altText) {
-        handleImageUpload(fileToUpload, altText);
-      }
-
-      processNextPendingImage();
-    }
-  }
-
-  function openAltTextModal(file, suggestedAltText) {
-    if (!imageAltModal || !imageAltInput) {
-      console.error('Missing alt text modal elements. Falling back to browser prompt.');
-      return false;
-    }
-
-    const fileName = (file && file.name) ? file.name.replace(/\.[^.]+$/, '') : '';
-    if (suggestedAltText !== undefined) {
-      imageAltInput.value = suggestedAltText;
-    } else {
-      imageAltInput.value = fileName ? `Image of ${fileName}` : '';
-    }
-    imageAltModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    imageAltInput.focus();
-    imageAltInput.select();
-    return true;
-  }
-
-  function closeAltTextModal() {
-    if (imageAltModal) {
-      imageAltModal.style.display = 'none';
-    }
-    if (imageAltInput) {
-      imageAltInput.value = '';
-    }
-    document.body.style.overflow = '';
-    pendingImageFile = null;
-  }
-
-  function promptForAltTextFallback(file) {
-    const fileName = (file && file.name) ? file.name.replace(/\.[^.]+$/, '') : 'uploaded image';
-    const suggestedAltText = `Image of ${fileName}`;
-
-    while (true) {
-      const enteredValue = window.prompt(
-        'Describe this image for screen readers (required):',
-        suggestedAltText
-      );
-
-      if (enteredValue === null) {
-        return null;
-      }
-
-      const altText = enteredValue.trim();
-      if (altText) {
-        return altText;
-      }
-
-      alert('Alt text is required to upload an image.');
-    }
   }
 
   function escapeHtmlAttribute(value) {
