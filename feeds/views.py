@@ -219,6 +219,7 @@ class FeedFolderDeleteView(FeedContextMixin, LoginRequiredMixin, DeleteView):
 class FeedCreateView(FeedContextMixin, LoginRequiredMixin, CreateView):
     model = Feed
     form_class = FeedForm
+    template_name = "feeds/feed_form.html"
     success_url = reverse_lazy("feeds_dashboard")
     login_url = "/accounts/login/"
 
