@@ -12,6 +12,8 @@ from blog.views import (
     NoteDeleteView,
     UploadPostImageView,
     DeletePostImageView,
+    InlineImagePanelView,
+    UpdatePostImageAltTextView,
     PostQRCodeView,
 )
 
@@ -31,6 +33,21 @@ urlpatterns = [
         "post/<int:pk>/upload-image/",
         UploadPostImageView.as_view(),
         name="upload_post_image",
+    ),
+    path(
+        "post/new/inline-images/",
+        InlineImagePanelView.as_view(),
+        name="post_inline_images_new",
+    ),
+    path(
+        "post/<int:pk>/inline-images/",
+        InlineImagePanelView.as_view(),
+        name="post_inline_images",
+    ),
+    path(
+        "post/image/<int:image_id>/alt-text/",
+        UpdatePostImageAltTextView.as_view(),
+        name="update_post_image_alt_text",
     ),
     path(
         "post/image/<int:image_id>/delete/",

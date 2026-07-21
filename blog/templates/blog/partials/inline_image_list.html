@@ -1,0 +1,16 @@
+<section class="card mt-4" aria-label="Inline image manager">
+  <div class="card-body">
+    <h2 class="h5 mb-3">Inline Images</h2>
+    <p class="text-muted small mb-3">Each alt text save is sent to the server immediately with HTMX.</p>
+
+    {% if images %}
+      <div class="d-grid gap-3">
+        {% for image in images %}
+          {% include 'blog/partials/inline_image_row.html' with image=image %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">No inline images uploaded yet.</p>
+    {% endif %}
+  </div>
+</section>

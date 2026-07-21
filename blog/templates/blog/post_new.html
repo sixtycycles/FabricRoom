@@ -46,33 +46,6 @@
     </div>
     {% endwith %}
 
-    {% with field=form.inline_image_alt_text %}
-    <div class="form-group mt-3">
-      {{ field.label_tag }}
-      {% if form.is_bound and field.errors %}
-      {% with error_id=field.auto_id|add:"_error" %}
-      {% render_field field class="form-control is-invalid" aria-describedby=error_id %}
-      {% for error in field.errors %}
-      <div class="alert alert-warning mt-2" id="{{ error_id }}" role="alert">{{ error }}</div>
-      {% endfor %}
-      {% endwith %}
-      {% else %}
-      {% if field.help_text %}
-      {% with help_id=field.auto_id|add:"_help" %}
-      {% render_field field class="form-control" aria-describedby=help_id %}
-      {% endwith %}
-      {% else %}
-      {% render_field field class="form-control" %}
-      {% endif %}
-      {% endif %}
-      {% if field.help_text %}
-      {% with help_id=field.auto_id|add:"_help" %}
-      <small class="form-text text-muted" id="{{ help_id }}">{{ field.help_text|safe }}</small>
-      {% endwith %}
-      {% endif %}
-    </div>
-    {% endwith %}
-
     <!-- Body field with custom rich text editor -->
     <div class="form-group">
       <label for="post-editor">{{ form.body.label }}</label>
@@ -94,6 +67,14 @@
       {% endfor %}
       {% endif %}
     </div>
+
+    <div
+      id="inline-images-panel"
+      hx-get="{% url 'post_inline_images_new' %}"
+      hx-trigger="load, inlineImagesChanged from:body"
+      hx-target="this"
+      hx-swap="innerHTML"
+    ></div>
 
     <input type="submit" value="Save" class="btn btn-primary">
 </form>

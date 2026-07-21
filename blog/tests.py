@@ -401,6 +401,82 @@ class RichTextEditorTest(TestCase):
         self.assertTrue(data["success"])
         self.assertEqual(data["alt_text"], "Blog image")
 
+    def test_inline_image_panel_lists_pending_session_images(self):
+        """The new-post HTMX panel should render pending images for the current session."""
+        self.client.login(username="editoruser", password="testpass")
+
+        session = self.client.session
+        session["inline_images_ready"] = True
+        session.save()
+
+        InlineImage.objects.create(
+            image=self.create_test_image(),
+            alt_text="Pending screenshot alt text",
+            session_key=session.session_key,
+        )
+
+        response = self.client.get(reverse("post_inline_images_new"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Inline Images")
+        self.assertContains(response, "Pending screenshot alt text")
+
+    def test_update_inline_image_alt_text_endpoint(self):
+        """Users can update inline image alt text through HTMX endpoint."""
+        self.client.login(username="editoruser", password="testpass")
+
+        post = Post.objects.create(
+            author=self.user,
+            title="Post for Alt Text Update",
+            body="<p>Content</p>",
+            published=True,
+        )
+        image = InlineImage.objects.create(
+            post=post,
+            image=self.create_test_image(),
+            alt_text="Old alt",
+        )
+
+        response = self.client.post(
+            reverse("update_post_image_alt_text", args=[image.id]),
+            {"alt_text": "New descriptive alt text"},
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("HX-Trigger", response.headers)
+
+        image.refresh_from_db()
+        self.assertEqual(image.alt_text, "New descriptive alt text")
+
+    def test_update_inline_image_alt_text_requires_value(self):
+        """Empty alt text should return validation error and not update image."""
+        self.client.login(username="editoruser", password="testpass")
+
+        post = Post.objects.create(
+            author=self.user,
+            title="Post for Alt Text Validation",
+            body="<p>Content</p>",
+            published=True,
+        )
+        image = InlineImage.objects.create(
+            post=post,
+            image=self.create_test_image(),
+            alt_text="Existing alt",
+        )
+
+        response = self.client.post(
+            reverse("update_post_image_alt_text", args=[image.id]),
+            {"alt_text": "   "},
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 422)
+        self.assertContains(response, "Alt text is required", status_code=422)
+
+        image.refresh_from_db()
+        self.assertEqual(image.alt_text, "Existing alt")
+
 
 class PostEditAuthTest(TestCase):
     """Tests for post editing authorization and functionality"""

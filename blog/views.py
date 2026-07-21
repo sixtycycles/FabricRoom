@@ -1,5 +1,6 @@
 from io import BytesIO
 import html
+import json
 import re
 
 from django.conf import settings
@@ -235,8 +236,6 @@ class UploadPostImageView(LoginRequiredMixin, View):
         if not alt_text:
             if post_alt_text:
                 alt_text = post_alt_text
-            elif post is not None and post.inline_image_alt_text:
-                alt_text = post.inline_image_alt_text
             else:
                 alt_text = "Blog image"
 
@@ -273,6 +272,99 @@ class UploadPostImageView(LoginRequiredMixin, View):
         )
 
 
+def _get_inline_image_or_403(request, image_id):
+    try:
+        image = InlineImage.objects.select_related("post").get(pk=image_id)
+    except InlineImage.DoesNotExist:
+        return None, JsonResponse({"error": "Image not found"}, status=404)
+
+    if image.post is not None:
+        if image.post.author != request.user:
+            return None, JsonResponse({"error": "Unauthorized"}, status=403)
+    else:
+        if image.session_key != request.session.session_key:
+            return None, JsonResponse({"error": "Unauthorized"}, status=403)
+
+    return image, None
+
+
+class InlineImagePanelView(LoginRequiredMixin, View):
+    login_url = "/accounts/login/"
+    template_name = "blog/partials/inline_image_list.html"
+
+    def get(self, request, *args, **kwargs):
+        post_id = kwargs.get("pk")
+        post = None
+
+        if post_id is not None:
+            post = get_object_or_404(Post, pk=post_id)
+            if post.author != request.user:
+                return HttpResponseForbidden("You are not authorized to view these images.")
+            images = InlineImage.objects.filter(post=post).order_by("created_at")
+        else:
+            session_key = request.session.session_key
+            if session_key is None:
+                images = InlineImage.objects.none()
+            else:
+                images = InlineImage.objects.filter(
+                    post__isnull=True,
+                    session_key=session_key,
+                ).order_by("created_at")
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "images": images,
+                "post": post,
+            },
+        )
+
+
+@method_decorator(require_POST, name="dispatch")
+class UpdatePostImageAltTextView(LoginRequiredMixin, View):
+    login_url = "/accounts/login/"
+
+    def post(self, request, image_id, *args, **kwargs):
+        image, error_response = _get_inline_image_or_403(request, image_id)
+        if error_response is not None:
+            return error_response
+
+        alt_text = request.POST.get("alt_text", "").strip()
+        if not alt_text:
+            response = render(
+                request,
+                "blog/partials/inline_image_row.html",
+                {
+                    "image": image,
+                    "error": "Alt text is required.",
+                },
+                status=422,
+            )
+            return response
+
+        image.alt_text = alt_text
+        image.save(update_fields=["alt_text"])
+
+        response = render(
+            request,
+            "blog/partials/inline_image_row.html",
+            {
+                "image": image,
+                "saved": True,
+            },
+        )
+        response["HX-Trigger"] = json.dumps(
+            {
+                "inlineImageAltUpdated": {
+                    "imageId": image.id,
+                    "altText": image.alt_text,
+                }
+            }
+        )
+        return response
+
+
 @method_decorator(require_http_methods(["POST"]), name="dispatch")
 class DeletePostImageView(LoginRequiredMixin, View):
     """Delete a single InlineImage record and its file from disk.
@@ -286,20 +378,19 @@ class DeletePostImageView(LoginRequiredMixin, View):
     login_url = "/accounts/login/"
 
     def post(self, request, image_id, *args, **kwargs):
-        try:
-            image = InlineImage.objects.select_related("post").get(pk=image_id)
-        except InlineImage.DoesNotExist:
-            return JsonResponse({"error": "Image not found"}, status=404)
-
-        # Authorisation check
-        if image.post is not None:
-            if image.post.author != request.user:
-                return JsonResponse({"error": "Unauthorized"}, status=403)
-        else:
-            # Pending image — must belong to this session
-            if image.session_key != request.session.session_key:
-                return JsonResponse({"error": "Unauthorized"}, status=403)
+        image, error_response = _get_inline_image_or_403(request, image_id)
+        if error_response is not None:
+            return error_response
 
         # Deleting the record fires the post_delete signal which removes the file.
+        deleted_image_id = image.id
         image.delete()
+
+        if request.headers.get("HX-Request") == "true":
+            response = HttpResponse(status=204)
+            response["HX-Trigger"] = json.dumps(
+                {"inlineImageDeleted": {"imageId": deleted_image_id}}
+            )
+            return response
+
         return JsonResponse({"success": True})

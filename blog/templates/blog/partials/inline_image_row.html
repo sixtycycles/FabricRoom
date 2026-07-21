@@ -1,0 +1,49 @@
+<div class="inline-image-row border rounded p-3" id="inline-image-row-{{ image.id }}">
+  <div class="row g-3 align-items-start">
+    <div class="col-md-3">
+      <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="img-fluid rounded" loading="lazy">
+    </div>
+    <div class="col-md-9">
+      <label for="alt-text-{{ image.id }}" class="form-label">Alt text</label>
+      <input
+        id="alt-text-{{ image.id }}"
+        type="text"
+        name="alt_text"
+        value="{{ image.alt_text }}"
+        class="form-control{% if error %} is-invalid{% endif %}"
+        maxlength="255"
+      >
+
+      {% if error %}
+      <div class="invalid-feedback d-block">{{ error }}</div>
+      {% elif saved %}
+      <div class="text-success small mt-2">Saved.</div>
+      {% endif %}
+
+      <div class="d-flex gap-2 mt-3">
+        <button
+          type="button"
+          class="btn btn-sm btn-primary"
+          hx-post="{% url 'update_post_image_alt_text' image.id %}"
+          hx-include="#alt-text-{{ image.id }}"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+          hx-target="#inline-image-row-{{ image.id }}"
+          hx-swap="outerHTML"
+        >
+          Save alt text
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm btn-outline-danger"
+          hx-post="{% url 'delete_post_image' image.id %}"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+          hx-target="#inline-image-row-{{ image.id }}"
+          hx-swap="delete"
+          hx-confirm="Delete this inline image?"
+        >
+          Remove image
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

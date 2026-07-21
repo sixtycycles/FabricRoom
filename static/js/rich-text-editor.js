@@ -164,8 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (imageFileInput) {
     imageFileInput.addEventListener('change', function() {
       if (this.files && this.files[0]) {
-        const postAltText = getPostAltText();
-        Array.from(this.files).forEach(file => handleImageUpload(file, postAltText));
+        Array.from(this.files).forEach(file => handleImageUpload(file, 'Blog image'));
         imageFileInput.value = '';
       }
     });
@@ -187,8 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Please select an image file');
         return;
       }
-      const postAltText = getPostAltText();
-      Array.from(imageFileInput.files).forEach(file => handleImageUpload(file, postAltText));
+      Array.from(imageFileInput.files).forEach(file => handleImageUpload(file, 'Blog image'));
       imageFileInput.value = '';
     });
   }
@@ -237,16 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return null;
   }
 
-  function getPostAltText() {
-    const postAltTextInput = document.getElementById('id_inline_image_alt_text');
-    if (!postAltTextInput) {
-      return 'Blog image';
-    }
-
-    const value = (postAltTextInput.value || '').trim();
-    return value || 'Blog image';
-  }
-
   // Handle image file upload
   function handleImageUpload(file, altText) {
     const postId = getPostId();
@@ -265,13 +253,11 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    const resolvedAltText = (altText || '').trim() || getPostAltText();
-    const postAltText = getPostAltText();
+    const resolvedAltText = (altText || '').trim() || 'Blog image';
 
     const formData = new FormData();
     formData.append('image', file);
     formData.append('alt_text', resolvedAltText);
-    formData.append('post_alt_text', postAltText);
 
     // Make request to upload endpoint
     fetch(uploadUrl, {
@@ -295,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
           // Setup image editing on newly added image
           setupImageEditing();
+          notifyInlineImagesChanged();
         } else {
           alert('Error uploading image: ' + (data.error || 'Unknown error'));
         }
@@ -394,7 +381,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Upload a file
   function uploadImageFile(file) {
-    handleImageUpload(file, getPostAltText());
+    handleImageUpload(file, 'Blog image');
   }
 
   function escapeHtmlAttribute(value) {
@@ -496,7 +483,9 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/blog/post/image/${imageId}/delete/`, {
           method: 'POST',
           headers: { 'X-CSRFToken': getCookie('csrftoken') },
-        }).catch(err => console.error('Error deleting image from server:', err));
+        })
+          .then(() => notifyInlineImagesChanged())
+          .catch(err => console.error('Error deleting image from server:', err));
       }
 
       imgElement.remove();
@@ -546,4 +535,41 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     return cookieValue;
   }
+
+  function notifyInlineImagesChanged() {
+    document.body.dispatchEvent(new Event('inlineImagesChanged'));
+  }
+
+  document.body.addEventListener('inlineImageAltUpdated', function(event) {
+    const detail = event.detail || {};
+    const imageId = detail.imageId;
+    const altText = detail.altText;
+    if (!imageId || typeof altText !== 'string') {
+      return;
+    }
+
+    const image = editor.querySelector(`img[data-image-id="${imageId}"]`);
+    if (!image) {
+      return;
+    }
+
+    image.setAttribute('alt', altText);
+    saveContent();
+  });
+
+  document.body.addEventListener('inlineImageDeleted', function(event) {
+    const detail = event.detail || {};
+    const imageId = detail.imageId;
+    if (!imageId) {
+      return;
+    }
+
+    const image = editor.querySelector(`img[data-image-id="${imageId}"]`);
+    if (!image) {
+      return;
+    }
+
+    image.remove();
+    saveContent();
+  });
 });
