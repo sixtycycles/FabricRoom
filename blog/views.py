@@ -304,12 +304,13 @@ class InlineImagePanelView(LoginRequiredMixin, View):
         else:
             session_key = request.session.session_key
             if session_key is None:
-                images = InlineImage.objects.none()
-            else:
-                images = InlineImage.objects.filter(
-                    post__isnull=True,
-                    session_key=session_key,
-                ).order_by("created_at")
+                request.session.create()
+                session_key = request.session.session_key
+
+            images = InlineImage.objects.filter(
+                post__isnull=True,
+                session_key=session_key,
+            ).order_by("created_at")
 
         return render(
             request,

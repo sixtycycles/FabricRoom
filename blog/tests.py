@@ -421,6 +421,31 @@ class RichTextEditorTest(TestCase):
         self.assertContains(response, "Inline Images")
         self.assertContains(response, "Pending screenshot alt text")
 
+    def test_first_new_post_upload_appears_in_inline_image_panel(self):
+        """Panel endpoint should create a session so first upload is immediately visible."""
+        self.client.login(username="editoruser", password="testpass")
+
+        panel_response = self.client.get(reverse("post_inline_images_new"))
+        self.assertEqual(panel_response.status_code, 200)
+
+        image_file = self.create_test_image()
+        upload_response = self.client.post(
+            reverse("upload_post_image_new"),
+            {
+                "image": image_file,
+                "alt_text": "First upload alt text",
+            },
+            format="multipart",
+        )
+
+        self.assertEqual(upload_response.status_code, 200)
+        upload_data = upload_response.json()
+        self.assertTrue(upload_data["success"])
+
+        refreshed_panel = self.client.get(reverse("post_inline_images_new"))
+        self.assertEqual(refreshed_panel.status_code, 200)
+        self.assertContains(refreshed_panel, "First upload alt text")
+
     def test_update_inline_image_alt_text_endpoint(self):
         """Users can update inline image alt text through HTMX endpoint."""
         self.client.login(username="editoruser", password="testpass")
