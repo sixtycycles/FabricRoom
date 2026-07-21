@@ -19,3 +19,7 @@ debug.log
 .idea/
 .DS_Store
 cache/
+node_modules/
+playwright-report/
+test-results/
+e2e/

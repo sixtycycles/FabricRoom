@@ -161,11 +161,10 @@ USE_TZ = True
 STATIC_URL = "/static/"
 if DEBUG:
     STATICFILES_DIRS = [BASE_DIR / "static"]
-    MEDIA_ROOT = BASE_DIR / "media"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"
-if "test" in sys.argv:
+if DEBUG or "test" in sys.argv:
     MEDIA_ROOT = BASE_DIR / "media"
 else:
     MEDIA_ROOT = "/var/www/media"
