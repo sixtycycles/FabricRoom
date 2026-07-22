@@ -1,6 +1,12 @@
+import subprocess
+
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 from .models import PrivacyPolicy, ManagementCommandRun
 
 from blog.models import Quote, Gratitude
@@ -70,6 +76,81 @@ class PrivacyPolicyView(TemplateView):
         privacy_policy = PrivacyPolicy.objects.first()
         context['privacy_policy'] = privacy_policy
         return context
+
+
+class TriggerManagementCommandView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = "/accounts/login/"
+    raise_exception = True
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def post(self, request, *args, **kwargs):
+        command_name = kwargs.get("command_name")
+        allowed_commands = settings.MANAGEMENT_COMMAND_SYSTEMD_SERVICES
+
+        if command_name not in allowed_commands:
+            return HttpResponseForbidden("Unknown or disallowed management command.")
+
+        service_name = allowed_commands[command_name]
+        sudo_path = settings.MANAGEMENT_COMMAND_SUDO_PATH
+        systemctl_path = settings.MANAGEMENT_COMMAND_SYSTEMCTL_PATH
+        command = [sudo_path, "-n", systemctl_path, "start", service_name]
+
+        started_at = timezone.now()
+        try:
+            proc = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+        except subprocess.TimeoutExpired:
+            finished_at = timezone.now()
+            ManagementCommandRun.objects.create(
+                command_name=command_name,
+                status=ManagementCommandRun.STATUS_FAILED,
+                summary=f"Failed to trigger {service_name}: timed out while running systemctl.",
+                details=f"Executed: {' '.join(command)}\nTimed out after 15 seconds.",
+                started_at=started_at,
+                finished_at=finished_at,
+                duration_seconds=max((finished_at - started_at).total_seconds(), 0.0),
+            )
+            return redirect("home")
+
+        if proc.returncode != 0:
+            stderr = (proc.stderr or "").strip()
+            stdout = (proc.stdout or "").strip()
+            summary = stderr or stdout or "systemctl start failed."
+            finished_at = timezone.now()
+            ManagementCommandRun.objects.create(
+                command_name=command_name,
+                status=ManagementCommandRun.STATUS_FAILED,
+                summary=f"Failed to trigger {service_name}: {summary}",
+                details=(
+                    f"Executed: {' '.join(command)}\n"
+                    f"Exit code: {proc.returncode}\n"
+                    f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
+                ),
+                started_at=started_at,
+                finished_at=finished_at,
+                duration_seconds=max((finished_at - started_at).total_seconds(), 0.0),
+            )
+            return redirect("home")
+
+        finished_at = timezone.now()
+        ManagementCommandRun.objects.create(
+            command_name=command_name,
+            status=ManagementCommandRun.STATUS_SUCCESS,
+            summary=f"Triggered systemd service {service_name}.",
+            details=f"Executed: {' '.join(command)}",
+            started_at=started_at,
+            finished_at=finished_at,
+            duration_seconds=max((finished_at - started_at).total_seconds(), 0.0),
+        )
+
+        return redirect("home")
 
 
 # Custom http error code pages

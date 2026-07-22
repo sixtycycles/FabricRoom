@@ -185,6 +185,26 @@ CACHE_TTL = env.int("CACHE_TTL", default=5)
 
 
 # ============================================================================
+# MANAGEMENT COMMAND TRIGGER SETTINGS (WEB UI -> SYSTEMD)
+# ============================================================================
+
+MANAGEMENT_COMMAND_SUDO_PATH = env(
+    "MANAGEMENT_COMMAND_SUDO_PATH",
+    default="/usr/bin/sudo",
+)
+MANAGEMENT_COMMAND_SYSTEMCTL_PATH = env(
+    "MANAGEMENT_COMMAND_SYSTEMCTL_PATH",
+    default="/usr/bin/systemctl",
+)
+MANAGEMENT_COMMAND_SYSTEMD_SERVICES = {
+    "cleanup_orphan_images": env(
+        "CLEANUP_ORPHAN_IMAGES_SYSTEMD_SERVICE",
+        default="image_cleanup.service",
+    ),
+}
+
+
+# ============================================================================
 # LOGGING
 # ============================================================================
 

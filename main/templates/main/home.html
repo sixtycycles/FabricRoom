@@ -87,6 +87,14 @@
     {% endif %}
 
     {% if user.is_superuser %}
+    <h5 class="mt-4">Admin command controls</h5>
+    <div class="d-flex flex-wrap gap-2 mt-2">
+      <form method="post" action="{% url 'run_management_command' 'cleanup_orphan_images' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-warning">Run cleanup_orphan_images</button>
+      </form>
+    </div>
+
     <h5 class="mt-4">Scheduled command runs</h5>
     {% if management_command_runs %}
     <ul class="list-unstyled mt-2 mb-0">

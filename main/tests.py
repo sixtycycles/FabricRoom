@@ -1,5 +1,6 @@
 from datetime import datetime, date, timedelta
 from io import BytesIO
+from unittest.mock import patch
 
 from PIL import Image
 from django.test import TestCase, Client
@@ -314,6 +315,7 @@ class HomePageTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("management_command_runs", response.context)
         self.assertContains(response, "Scheduled command runs")
+        self.assertContains(response, "Run cleanup_orphan_images")
         self.assertContains(response, "cleanup_orphan_images")
         self.assertContains(response, "Deleted 4 orphaned inline images.")
 
@@ -330,6 +332,50 @@ class HomePageTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertNotIn("management_command_runs", response.context)
         self.assertNotContains(response, "Scheduled command runs")
+
+    def test_superuser_can_trigger_cleanup_command_from_dashboard(self):
+        superuser = get_user_model().objects.create_superuser(
+            username="opsadmin",
+            email="opsadmin@example.com",
+            password="supersecret123!",
+        )
+        self.client.force_login(superuser)
+
+        with patch("main.views.subprocess.run") as run_mock:
+            run_mock.return_value.returncode = 0
+            run_mock.return_value.stdout = ""
+            run_mock.return_value.stderr = ""
+
+            response = self.client.post(
+                reverse("run_management_command", args=["cleanup_orphan_images"])
+            )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("home"))
+        run_mock.assert_called_once()
+        call_args = run_mock.call_args[0][0]
+        self.assertEqual(call_args[-2:], ["start", "fabricroom-cleanup-orphan-images.service"])
+        log_entry = ManagementCommandRun.objects.filter(
+            command_name="cleanup_orphan_images"
+        ).first()
+        self.assertIsNotNone(log_entry)
+        self.assertEqual(log_entry.status, ManagementCommandRun.STATUS_SUCCESS)
+        self.assertIn("Triggered systemd service", log_entry.summary)
+
+    def test_non_superuser_cannot_trigger_cleanup_command(self):
+        self.client.force_login(self.user)
+        with patch("main.views.subprocess.run") as run_mock:
+            response = self.client.post(
+                reverse("run_management_command", args=["cleanup_orphan_images"])
+            )
+        self.assertEqual(response.status_code, 200)
+        run_mock.assert_not_called()
+        self.assertFalse(
+            ManagementCommandRun.objects.filter(
+                command_name="cleanup_orphan_images",
+                summary__contains="Triggered systemd service",
+            ).exists()
+        )
 
 
 class CleanupOrphanImagesCommandLogTests(TestCase):
