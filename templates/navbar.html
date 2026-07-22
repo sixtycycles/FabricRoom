@@ -47,27 +47,21 @@
             </li>
           {% endif %}
 
-          {% if user|has_group:"blog access" or user|has_group:"notes access" %}
+          {% if user|has_group:"blog access" %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
                 Blog
               </a>
               <ul class="dropdown-menu" aria-labelledby="blogDropdown">
-                {% if user|has_group:"blog access" %}
-                  <li><a class="dropdown-item" href="{% url 'blog' %}">See Blog Posts</a></li>
-                  <li><a class="dropdown-item" href="{% url 'post_new' %}">Create New Blog Post</a></li>
-                {% endif %}
-
-                {% if user|has_group:"notes access" %}
-                  {% if user|has_group:"blog access" %}
-                    <li class="dropdown-divider"></li>
-                  {% endif %}
-                  <li><a class="dropdown-item" href="{% url 'note_list' %}">My Notes</a></li>
-                  {% for note in all_notes_list %}
-                    <li><a class="dropdown-item" href="{{ note.get_absolute_url }}">{{ note.title }}</a></li>
-                  {% endfor %}
-                {% endif %}
+                <li><a class="dropdown-item" href="{% url 'blog' %}">See Blog Posts</a></li>
+                <li><a class="dropdown-item" href="{% url 'post_new' %}">Create New Blog Post</a></li>
               </ul>
+            </li>
+          {% endif %}
+
+          {% if user|has_group:"notes access" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'note_list' %}">Notes</a>
             </li>
           {% endif %}
         {% endif %}
@@ -90,9 +84,6 @@
                     {% endif %}
                   </a>
                 </li>
-                {% if user|has_group:"health access" %}
-                  <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
-                {% endif %}
                 <li><hr class="dropdown-divider"></li>
                 {% if user.is_staff %}
                   <li><a class="dropdown-item" href="/admin/">Admin</a></li>
