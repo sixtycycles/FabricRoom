@@ -43,11 +43,17 @@ def _recipient_state_defaults(now, is_self_message):
     }
 
 
-def _persist_message(request, form, action, parent=None, draft=None):
+def _reply_recipient_for_message(message, replying_user):
+    if message.sender_id == replying_user.id:
+        return message.recipient
+    return message.sender
+
+
+def _persist_message(request, form, action, parent=None, draft=None, recipient_override=None):
     now = timezone.now()
     message = draft or form.save(commit=False)
     message.sender = request.user
-    message.recipient = form.cleaned_data.get("recipient")
+    message.recipient = recipient_override or form.cleaned_data.get("recipient")
     message.subject = form.cleaned_data.get("subject", "")
     message.body = form.cleaned_data.get("body", "")
 
@@ -283,7 +289,7 @@ class ReplyMessageView(LoginRequiredMixin, View):
 
     def get(self, request, message_id):
         target = _message_for_user_or_404(request.user, message_id)
-        recipient = target.sender if target.sender_id != request.user.id else target.recipient
+        recipient = _reply_recipient_for_message(target, request.user)
         initial_subject = target.subject or ""
         if initial_subject and not initial_subject.lower().startswith("re:"):
             initial_subject = f"Re: {initial_subject}"
@@ -306,6 +312,7 @@ class ReplyMessageView(LoginRequiredMixin, View):
 
     def post(self, request, message_id):
         target = _message_for_user_or_404(request.user, message_id)
+        recipient = _reply_recipient_for_message(target, request.user)
         form = MessageComposeForm(request.POST, user=request.user)
         if not form.is_valid():
             return render(
@@ -330,7 +337,25 @@ class ReplyMessageView(LoginRequiredMixin, View):
                 },
             )
 
-        message = _persist_message(request, form, action=action, parent=target)
+        if action == "send" and recipient is None:
+            form.add_error(None, "This message cannot be replied to because it has no recipient.")
+            return render(
+                request,
+                self.template_name,
+                {
+                    "form": form,
+                    "page_title": "Reply",
+                    "reply_to": target,
+                },
+            )
+
+        message = _persist_message(
+            request,
+            form,
+            action=action,
+            parent=target,
+            recipient_override=recipient,
+        )
         if action == "send":
             messages.success(request, "Reply sent.")
             return redirect("inbox_thread", message_id=message.id)

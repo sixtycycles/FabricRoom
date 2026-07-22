@@ -7,6 +7,11 @@
     <a class="btn btn-outline-secondary btn-sm" href="{% url 'inbox_list' %}">Back to Inbox</a>
   </div>
   <div class="card-body">
+    {% if reply_to %}
+      <p class="text-muted small">
+        Replying in thread for: <strong>{{ reply_to.subject|default:"(no subject)" }}</strong>
+      </p>
+    {% endif %}
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
