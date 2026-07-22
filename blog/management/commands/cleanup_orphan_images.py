@@ -150,13 +150,32 @@ class Command(BaseCommand):
                 return
 
             deleted = 0
+            deleted_files = []
             for img in to_delete:
-                self.stdout.write(f"  Deleting {img.image.name} …")
+                image_name = img.image.name if img.image else ""
+                # image.path is the absolute path on disk; image.name is the
+                # storage-relative path (e.g. "inline-images/2025/07/22/foo.jpg").
+                image_path = ""
+                if image_name:
+                    try:
+                        image_path = img.image.path
+                    except (ValueError, NotImplementedError):
+                        image_path = image_name
+                self.stdout.write(f"  Deleting {image_name} …")
                 img.delete()  # post_delete signal removes file from disk
                 deleted += 1
+                deleted_files.append((image_name, image_path))
 
             self.stdout.write(
                 self.style.SUCCESS(f"\nCleaned up {deleted} orphaned inline image(s).")
+            )
+            details_lines = [
+                f"{name} ({path})" for name, path in deleted_files if name
+            ]
+            details = (
+                "Deleted files:\n  " + "\n  ".join(details_lines)
+                if details_lines
+                else ""
             )
             record_management_command_run(
                 command_name="cleanup_orphan_images",
@@ -167,6 +186,7 @@ class Command(BaseCommand):
                     f"(pending={pending_count}, content={content_count}, "
                     f"grace_hours={grace_hours}, skip_content_check={skip_content_check})."
                 ),
+                details=details,
             )
         except Exception as error:
             record_management_command_failure(

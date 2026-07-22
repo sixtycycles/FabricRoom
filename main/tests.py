@@ -404,3 +404,5 @@ class CleanupOrphanImagesCommandLogTests(TestCase):
         self.assertIsNotNone(command_log)
         self.assertEqual(command_log.status, ManagementCommandRun.STATUS_SUCCESS)
         self.assertIn("Deleted 1 orphaned inline images", command_log.summary)
+        self.assertIn("Deleted files:", command_log.details)
+        self.assertIn("orphan.jpg", command_log.details)

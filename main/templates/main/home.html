@@ -114,6 +114,12 @@
         {% if run.summary %}
         <div class="small">{{ run.summary }}</div>
         {% endif %}
+        {% if run.details %}
+        <details class="small mt-1">
+          <summary class="text-muted">Show deleted file paths</summary>
+          <pre class="mb-0 mt-1" style="white-space: pre-wrap;">{{ run.details }}</pre>
+        </details>
+        {% endif %}
       </li>
       {% endfor %}
     </ul>
