@@ -8,11 +8,13 @@ from feeds.views import (
     FeedDeleteView,
     FeedFolderDeleteView,
     open_article,
+    refresh_feeds,
     toggle_read,
 )
 
 urlpatterns = [
     path("", FeedDashboardView.as_view(), name="feeds_dashboard"),
+    path("refresh/", refresh_feeds, name="feeds_refresh"),
     path("read/", ReadArticlesView.as_view(), name="feeds_read"),
     path(
         "item/<int:pk>/toggle-read/",

@@ -1,11 +1,11 @@
 import logging
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import feedparser
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from datetime import timedelta
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.decorators import method_decorator
@@ -51,9 +51,6 @@ def _parse_published(value):
         return parsedate_to_datetime(value)
     except (TypeError, ValueError):
         return None
-
-
-SYNC_FEED_INTERVAL = timedelta(minutes=30)
 
 
 def sync_feed_items(feed):
@@ -119,18 +116,6 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
 
         feeds = list(feeds_qs)
 
-        # Refresh feed content only when the feed has not been fetched recently.
-        for feed in feeds:
-            if (
-                feed.last_fetched_at is None
-                or feed.last_fetched_at + SYNC_FEED_INTERVAL < timezone.now()
-            ):
-                try:
-                    sync_feed_items(feed)
-                except Exception:
-                    logger.exception("Feed sync failed", extra={"feed_id": feed.id, "feed_url": feed.feed_url})
-                    continue
-
         sort_order = self.request.GET.get("sort", "date")
         if sort_order not in ("date", "source"):
             sort_order = "date"
@@ -164,6 +149,28 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
         context["entries"] = entries
         context["sort"] = sort_order
         return context
+
+
+@login_required
+@require_POST
+def refresh_feeds(request):
+    """Refresh active feeds for the current user, then return to dashboard."""
+    feeds = Feed.objects.filter(user=request.user, is_active=True)
+    for feed in feeds:
+        try:
+            sync_feed_items(feed)
+        except Exception:
+            logger.exception(
+                "Feed sync failed",
+                extra={"feed_id": feed.id, "feed_url": feed.feed_url},
+            )
+            continue
+
+    next_url = request.POST.get("next") or reverse("feeds_dashboard")
+    parsed_next = urlparse(next_url)
+    query = dict(parse_qsl(parsed_next.query, keep_blank_values=True))
+    query["refreshed"] = str(int(timezone.now().timestamp()))
+    return redirect(urlunparse(parsed_next._replace(query=urlencode(query))))
 
 
 @method_decorator(vary_on_cookie, name="dispatch")
