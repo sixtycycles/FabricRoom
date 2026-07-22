@@ -35,7 +35,23 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
     ]
     fieldsets = UserAdmin.fieldsets + ((None, {"fields": ("birthdate",)}),)
-    add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ("birthdate",)}),)
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": (
+                    "username",
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "birthdate",
+                    "password1",
+                    "password2",
+                ),
+            },
+        ),
+    )
 
     def get_inline_instances(self, request, obj=None):
         # Profile is auto-created by signal; skip inline on add form to avoid duplicate create.
