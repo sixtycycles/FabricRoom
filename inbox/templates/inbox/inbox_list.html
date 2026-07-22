@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mt-3 mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h1 class="h4 mb-0">{{ title }}</h1>
+    <a class="btn btn-primary btn-sm" href="{% url 'inbox_compose' %}">Compose</a>
+  </div>
+  <div class="card-body">
+    <div class="mb-3">
+      <a class="btn btn-outline-secondary btn-sm {% if mailbox == 'inbox' %}active{% endif %}" href="{% url 'inbox_list' %}">Inbox</a>
+      <a class="btn btn-outline-secondary btn-sm {% if mailbox == 'sent' %}active{% endif %}" href="{% url 'inbox_sent' %}">Sent</a>
+      <a class="btn btn-outline-secondary btn-sm {% if mailbox == 'drafts' %}active{% endif %}" href="{% url 'inbox_drafts' %}">Drafts</a>
+      <a class="btn btn-outline-secondary btn-sm {% if mailbox == 'archive' %}active{% endif %}" href="{% url 'inbox_archive' %}">Archive</a>
+    </div>
+
+    {% if states %}
+      <div class="list-group">
+        {% for state in states %}
+          {% with message=state.message %}
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                {% if mailbox == "sent" or mailbox == "drafts" %}
+                  <strong>To:</strong> {{ message.recipient.username|default:"(not set)" }}
+                {% else %}
+                  <strong>From:</strong> {{ message.sender.username }}
+                {% endif %}
+                {% if state.is_read %}
+                  <span class="badge bg-secondary ms-2">read</span>
+                {% else %}
+                  <span class="badge bg-info ms-2">unread</span>
+                {% endif %}
+              </div>
+              <small class="text-muted">
+                {% if message.sent_at %}{{ message.sent_at }}{% else %}Draft{% endif %}
+              </small>
+            </div>
+
+            <div class="mt-1">
+              <a href="{% if mailbox == 'drafts' %}{% url 'inbox_draft_edit' message.id %}{% else %}{% url 'inbox_thread' message.id %}{% endif %}">
+                {{ message.subject|default:"(no subject)" }}
+              </a>
+            </div>
+
+            <div class="text-muted mt-1">
+              {{ message.body|truncatechars:140 }}
+            </div>
+
+            <div class="mt-2 d-flex gap-2">
+              {% if mailbox != "drafts" and not state.is_read %}
+              <form method="post" action="{% url 'inbox_mark_read' message.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="btn btn-sm btn-outline-success">Mark read</button>
+              </form>
+              {% endif %}
+
+              {% if mailbox != "drafts" %}
+              <form method="post" action="{% url 'inbox_toggle_archive' message.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="btn btn-sm btn-outline-warning">
+                  {% if state.is_archived %}Unarchive{% else %}Archive{% endif %}
+                </button>
+              </form>
+              {% endif %}
+
+              <form method="post" action="{% url 'inbox_delete' message.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="mb-0">No messages here.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}

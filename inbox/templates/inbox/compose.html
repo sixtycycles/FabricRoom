@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mt-3 mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h1 class="h4 mb-0">{{ page_title }}</h1>
+    <a class="btn btn-outline-secondary btn-sm" href="{% url 'inbox_list' %}">Back to Inbox</a>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <div class="d-flex gap-2">
+        <button type="submit" name="send" value="1" class="btn btn-primary">Send</button>
+        <button type="submit" name="save_draft" value="1" class="btn btn-outline-secondary">Save Draft</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

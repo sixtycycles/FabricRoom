@@ -11,6 +11,7 @@ urlpatterns = [
     path("blog/", include("blog.urls")),
     path("health/", include("healthstats.urls")),
     path("feeds/", include("feeds.urls")),
+    path("inbox/", include("inbox.urls")),
     # path("snacks/", include("foodtown.urls")),
 ]
 if settings.DEBUG:

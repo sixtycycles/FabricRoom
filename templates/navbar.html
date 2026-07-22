@@ -69,8 +69,9 @@
             {{user.first_name}}
           </a>
           <ul class="dropdown-menu" aria-labelledby="userDropdown">
-            <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
-            <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'inbox_list' %}">Inbox</a></li>
+          <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
+          <li><hr class="dropdown-divider"></li>
             {% if user.is_staff %}
                 <li><a class="dropdown-item" href="/admin/">Admin</a></li>
             {% endif %}

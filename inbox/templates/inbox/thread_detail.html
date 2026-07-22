@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mt-3 mb-3">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <div>
+      <h1 class="h4 mb-0">{{ thread_root.subject|default:"(no subject)" }}</h1>
+      <small class="text-muted">Thread</small>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary btn-sm" href="{% url 'inbox_list' %}">Inbox</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'inbox_reply' current_message.id %}">Reply</a>
+    </div>
+  </div>
+
+  <div class="card-body">
+    {% if thread_entries %}
+      <div class="list-group">
+      {% for entry in thread_entries %}
+        {% with message=entry.message state=entry.state %}
+        <div class="list-group-item">
+          <div class="d-flex justify-content-between">
+            <div>
+              <strong>From:</strong> {{ message.sender.username }}
+              <span class="ms-2"><strong>To:</strong> {{ message.recipient.username|default:"(not set)" }}</span>
+            </div>
+            <small class="text-muted">{{ message.sent_at|default:message.created_at }}</small>
+          </div>
+          <div class="mt-1"><strong>{{ message.subject|default:"(no subject)" }}</strong></div>
+          <div class="mt-2">{{ message.body|linebreaksbr }}</div>
+          <div class="mt-2 d-flex gap-2">
+            {% if state and not state.is_archived %}
+            <form method="post" action="{% url 'inbox_toggle_archive' message.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn btn-sm btn-outline-warning">Archive</button>
+            </form>
+            {% elif state %}
+            <form method="post" action="{% url 'inbox_toggle_archive' message.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.path }}">
+              <button type="submit" class="btn btn-sm btn-outline-warning">Unarchive</button>
+            </form>
+            {% endif %}
+
+            {% if state %}
+            <form method="post" action="{% url 'inbox_delete' message.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{% url 'inbox_list' %}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endwith %}
+      {% endfor %}
+      </div>
+    {% else %}
+      <p class="mb-0">No messages in this thread.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
