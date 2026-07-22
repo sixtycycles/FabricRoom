@@ -1,32 +1,29 @@
 {% extends 'base.html' %}
 {% block content %}
+<div class="container py-4 mt-3">
+  {% for note in all_notes_list %}
+  <div class="card mb-4">
+    <div class="card-header">
+      <h2 class="h5 mb-0">
+        <a class="text-decoration-none" href="{% url 'note_detail' note.pk %}">{{ note.title }}</a>
+      </h2>
+    </div>
 
-{% for note in all_notes_list %}
-<div class="card mb-3">
-  <div class="card-header">
-    <h2 class="h5">
+    <div class="card-body">
+      <p class="mb-2"><strong>Author:</strong> {{ note.author }}</p>
       {% if note.link %}
-        <a href="{{ note.link }}" target="_blank">{{ note.title }}</a>
-      {% else %}
-        {{ note.title }}
+        <p class="mb-2">
+          <strong>External Link:</strong>
+          <a href="{{ note.link }}" target="_blank" rel="noopener noreferrer">{{ note.link }}</a>
+        </p>
       {% endif %}
-    </h2>
+      <p class="mb-0">
+        {% for tag in note.tags.all %}
+          <span class="badge bg-primary">{{ tag }}</span>
+        {% endfor %}
+      </p>
+    </div>
   </div>
-
-  <div class="card-body">
-    <p class="mb-1"><strong>Author:</strong> {{ note.author }}</p>
-    {% if note.link %}
-      <p class="mb-1"><strong>Link:</strong> <a href="{{ note.link }}" target="_blank">{{ note.link }}</a></p>
-    {% endif %}
-    <p class="mb-1">
-      {% for tag in note.tags.all %}
-        <span class="badge bg-primary">{{ tag }}</span>
-      {% endfor %}
-    </p>
-  </div>
-  <div class="card-footer">
-    <a class='btn btn-secondary btn-sm' href="{% url 'note_detail' note.pk %}">Read More...</a>
-  </div>
+  {% endfor %}
 </div>
-{% endfor %}
 {% endblock content %}

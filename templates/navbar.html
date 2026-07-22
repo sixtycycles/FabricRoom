@@ -60,8 +60,14 @@
           {% endif %}
 
           {% if user|has_group:"notes access" %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'note_list' %}">Notes</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="notesDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+                Notes
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="notesDropdown">
+                <li><a class="dropdown-item" href="{% url 'note_new' %}">Add New Note</a></li>
+                <li><a class="dropdown-item" href="{% url 'note_list' %}">See All Notes</a></li>
+              </ul>
             </li>
           {% endif %}
         {% endif %}
