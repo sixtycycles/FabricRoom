@@ -86,6 +86,34 @@
     {% endif %}
     {% endif %}
 
+    {% if user.is_superuser %}
+    <h5 class="mt-4">Scheduled command runs</h5>
+    {% if management_command_runs %}
+    <ul class="list-unstyled mt-2 mb-0">
+      {% for run in management_command_runs %}
+      <li class="mb-3 pb-2 border-bottom">
+        <div class="d-flex justify-content-between align-items-center">
+          <strong>{{ run.command_name }}</strong>
+          {% if run.status == "success" %}
+          <span class="badge text-bg-success">Success</span>
+          {% else %}
+          <span class="badge text-bg-danger">Failed</span>
+          {% endif %}
+        </div>
+        <div class="text-muted small">
+          {{ run.started_at|date:"Y-m-d H:i" }} · {{ run.duration_seconds|floatformat:2 }}s
+        </div>
+        {% if run.summary %}
+        <div class="small">{{ run.summary }}</div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted small mb-0">No scheduled command runs yet.</p>
+    {% endif %}
+    {% endif %}
+
   </div>
   <div class="card-footer">
   </div>

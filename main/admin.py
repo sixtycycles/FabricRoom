@@ -5,6 +5,7 @@ from main.forms import CustomUserCreationForm, CustomUserChangeForm
 from main.models import CustomUser
 from main.models import Profile
 from main.models import PrivacyPolicy
+from main.models import ManagementCommandRun
 
 # from blog.models import Note, Tag
 
@@ -113,3 +114,24 @@ class CustomUserAdmin(UserAdmin):
 class PrivacyPolicyAdmin(admin.ModelAdmin):
     list_display = ('id',)
     fields = ('content',)
+
+
+@admin.register(ManagementCommandRun)
+class ManagementCommandRunAdmin(admin.ModelAdmin):
+    list_display = (
+        "started_at",
+        "command_name",
+        "status",
+        "duration_seconds",
+    )
+    list_filter = ("status", "command_name")
+    search_fields = ("command_name", "summary")
+    readonly_fields = (
+        "command_name",
+        "status",
+        "summary",
+        "details",
+        "started_at",
+        "finished_at",
+        "duration_seconds",
+    )

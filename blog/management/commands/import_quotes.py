@@ -5,8 +5,14 @@ from pathlib import Path
 from typing import TextIO, Union
 
 from django.core.management.base import BaseCommand, CommandError
+from django.utils import timezone
 
 from blog.models import Quote
+from main.command_run_logging import (
+    record_management_command_failure,
+    record_management_command_run,
+)
+from main.models import ManagementCommandRun
 
 
 class Command(BaseCommand):
@@ -30,21 +36,40 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options) -> None:
+        started_at = timezone.now()
         csv_source = options.get("csv_flag") or options.get("csv_path")
         dry_run = options.get("dry_run", False)
 
-        handle = self._open_csv_source(csv_source)
-
         try:
-            imported_count = self._import_from_handle(handle, dry_run=dry_run)
-        finally:
-            if hasattr(handle, "close"):
-                handle.close()
+            handle = self._open_csv_source(csv_source)
+            try:
+                imported_count = self._import_from_handle(handle, dry_run=dry_run)
+            finally:
+                if hasattr(handle, "close"):
+                    handle.close()
 
-        if dry_run:
-            self.stdout.write(self.style.SUCCESS(f"Dry run complete. {imported_count} rows would be imported."))
-        else:
-            self.stdout.write(self.style.SUCCESS(f"Imported {imported_count} quotes."))
+            if dry_run:
+                self.stdout.write(self.style.SUCCESS(f"Dry run complete. {imported_count} rows would be imported."))
+            else:
+                self.stdout.write(self.style.SUCCESS(f"Imported {imported_count} quotes."))
+
+            source_text = str(csv_source) if csv_source else "*.csv"
+            record_management_command_run(
+                command_name="import_quotes",
+                status=ManagementCommandRun.STATUS_SUCCESS,
+                started_at=started_at,
+                summary=(
+                    f"{imported_count} quote rows processed "
+                    f"(dry_run={dry_run}, source={source_text})."
+                ),
+            )
+        except Exception as error:
+            record_management_command_failure(
+                command_name="import_quotes",
+                started_at=started_at,
+                error=error,
+            )
+            raise
 
     def _open_csv_source(self, csv_source: Union[str, os.PathLike, TextIO, None]) -> TextIO:
         if csv_source is None:

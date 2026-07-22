@@ -54,3 +54,28 @@ class Profile(models.Model):
 
     def get_absolute_url(self):
         return reverse("profile_detail", args=[str(self.user.id)])
+
+
+class ManagementCommandRun(models.Model):
+    STATUS_SUCCESS = "success"
+    STATUS_FAILED = "failed"
+    STATUS_CHOICES = [
+        (STATUS_SUCCESS, "Success"),
+        (STATUS_FAILED, "Failed"),
+    ]
+
+    command_name = models.CharField(max_length=255, db_index=True)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, db_index=True)
+    summary = models.TextField(blank=True)
+    details = models.TextField(blank=True)
+    started_at = models.DateTimeField(default=timezone.now, db_index=True)
+    finished_at = models.DateTimeField(default=timezone.now)
+    duration_seconds = models.FloatField(default=0.0)
+
+    class Meta:
+        verbose_name = "Management Command Run"
+        verbose_name_plural = "Management Command Runs"
+        ordering = ["-started_at"]
+
+    def __str__(self):
+        return f"{self.command_name} ({self.status})"

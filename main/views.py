@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import PrivacyPolicy
+from .models import PrivacyPolicy, ManagementCommandRun
 
 from blog.models import Quote, Gratitude
 from feeds.models import FeedItem
@@ -37,6 +37,10 @@ class LandingPageView(TemplateView):
                 .select_related("feed")
                 .order_by("-published", "-fetched_at")[:5]
             )
+
+        if user.is_superuser:
+            context["management_command_runs"] = ManagementCommandRun.objects.all()[:10]
+
         return context
 
 

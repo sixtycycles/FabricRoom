@@ -33,6 +33,11 @@ from django.utils import timezone
 from datetime import timedelta
 
 from blog.models import InlineImage
+from main.command_run_logging import (
+    record_management_command_failure,
+    record_management_command_run,
+)
+from main.models import ManagementCommandRun
 
 
 class Command(BaseCommand):
@@ -68,63 +73,105 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        started_at = timezone.now()
         grace_hours = options["grace_hours"]
         skip_content_check = options["skip_content_check"]
         dry_run = options["dry_run"]
 
-        to_delete = []
+        try:
+            to_delete = []
 
-        # ── 1. Pending orphans (no post, outside the grace window) ───────────
-        cutoff = timezone.now() - timedelta(hours=grace_hours)
-        pending_orphans = list(
-            InlineImage.objects.filter(post__isnull=True, created_at__lt=cutoff)
-        )
-        self.stdout.write(
-            f"Pending orphans (no post, older than {grace_hours}h): "
-            f"{len(pending_orphans)} found."
-        )
-        to_delete.extend(pending_orphans)
-
-        # ── 2. Content orphans (linked to post, URL absent from body) ────────
-        if not skip_content_check:
-            linked_images = InlineImage.objects.filter(
-                post__isnull=False
-            ).select_related("post")
-            content_orphans = [
-                img for img in linked_images
-                if img.image and img.image.url not in img.post.body
-            ]
-            self.stdout.write(
-                f"Content orphans (linked to post, absent from body): "
-                f"{len(content_orphans)} found."
+            # ── 1. Pending orphans (no post, outside the grace window) ───────────
+            cutoff = timezone.now() - timedelta(hours=grace_hours)
+            pending_orphans = list(
+                InlineImage.objects.filter(post__isnull=True, created_at__lt=cutoff)
             )
-            to_delete.extend(content_orphans)
-
-        if not to_delete:
-            self.stdout.write(self.style.SUCCESS("Nothing to clean up."))
-            return
-
-        if dry_run:
+            pending_count = len(pending_orphans)
             self.stdout.write(
-                self.style.WARNING(
-                    f"\n[dry-run] Would delete {len(to_delete)} image(s):"
-                )
+                f"Pending orphans (no post, older than {grace_hours}h): "
+                f"{pending_count} found."
             )
-            for img in to_delete:
+            to_delete.extend(pending_orphans)
+
+            # ── 2. Content orphans (linked to post, URL absent from body) ────────
+            content_count = 0
+            if not skip_content_check:
+                linked_images = InlineImage.objects.filter(
+                    post__isnull=False
+                ).select_related("post")
+                content_orphans = [
+                    img for img in linked_images
+                    if img.image and img.image.url not in img.post.body
+                ]
+                content_count = len(content_orphans)
                 self.stdout.write(
-                    f"  • {img.image.name}  "
-                    f"(post: {img.post_id or 'none'}, "
-                    f"session: {img.session_key or '-'}, "
-                    f"created: {img.created_at})"
+                    f"Content orphans (linked to post, absent from body): "
+                    f"{content_count} found."
                 )
-            return
+                to_delete.extend(content_orphans)
 
-        deleted = 0
-        for img in to_delete:
-            self.stdout.write(f"  Deleting {img.image.name} …")
-            img.delete()  # post_delete signal removes file from disk
-            deleted += 1
+            if not to_delete:
+                self.stdout.write(self.style.SUCCESS("Nothing to clean up."))
+                record_management_command_run(
+                    command_name="cleanup_orphan_images",
+                    status=ManagementCommandRun.STATUS_SUCCESS,
+                    started_at=started_at,
+                    summary=(
+                        "No orphaned inline images found "
+                        f"(pending={pending_count}, content={content_count}, "
+                        f"grace_hours={grace_hours}, skip_content_check={skip_content_check})."
+                    ),
+                )
+                return
 
-        self.stdout.write(
-            self.style.SUCCESS(f"\nCleaned up {deleted} orphaned inline image(s).")
-        )
+            if dry_run:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"\n[dry-run] Would delete {len(to_delete)} image(s):"
+                    )
+                )
+                for img in to_delete:
+                    self.stdout.write(
+                        f"  • {img.image.name}  "
+                        f"(post: {img.post_id or 'none'}, "
+                        f"session: {img.session_key or '-'}, "
+                        f"created: {img.created_at})"
+                    )
+                record_management_command_run(
+                    command_name="cleanup_orphan_images",
+                    status=ManagementCommandRun.STATUS_SUCCESS,
+                    started_at=started_at,
+                    summary=(
+                        f"Dry run: {len(to_delete)} orphaned inline images would be deleted "
+                        f"(pending={pending_count}, content={content_count}, "
+                        f"grace_hours={grace_hours}, skip_content_check={skip_content_check})."
+                    ),
+                )
+                return
+
+            deleted = 0
+            for img in to_delete:
+                self.stdout.write(f"  Deleting {img.image.name} …")
+                img.delete()  # post_delete signal removes file from disk
+                deleted += 1
+
+            self.stdout.write(
+                self.style.SUCCESS(f"\nCleaned up {deleted} orphaned inline image(s).")
+            )
+            record_management_command_run(
+                command_name="cleanup_orphan_images",
+                status=ManagementCommandRun.STATUS_SUCCESS,
+                started_at=started_at,
+                summary=(
+                    f"Deleted {deleted} orphaned inline images "
+                    f"(pending={pending_count}, content={content_count}, "
+                    f"grace_hours={grace_hours}, skip_content_check={skip_content_check})."
+                ),
+            )
+        except Exception as error:
+            record_management_command_failure(
+                command_name="cleanup_orphan_images",
+                started_at=started_at,
+                error=error,
+            )
+            raise

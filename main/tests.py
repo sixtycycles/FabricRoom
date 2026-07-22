@@ -1,10 +1,16 @@
+from datetime import datetime, date, timedelta
+from io import BytesIO
+
+from PIL import Image
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.urls import reverse
-from datetime import datetime, date
 from django.utils import timezone
-from main.models import CustomUser, Profile
+from main.models import CustomUser, Profile, ManagementCommandRun
 from main.forms import CustomUserCreationForm, CustomUserChangeForm
+from blog.models import InlineImage
 
 
 class CustomUserModelTest(TestCase):
@@ -289,3 +295,66 @@ class HomePageTest(TestCase):
         self.assertNotContains(response, 'href="/blog/note/new/"')
         self.assertNotContains(response, 'href="/feeds/add/"')
         self.assertNotContains(response, 'href="/blog/gratitude/new/"')
+
+    def test_superuser_sees_management_command_feed(self):
+        superuser = get_user_model().objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="supersecret123!",
+        )
+        ManagementCommandRun.objects.create(
+            command_name="cleanup_orphan_images",
+            status=ManagementCommandRun.STATUS_SUCCESS,
+            summary="Deleted 4 orphaned inline images.",
+        )
+
+        self.client.force_login(superuser)
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("management_command_runs", response.context)
+        self.assertContains(response, "Scheduled command runs")
+        self.assertContains(response, "cleanup_orphan_images")
+        self.assertContains(response, "Deleted 4 orphaned inline images.")
+
+    def test_non_superuser_does_not_see_management_command_feed(self):
+        ManagementCommandRun.objects.create(
+            command_name="cleanup_orphan_images",
+            status=ManagementCommandRun.STATUS_SUCCESS,
+            summary="Deleted 3 orphaned inline images.",
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("management_command_runs", response.context)
+        self.assertNotContains(response, "Scheduled command runs")
+
+
+class CleanupOrphanImagesCommandLogTests(TestCase):
+    def test_cleanup_command_writes_success_log(self):
+        image = Image.new("RGB", (8, 8), color="blue")
+        image_io = BytesIO()
+        image.save(image_io, format="JPEG")
+        image_io.seek(0)
+        upload = SimpleUploadedFile(
+            "orphan.jpg",
+            image_io.getvalue(),
+            content_type="image/jpeg",
+        )
+
+        orphan_image = InlineImage.objects.create(image=upload, session_key="test-session")
+        InlineImage.objects.filter(pk=orphan_image.pk).update(
+            created_at=timezone.now() - timedelta(hours=2)
+        )
+
+        call_command("cleanup_orphan_images")
+
+        self.assertFalse(InlineImage.objects.filter(pk=orphan_image.pk).exists())
+        command_log = ManagementCommandRun.objects.filter(
+            command_name="cleanup_orphan_images"
+        ).first()
+        self.assertIsNotNone(command_log)
+        self.assertEqual(command_log.status, ManagementCommandRun.STATUS_SUCCESS)
+        self.assertIn("Deleted 1 orphaned inline images", command_log.summary)
