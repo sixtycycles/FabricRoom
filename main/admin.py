@@ -36,10 +36,12 @@ class CustomUserAdmin(UserAdmin):
     ]
     fieldsets = UserAdmin.fieldsets + ((None, {"fields": ("birthdate",)}),)
     add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ("birthdate",)}),)
-    # def get_inline_instances(self, request, obj=None):
-    #     if not obj:
-    #         return list()
-    #     return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
+    def get_inline_instances(self, request, obj=None):
+        # Profile is auto-created by signal; skip inline on add form to avoid duplicate create.
+        if obj is None:
+            return []
+        return super().get_inline_instances(request, obj)
 
 
 # class ProfileAdmin(UserAdmin):
