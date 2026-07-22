@@ -7,6 +7,10 @@ from blog.models import Quote, Gratitude
 from feeds.models import FeedItem
 
 
+def _user_in_group(user, group_name):
+    return user.groups.filter(name=group_name).exists()
+
+
 class LandingPageView(TemplateView):
     template_name = "main/home.html"
 
@@ -20,16 +24,19 @@ class LandingPageView(TemplateView):
         user = self.request.user
         context["user"] = user
 
-        if user.username == "rod":
+        if _user_in_group(user, "blog access"):
             context["random_quote"] = Quote.objects.order_by("?").first()
-        elif user.username == "marisa":
+        elif _user_in_group(user, "gratitudes access"):
             context["random_gratitude"] = (
                 Gratitude.objects.filter(target=user).order_by("?").first()
             )
 
-        context["recent_feed_items"] = FeedItem.objects.filter(
-            feed__user=user, is_read=False
-        ).select_related("feed").order_by("-published", "-fetched_at")[:5]
+        if _user_in_group(user, "feeds access"):
+            context["recent_feed_items"] = (
+                FeedItem.objects.filter(feed__user=user, is_read=False)
+                .select_related("feed")
+                .order_by("-published", "-fetched_at")[:5]
+            )
         return context
 
 

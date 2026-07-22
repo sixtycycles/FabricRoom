@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load access_groups %}
 
 {% block content %}
-{% if user.username == "rod" and random_quote %}
+{% if user|has_group:"blog access" and random_quote %}
 <div class="card mb-3 mt-3">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-start gap-3">
@@ -16,7 +17,7 @@
     </div>
   </div>
 </div>
-{% elif user.username == "marisa" and random_gratitude %}
+{% elif user|has_group:"gratitudes access" and random_gratitude %}
 <div class="card mb-3 mt-3">
   <div class="card-body">
     <blockquote style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; margin: 0;">
@@ -35,6 +36,7 @@
 
   <div class="card-body">
     <div class="row g-2">
+      {% if user|has_group:"health access" %}
       <div class="col-12 col-md-3">
         <a class="btn btn-primary w-100" href="{% url 'bp_new'%}">New Blood Pressure</a>
       </div>
@@ -44,22 +46,29 @@
       <div class="col-12 col-md-3">
         <a class="btn btn-primary w-100" href="{% url 'symptom_new' %}">New Symptom</a>
       </div>
-      {% if user.username != "marisa" %}
+      {% endif %}
+      {% if user|has_group:"blog access" %}
       <div class="col-12 col-md-3">
         <a class="btn btn-primary w-100" href="{% url 'post_new' %}">New Blog Entry</a>
       </div>
-      <div class="col-12 col-md-3">
+      {% endif %}
+      {% if user|has_group:"notes access" %}
+       <div class="col-12 col-md-3">
         <a class="btn btn-primary w-100" href="{% url 'note_new' %}">New Note</a>
       </div>
+      {% endif %}
+      {% if user|has_group:"feeds access" %}
       <div class="col-12 col-md-3">
         <a class="btn btn-primary w-100" href="{% url 'feeds_add' %}">New Feed</a>
       </div>
+      {% endif %}
+      {% if user|has_group:"gratitudes access" %}
       <div class="col-12 col-md-3">
         <a class="btn btn-primary w-100" href="{% url 'gratitude_create' %}">New Gratitude</a>
       </div>
       {% endif %}
     </div>
-{% if user.username != "marisa" %}
+{% if user|has_group:"feeds access" %}
     <h5 class="mt-4">Recent feed items</h5>
     {% if recent_feed_items %}
     <ul class="list-unstyled mt-2">
