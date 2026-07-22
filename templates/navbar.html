@@ -1,5 +1,5 @@
-{%block navbar%}
-
+{% load access_groups %}
+{% block navbar %}
 <nav class="navbar sticky-top navbar-expand-lg">
   <div class="container-fluid">
     <a class="navbar-brand text-dark" href="/" aria-label="60hz.dev Home">60hz.dev</a>
@@ -11,90 +11,103 @@
         <li class="nav-item">
           <a class="nav-link" href="/">Home</a>
         </li>
+
         {% if user.is_authenticated %}
-        {% if user.username != "marisa" %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'feeds_dashboard' %}">Feeds</a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="healthDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
-              Health
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="healthDropdown">
-              <li><a class="dropdown-item" href="{% url 'stat_new' %}">New Temperature</a></li>
-              <li><a class="dropdown-item" href="{% url 'symptom_new' %}">New Symptom</a></li>
-              <li><a class="dropdown-item" href="{% url 'stat_plot' %}">Plots</a></li>
-              <li><a class="dropdown-item" href="{% url 'stat_list' %}">List of Temperatures</a></li>
-              <li><a class="dropdown-item" href="{% url 'symptoms' %}">List of Symptoms</a></li>
-              <li><a class="dropdown-item" href="{% url 'apple-health-list' %}">Apple Health Data</a></li>
-            </ul>
-          </li>
+          {% if user|has_group:"feeds access" %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'feeds_dashboard' %}">Feeds</a>
+            </li>
           {% endif %}
-          {% if user.username != "marisa" %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="gratitudeDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
-              Gratitudes
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="gratitudeDropdown">
-              <li><a class="dropdown-item" href="{% url 'gratitude_list' %}">All Gratitudes</a></li>
-              
-              <li><a class="dropdown-item" href="{% url 'gratitude_create' %}">New Gratitude</a></li>
-              
-            </ul>
-          </li>{% endif %}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
-              Blog
-            </a>
-              {% if user.username != "marisa" %}
 
-            <ul class="dropdown-menu" aria-labelledby="blogDropdown">
-              <li><a class="dropdown-item" href="{% url 'blog' %}">See Blog Posts</a></li>
-              <li><a class="dropdown-item" href="{% url 'post_new' %}">Create New Blog Post</a></li>
+          {% if user|has_group:"health access" %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="healthDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+                Health
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="healthDropdown">
+                <li><a class="dropdown-item" href="{% url 'stat_new' %}">New Temperature</a></li>
+                <li><a class="dropdown-item" href="{% url 'symptom_new' %}">New Symptom</a></li>
+                <li><a class="dropdown-item" href="{% url 'stat_plot' %}">Plots</a></li>
+                <li><a class="dropdown-item" href="{% url 'stat_list' %}">List of Temperatures</a></li>
+                <li><a class="dropdown-item" href="{% url 'symptoms' %}">List of Symptoms</a></li>
+                <li><a class="dropdown-item" href="{% url 'apple-health-list' %}">Apple Health Data</a></li>
+              </ul>
+            </li>
+          {% endif %}
 
-              <li class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{% url 'note_list' %}">My Notes</a></li>
-              {% for note in all_notes_list %}
-                <li><a class="dropdown-item" href="{{ note.get_absolute_url }}">{{ note.title }}</a></li>
-              {% endfor %}
-            </ul>
-                          {% endif %}
-          </li>
+          {% if user|has_group:"gratitudes access" %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="gratitudeDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+                Gratitudes
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="gratitudeDropdown">
+                <li><a class="dropdown-item" href="{% url 'gratitude_list' %}">All Gratitudes</a></li>
+                <li><a class="dropdown-item" href="{% url 'gratitude_create' %}">New Gratitude</a></li>
+              </ul>
+            </li>
+          {% endif %}
 
-        {% endif%}
-    {% block user_login %}
-        {% if user.is_authenticated %}
-          <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
-            {{user.first_name}}
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="userDropdown">
-          <li><a class="dropdown-item" href="{% url 'inbox_list' %}">Inbox</a></li>
-          <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
-          <li><hr class="dropdown-divider"></li>
-            {% if user.is_staff %}
-                <li><a class="dropdown-item" href="/admin/">Admin</a></li>
-            {% endif %}
-            <li class="dropdown-item">
-              <form method="POST" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-link dropdown-item" style="padding: 0; border: none; background: none;">
-                  Log Out <span class="badge bg-info">{{ user.first_name }}</span>
-                </button>
-              </form>
-          </ul>
-        </li>
+          {% if user|has_group:"blog access" or user|has_group:"notes access" %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+                Blog
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="blogDropdown">
+                {% if user|has_group:"blog access" %}
+                  <li><a class="dropdown-item" href="{% url 'blog' %}">See Blog Posts</a></li>
+                  <li><a class="dropdown-item" href="{% url 'post_new' %}">Create New Blog Post</a></li>
+                {% endif %}
+
+                {% if user|has_group:"notes access" %}
+                  {% if user|has_group:"blog access" %}
+                    <li class="dropdown-divider"></li>
+                  {% endif %}
+                  <li><a class="dropdown-item" href="{% url 'note_list' %}">My Notes</a></li>
+                  {% for note in all_notes_list %}
+                    <li><a class="dropdown-item" href="{{ note.get_absolute_url }}">{{ note.title }}</a></li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
+            </li>
+          {% endif %}
+        {% endif %}
+
+        {% block user_login %}
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+                {{ user.first_name }}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="{% url 'inbox_list' %}">Inbox</a></li>
+                {% if user|has_group:"health access" %}
+                  <li><a class="dropdown-item" href="{% url 'health_event_home' %}">Health</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if user.is_staff %}
+                  <li><a class="dropdown-item" href="/admin/">Admin</a></li>
+                {% endif %}
+                <li class="dropdown-item">
+                  <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link dropdown-item" style="padding: 0; border: none; background: none;">
+                      Log Out <span class="badge bg-info">{{ user.first_name }}</span>
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
           {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'blog' %}" role="button">Blog</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'blog' %}" role="button">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Log In</a>
+            </li>
           {% endif %}
-          {% endblock user_login %}
-        </ul>
-      </div>
+        {% endblock user_login %}
+      </ul>
     </div>
-    </nav>
-    {%endblock navbar%}
+  </div>
+</nav>
+{% endblock navbar %}
