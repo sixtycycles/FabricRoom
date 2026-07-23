@@ -70,6 +70,12 @@
               </ul>
             </li>
           {% endif %}
+
+          {% if user.is_superuser %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'utilities' %}">Utilities</a>
+            </li>
+          {% endif %}
         {% endif %}
 
         {% block user_login %}

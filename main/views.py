@@ -78,6 +78,13 @@ class PrivacyPolicyView(TemplateView):
         return context
 
 
+class UtilitiesView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = "main/utilities.html"
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
 class TriggerManagementCommandView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = "/accounts/login/"
     raise_exception = True
