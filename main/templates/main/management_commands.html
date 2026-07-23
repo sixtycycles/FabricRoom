@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h1 class="mb-4">Management Command Runs</h1>
+    
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Admin command controls</h5>
+      </div>
+      <div class="card-body">
+        <div class="d-flex flex-wrap gap-2">
+          <form method="post" action="{% url 'run_management_command' 'cleanup_orphan_images' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-warning">Run cleanup_orphan_images</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Scheduled command runs</h5>
+      </div>
+      <div class="card-body">
+        {% if management_command_runs %}
+        <ul class="list-unstyled mt-2 mb-0">
+          {% for run in management_command_runs %}
+          <li class="mb-3 pb-2 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>{{ run.command_name }}</strong>
+              {% if run.status == "success" %}
+              <span class="badge text-bg-success">Success</span>
+              {% else %}
+              <span class="badge text-bg-danger">Failed</span>
+              {% endif %}
+            </div>
+            <div class="text-muted small">
+              {{ run.started_at|date:"Y-m-d H:i" }} · {{ run.duration_seconds|floatformat:2 }}s
+            </div>
+            {% if run.summary %}
+            <div class="small">{{ run.summary }}</div>
+            {% endif %}
+            {% if run.details %}
+            <details class="small mt-1">
+              <summary class="text-muted">Show details</summary>
+              <pre class="mb-0 mt-1" style="white-space: pre-wrap;">{{ run.details }}</pre>
+            </details>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="text-muted small mb-0">No scheduled command runs yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock content %}

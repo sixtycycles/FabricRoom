@@ -6,6 +6,7 @@ from main.views import (
     delete_quote,
     PrivacyPolicyView,
     UtilitiesView,
+    ManagementCommandRunsView,
 )
 from django.views.generic import TemplateView
 
@@ -15,6 +16,7 @@ urlpatterns = [
     path("quotes/<int:pk>/delete/", delete_quote, name="delete_quote"),
     path("privacy-policy/", PrivacyPolicyView.as_view(), name="privacy_policy"),
     path("utilities/", UtilitiesView.as_view(), name="utilities"),
+    path("utilities/commands/", ManagementCommandRunsView.as_view(), name="management_commands"),
     path(
         "admin/commands/<str:command_name>/run/",
         TriggerManagementCommandView.as_view(),

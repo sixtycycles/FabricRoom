@@ -6,7 +6,7 @@
     <p>Welcome to the superuser utilities page.</p>
     <div class="list-group">
       <a href="/admin/" class="list-group-item list-group-item-action">Django Admin</a>
-      <!-- Add other utility links here as needed -->
+      <a href="{% url 'management_commands' %}" class="list-group-item list-group-item-action">Management Command Runs</a>
     </div>
   </div>
 {% endblock %}

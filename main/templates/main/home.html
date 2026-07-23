@@ -69,71 +69,28 @@
       {% endif %}
     </div>
 {% if user|has_group:"feeds access" %}
-    <h5 class="mt-4">Recent feed items</h5>
-    {% if recent_feed_items %}
-    <ul class="list-unstyled mt-2">
-      {% for item in recent_feed_items %}
-      <li class="mb-2">
-        <a href="{{ item.link|default:'#' }}" target="_blank" rel="noopener noreferrer">
-          {{ item.title|default:item.feed.title }}
-        </a>
-        <div class="text-muted small">{{ item.feed.title }}</div>
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p class="text-muted small mb-0">No recent feed items yet.</p>
-    {% endif %}
-    {% endif %}
-
-    {% if user.is_superuser %}
-    <h5 class="mt-4">Admin command controls</h5>
-    <div class="d-flex flex-wrap gap-2 mt-2">
-      <form method="post" action="{% url 'run_management_command' 'cleanup_orphan_images' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-sm btn-warning">Run cleanup_orphan_images</button>
-      </form>
-    </div>
-
-    <h5 class="mt-4">Scheduled command runs</h5>
-    {% if management_command_runs %}
-    <ul class="list-unstyled mt-2 mb-0">
-      {% for run in management_command_runs %}
-      <li class="mb-3 pb-2 border-bottom">
-        <div class="d-flex justify-content-between align-items-center">
-          <strong>{{ run.command_name }}</strong>
-          {% if run.status == "success" %}
-          <span class="badge text-bg-success">Success</span>
-          {% else %}
-          <span class="badge text-bg-danger">Failed</span>
-          {% endif %}
-        </div>
-        <div class="text-muted small">
-          {{ run.started_at|date:"Y-m-d H:i" }} · {{ run.duration_seconds|floatformat:2 }}s
-        </div>
-        {% if run.summary %}
-        <div class="small">{{ run.summary }}</div>
-        {% endif %}
-        {% if run.details %}
-        <details class="small mt-1">
-          <summary class="text-muted">Show deleted file paths</summary>
-          <pre class="mb-0 mt-1" style="white-space: pre-wrap;">{{ run.details }}</pre>
-        </details>
-        {% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p class="text-muted small mb-0">No scheduled command runs yet.</p>
-    {% endif %}
-    {% endif %}
+<h5 class="mt-4">Recent feed items</h5>
+{% if recent_feed_items %}
+<ul class="list-unstyled mt-2">
+  {% for item in recent_feed_items %}
+  <li class="mb-2">
+    <a href="{{ item.link|default:'#' }}" target="_blank" rel="noopener noreferrer">
+      {{ item.title|default:item.feed.title }}
+    </a>
+    <div class="text-muted small">{{ item.feed.title }}</div>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted small mb-0">No recent feed items yet.</p>
+{% endif %}
+{% endif %}
 
   </div>
   <div class="card-footer">
   </div>
 </div>
-{% else %}
-<div class="jumbotron mt-3">
+{% else %}<div class="jumbotron mt-3">
   <h1 class="display-4">Hello, internet person!</h1>
   <p class="lead"></p>
   <hr class="my-4">

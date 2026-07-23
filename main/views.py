@@ -44,9 +44,6 @@ class LandingPageView(TemplateView):
                 .order_by("-published", "-fetched_at")[:5]
             )
 
-        if user.is_superuser:
-            context["management_command_runs"] = ManagementCommandRun.objects.all()[:10]
-
         return context
 
 
@@ -83,6 +80,18 @@ class UtilitiesView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class ManagementCommandRunsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    template_name = "main/management_commands.html"
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["management_command_runs"] = ManagementCommandRun.objects.all()[:10]
+        return context
 
 
 class TriggerManagementCommandView(LoginRequiredMixin, UserPassesTestMixin, View):
