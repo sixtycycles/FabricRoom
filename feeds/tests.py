@@ -192,3 +192,32 @@ class FeedReaderTests(TestCase):
         response = self.client.get(reverse("feeds_dashboard"))
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["last_updated_at"])
+
+    def test_dashboard_pagination_and_unread_count(self):
+        self.client.login(username="reader", password="secret123")
+        feed = Feed.objects.create(
+            user=self.user,
+            title="Test Feed",
+            feed_url="https://example.com/feed.xml",
+        )
+        for i in range(15):
+            FeedItem.objects.create(
+                feed=feed,
+                entry_id=f"entry-{i}",
+                title=f"Article {i}",
+                published=f"2026-07-01T{i:02d}:00:00Z",
+            )
+
+        # Page 1 should contain 10 items and report unread_count of 15
+        response = self.client.get(reverse("feeds_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["unread_count"], 15)
+        self.assertEqual(len(response.context["entries"]), 10)
+        self.assertTrue(response.context["page_obj"].has_next())
+
+        # Page 2 should contain the remaining 5 items
+        response_page2 = self.client.get(reverse("feeds_dashboard") + "?page=2")
+        self.assertEqual(response_page2.status_code, 200)
+        self.assertEqual(len(response_page2.context["entries"]), 5)
+        self.assertFalse(response_page2.context["page_obj"].has_next())
+

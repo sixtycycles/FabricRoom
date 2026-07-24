@@ -4,6 +4,7 @@ import feedparser
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -129,16 +130,13 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
                 "feed"
             ).order_by("-published", "-fetched_at")
 
-        unread_feed_ids = list({item.feed_id for item in latest_items})
+        unread_count = latest_items.count()
+        unread_feed_ids = list(latest_items.values_list("feed_id", flat=True).distinct())
         available_feeds = [feed for feed in feeds if feed.pk in unread_feed_ids]
 
-        entries = []
-        feed_item_counts = {}
-        for item in latest_items:
-            count = feed_item_counts.get(item.feed_id, 0)
-            if count < 6:
-                entries.append(item)
-                feed_item_counts[item.feed_id] = count + 1
+        paginator = Paginator(latest_items, 10)  # 10 items per page
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
 
         last_updated_at = None
         for feed in feeds:
@@ -154,7 +152,10 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
         context["feeds"] = available_feeds
         context["folder_form"] = FeedFolderForm()
         context["feed_form"] = FeedForm(user=user)
-        context["entries"] = entries
+        context["entries"] = page_obj.object_list
+        context["page_obj"] = page_obj
+        context["paginator"] = paginator
+        context["unread_count"] = unread_count
         context["sort"] = sort_order
         context["last_updated_at"] = last_updated_at
         return context
