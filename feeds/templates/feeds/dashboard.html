@@ -2,25 +2,8 @@
 {% load tz %}
 
 {% block content %}
-<style>
-  /* Ensure Django as_p form fields stay within card bounds */
-  #collapse-add-folder form input,
-  #collapse-add-folder form textarea,
-  #collapse-add-folder form select,
-  #collapse-add-feed form input,
-  #collapse-add-feed form textarea,
-  #collapse-add-feed form select {
-    max-width: 100%;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  /* Prevent p tags wrapping form inputs from causing overflow */
-  #collapse-add-folder form p,
-  #collapse-add-feed form p {
-    overflow: hidden;
-  }
-</style>
 <div class="container py-4">
+
   <div class="row g-4">
     {# Sidebar: renders after the feed list on mobile (order-lg-first keeps it left on large screens) #}
     <div class="col-12 col-lg-4 order-last order-lg-first">
@@ -152,7 +135,7 @@
             {% endif %}
           {% endif %}
           {% if entries %}
-            <div class="row g-3" style="max-height: 75vh; overflow-y: auto;">
+            <div class="row g-3 dashboard-scroll-area">
               {% for item in entries %}
                 <div class="col-12 col-md-6">
                   <article class="border rounded p-3 h-100 shadow-sm d-flex flex-column">

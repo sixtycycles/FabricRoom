@@ -101,11 +101,11 @@
                   <li><a class="dropdown-item" href="/admin/">Admin</a></li>
                 {% endif %}
                 <li class="dropdown-item">
-                  <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                  <form method="POST" action="{% url 'logout' %}" class="d-inline">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-link dropdown-item" style="padding: 0; border: none; background: none;">
+                    <button type="submit" class="btn btn-link dropdown-item p-0 border-0 bg-transparent">
                       Log Out <span class="badge bg-info">{{ user.first_name }}</span>
-                    </button>
+                    </button
                   </form>
                 </li>
               </ul>

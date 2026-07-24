@@ -4,7 +4,7 @@
     <button type="button" class="btn btn-sm btn-outline-secondary" id="heading-dropdown" title="Heading">
       ¶
     </button>
-    <div class="btn-group" role="group" style="display: none;" id="heading-menu">
+    <div class="btn-group d-none" role="group" id="heading-menu">
       <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="h1" title="Heading 1">H1</button>
       <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="h2" title="Heading 2">H2</button>
       <button type="button" class="btn btn-sm btn-outline-secondary editor-command" data-command="formatBlock" data-value="h3" title="Heading 3">H3</button>
@@ -43,7 +43,7 @@
 </div>
 
 <!-- Link dialog -->
-<div id="link-dialog" style="display: none;" class="mb-3">
+<div id="link-dialog" class="d-none mb-3">
   <div class="input-group input-group-sm">
     <input type="text" class="form-control" id="link-url" placeholder="https://example.com">
     <button class="btn btn-outline-secondary" type="button" id="link-apply">Apply</button>
@@ -52,7 +52,7 @@
 </div>
 
 <!-- Image upload form -->
-<div id="image-upload-form" style="display: none;" class="mb-3">
+<div id="image-upload-form" class="d-none mb-3">
   <div class="input-group input-group-sm">
     <input type="file" class="form-control" id="image-file-input" accept="image/*">
     <button class="btn btn-outline-secondary" type="button" id="image-upload-btn">Upload</button>

@@ -6,7 +6,7 @@
 <div class="card mb-3 mt-3">
   <div class="card-body">
     <div class="d-flex justify-content-between align-items-start gap-3">
-      <blockquote style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; margin: 0;">
+      <blockquote class="vintage-quote">
         “{{ random_quote.text }}”
         <footer class="mt-2"><em>— {{ random_quote.author }}</em></footer>
       </blockquote>
@@ -20,7 +20,7 @@
 {% elif user|has_group:"gratitudes access" and random_gratitude %}
 <div class="card mb-3 mt-3">
   <div class="card-body">
-    <blockquote style="font-family: Georgia, 'Times New Roman', serif; font-size: 1.1rem; margin: 0;">
+    <blockquote class="vintage-quote">
       “{{ random_gratitude.gratitude_text }}”
       <footer class="mt-2"><em>— {{ random_gratitude.author.username }} ({{ random_gratitude.created_date|date:"Y-m-d" }})</em></footer>
     </blockquote>

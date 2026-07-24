@@ -39,6 +39,45 @@ background:#333333;
   color: red;
 }
 
+.editor-min-height {
+  min-height: 400px;
+  overflow-y: auto;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.dashboard-scroll-area {
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.pre-wrap {
+  white-space: pre-wrap;
+}
+
+.vintage-quote {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+// Fix for Django as_p in feed collapse forms
+#collapse-add-folder form input,
+#collapse-add-folder form textarea,
+#collapse-add-folder form select,
+#collapse-add-feed form input,
+#collapse-add-feed form textarea,
+#collapse-add-feed form select {
+  max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+#collapse-add-folder form p,
+#collapse-add-feed form p {
+  overflow: hidden;
+}
+
+
 // Accessibility: Skip-to-main link
 .skip-to-main {
   position: absolute;
