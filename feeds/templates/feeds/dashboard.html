@@ -19,13 +19,22 @@
   #collapse-add-feed form p {
     overflow: hidden;
   }
+  /* On large screens, narrow the sidebar so it doesn't take a third of the row */
+  @media (min-width: 992px) {
+    .feeds-sidebar {
+      max-width: 280px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
 </style>
 <div class="container py-4">
   <div class="row g-4">
     {# Sidebar: renders after the feed list on mobile (order-lg-first keeps it left on large screens) #}
     <div class="col-12 col-lg-4 order-last order-lg-first">
+      <div class="feeds-sidebar">
 
-      {# Add Folder: collapsed by default on mobile, expanded on large screens via JS below #}
+      {# Add Folder: collapsed by default on all screen sizes #}
       <div class="card shadow-sm mb-3">
         <div class="card-body">
           <button class="btn btn-link p-0 text-start text-decoration-none w-100 d-flex justify-content-between align-items-center"
@@ -50,7 +59,7 @@
         </div>
       </div>
 
-      {# Add Feed: collapsed by default on mobile, expanded on large screens via JS below #}
+      {# Add Feed: collapsed by default on all screen sizes #}
       <div class="card shadow-sm mb-3">
         <div class="card-body">
           <button class="btn btn-link p-0 text-start text-decoration-none w-100 d-flex justify-content-between align-items-center"
@@ -75,19 +84,19 @@
         </div>
       </div>
 
-      {# Folders: always visible #}
+      {# Folders: collapsed by default #}
       <div class="card shadow-sm">
         <div class="card-body">
           <button class="btn btn-link p-0 text-start text-decoration-none w-100 d-flex justify-content-between align-items-center"
                   type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapse-folders"
-                  aria-expanded="true"
+                  aria-expanded="false"
                   aria-controls="collapse-folders">
             <h3 class="h5 mb-0">Folders</h3>
             <span class="fs-5 lh-1" aria-hidden="true">&#43;</span>
           </button>
-          <div class="collapse show mt-3" id="collapse-folders">
+          <div class="collapse mt-3" id="collapse-folders">
             {% if folders %}
               <ul class="list-group list-group-flush">
                 {% for folder in folders %}
@@ -104,6 +113,7 @@
         </div>
       </div>
 
+    </div>
     </div>
     {# /sidebar #}
     <div class="col-12 col-lg-8 order-first order-lg-last">
@@ -180,23 +190,4 @@
   </div>
 </div>
 
-{# On large screens, auto-expand the Add Folder and Add Feed panels #}
-<script>
-  (function () {
-    function syncPanels() {
-      var isLarge = window.matchMedia('(min-width: 992px)').matches;
-      ['collapse-add-folder', 'collapse-add-feed'].forEach(function (id) {
-        var el = document.getElementById(id);
-        var btn = el && el.previousElementSibling;
-        if (!el) return;
-        var bsCollapse = bootstrap.Collapse.getOrCreateInstance(el, { toggle: false });
-        if (isLarge) {
-          bsCollapse.show();
-          if (btn) btn.setAttribute('aria-expanded', 'true');
-        }
-      });
-    }
-    document.addEventListener('DOMContentLoaded', syncPanels);
-  })();
-</script>
 {% endblock %}
