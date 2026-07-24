@@ -140,6 +140,14 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
                 entries.append(item)
                 feed_item_counts[item.feed_id] = count + 1
 
+        last_updated_at = None
+        for feed in feeds:
+            candidate = feed.last_fetched_at
+            if candidate is None:
+                continue
+            if last_updated_at is None or candidate > last_updated_at:
+                last_updated_at = candidate
+
         context["folders"] = folders
         context["selected_folder"] = selected_folder
         context["selected_feed"] = selected_feed
@@ -148,6 +156,7 @@ class FeedDashboardView(FeedContextMixin, LoginRequiredMixin, TemplateView):
         context["feed_form"] = FeedForm(user=user)
         context["entries"] = entries
         context["sort"] = sort_order
+        context["last_updated_at"] = last_updated_at
         return context
 
 

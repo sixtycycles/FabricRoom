@@ -150,3 +150,45 @@ class FeedReaderTests(TestCase):
         response = self.client.get(reverse("feeds_dashboard") + "?sort=source")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(list(response.context["entries"]), [item2, item1])
+
+    def test_dashboard_reports_most_recent_last_fetched_at(self):
+        from django.utils.dateparse import parse_datetime
+
+        self.client.login(username="reader", password="secret123")
+        Feed.objects.create(
+            user=self.user,
+            title="Older",
+            feed_url="https://example.com/older.xml",
+            last_fetched_at=parse_datetime("2026-07-01T08:00:00Z"),
+        )
+        newest = Feed.objects.create(
+            user=self.user,
+            title="Newest",
+            feed_url="https://example.com/newest.xml",
+            last_fetched_at=parse_datetime("2026-07-24T15:00:00Z"),
+        )
+        FeedItem.objects.create(
+            feed=newest,
+            entry_id="new-1",
+            title="Newest article",
+            published="2026-07-24T12:00:00Z",
+        )
+
+        response = self.client.get(reverse("feeds_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.context["last_updated_at"],
+            newest.last_fetched_at,
+        )
+
+    def test_dashboard_reports_none_when_no_feeds_fetched(self):
+        self.client.login(username="reader", password="secret123")
+        Feed.objects.create(
+            user=self.user,
+            title="Stale",
+            feed_url="https://example.com/stale.xml",
+        )
+
+        response = self.client.get(reverse("feeds_dashboard"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context["last_updated_at"])
